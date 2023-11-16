@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34221.43
+VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAFB-PowerShell-Tool", "FAFB-PowerShell-Tool\FAFB-PowerShell-Tool.csproj", "{E7F377F4-905B-42EE-8267-9B2116B38F74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAFB-PowerShell-Tool", "FAFB-PowerShell-Tool\FAFB-PowerShell-Tool.csproj", "{72C5F986-BC18-47B9-9EE1-A5E61A7A5A68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E7F377F4-905B-42EE-8267-9B2116B38F74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7F377F4-905B-42EE-8267-9B2116B38F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7F377F4-905B-42EE-8267-9B2116B38F74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7F377F4-905B-42EE-8267-9B2116B38F74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72C5F986-BC18-47B9-9EE1-A5E61A7A5A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72C5F986-BC18-47B9-9EE1-A5E61A7A5A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72C5F986-BC18-47B9-9EE1-A5E61A7A5A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72C5F986-BC18-47B9-9EE1-A5E61A7A5A68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {029A8A2F-C6AE-4C07-95FE-FF53E3AFE766}
+		SolutionGuid = {FB3EA193-E8C1-4969-A089-D9EDFED20037}
 	EndGlobalSection
 EndGlobal
