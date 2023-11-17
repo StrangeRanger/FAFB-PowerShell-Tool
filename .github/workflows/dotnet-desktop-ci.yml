@@ -39,4 +39,3 @@ jobs:
       with:
         name: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
         path: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
-
