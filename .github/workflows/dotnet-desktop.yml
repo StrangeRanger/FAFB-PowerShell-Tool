@@ -74,7 +74,7 @@ jobs:
       id: nbgv
 
     # Install the .NET Core workload
-    - name: Install .NET Core (net8)
+    - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
@@ -104,22 +104,22 @@ jobs:
         [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
 
     # Create the app package by building and packaging the Windows Application Packaging project
-    - name: Create the app package
-      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
-      env:
-        Appx_Bundle: Always
-        Appx_Bundle_Platforms: x86|x64
-        Appx_Package_Build_Mode: StoreUpload
-        Configuration: ${{ matrix.configuration }}
+    #- name: Create the app package
+    #  run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
+    #  env:
+    #    Appx_Bundle: Always
+    #    Appx_Bundle_Platforms: x86|x64
+    #    Appx_Package_Build_Mode: StoreUpload
+    #    Configuration: ${{ matrix.configuration }}
 
     # NEW: Build the Windows Application Packaging project
-    #- name: Build the Windows Application Packaging Project (wapproj)
-    #  run: msbuild $env:Solution_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:BuildMode /p:AppxBundle=$env:AppxBundle /p:PackageCertificateKeyFile=$env:SigningCertificate /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
-    #  env:
-    #    AppxBundle: Never
-    #    BuildMode: SideloadOnly
-    #    Configuration: Debug
-    #    TargetPlatform: ${{ matrix.targetplatform }}
+    - name: Build the Windows Application Packaging Project (wapproj)
+      run: msbuild $env:Solution_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:BuildMode /p:AppxBundle=$env:AppxBundle /p:PackageCertificateKeyFile=$env:SigningCertificate /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
+      env:
+        AppxBundle: Never
+        BuildMode: SideloadOnly
+        Configuration: ${{ matrix.configuration }}
+        TargetPlatform: ${{ matrix.targetplatform }}
 
     # Remove the pfx
     - name: Remove the pfx
