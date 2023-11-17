@@ -58,7 +58,6 @@ jobs:
     env:
       App_Packages_Directory: AppPackages
       SigningCertificate: GitHubActionsDemo.pfx
-      Solution_Name: FAFB-PowerShell-Tool.sln                                              # Replace with your solution name, i.e. MyWpfApp.sln.
       Test_Project_Path: FAFB-PowerShell-Tool.Test\FAFB-PowerShell-Tool.Test.csproj        # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Wap_Project_Directory: FAFB-PowerShell-Tool.Package                                  # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       Wap_Project_Path: FAFB-PowerShell-Tool.Package/FAFB-PowerShell-Tool.Package.wapproj  # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
@@ -90,10 +89,6 @@ jobs:
         [xml]$manifest = get-content ".\$env:Wap_Project_Directory\Package.appxmanifest"
         $manifest.Package.Identity.Version = "${{ steps.nbgv.outputs.SimpleVersion }}.0"
         $manifest.save(".\$env:Wap_Project_Directory\Package.appxmanifest")
-
-    # Execute all unit tests in the solution
-    #- name: Execute unit tests
-    #  run: dotnet test
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
