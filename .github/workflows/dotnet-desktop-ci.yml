@@ -29,10 +29,10 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Build
-      run: dotnet build $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --self-contained
+      run: dotnet build $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --self-contained true
 
     - name: Publish Artifact
-      run: dotnet publish -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} -o ./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --self-contained -p:PublishSingleFile=true
+      run: dotnet publish -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} -o ./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=embedded
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
