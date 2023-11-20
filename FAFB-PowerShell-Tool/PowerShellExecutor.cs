@@ -2,22 +2,24 @@
 
 namespace FAFB_PowerShell_Tool;
 
-internal class PowerShellExecutor
+class PowerShellExecutor
 {
-    public static void ExecutePowerShellCommand(string commandText)
+    public static List<string> Execute(string commandText)
     {
-        //Create a powershell env and then add the command given to this method
+        List<string> returnValues = new List<string>();
+        // Create a powershell env and then add the command given to this method.
         using PowerShell ps = PowerShell.Create();
         ps.AddScript(commandText);
 
-        // run the script
+        // Run the script.
         var results = ps.Invoke();
 
-        // error checking if the powershell command fails 
+        // Error checking if the powershell command fails /
         if (ps.HadErrors)
         {
             foreach (var error in ps.Streams.Error)
             {
+                returnValues.Add("Error: " + error.ToString());
                 Console.WriteLine("Error: " + error.ToString());
             }
         }
@@ -25,9 +27,12 @@ internal class PowerShellExecutor
         {
             foreach (var result in results)
             {
+                returnValues.Add(result.ToString());
                 Console.WriteLine(result.ToString());
             }
         }
+
+        return returnValues;
     }
 }
 

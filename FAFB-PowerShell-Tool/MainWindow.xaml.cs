@@ -1,4 +1,5 @@
-﻿using System.Text;
+using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,7 +17,8 @@ namespace FAFB_PowerShell_Tool
     /// </summary>
     public partial class MainWindow : Window
     {
-        string command = "";
+        private string command = null!;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,13 +38,24 @@ namespace FAFB_PowerShell_Tool
         {
             command = "Get-ChildItem -Path $env:USERPROFILE | Out-String -Width 4096";
         }
+
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             command = "New-Item -Path $env:USERPROFILE\\myFile.txt -ItemType File";
         }
+
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            PowerShellExecutor.ExecutePowerShellCommand(command);
+            List<string> commandOutput = PowerShellExecutor.Execute(command);
+            string fullCommandOutput = "";
+
+
+            foreach (var str in commandOutput)
+            {
+                fullCommandOutput += str;
+            }
+
+            MessageBox.Show(fullCommandOutput);
         }
     }
 }
