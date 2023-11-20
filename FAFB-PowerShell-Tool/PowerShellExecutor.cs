@@ -14,13 +14,13 @@ class PowerShellExecutor
         // Run the script.
         var results = ps.Invoke();
 
-        // Error checking if the powershell command fails /
+        // Error checking if the powershell command fails.
         if (ps.HadErrors)
         {
             foreach (var error in ps.Streams.Error)
             {
                 returnValues.Add("Error: " + error.ToString());
-                Console.WriteLine("Error: " + error.ToString());
+                //Console.WriteLine("Error: " + error.ToString());
             }
         }
         else
@@ -28,7 +28,7 @@ class PowerShellExecutor
             foreach (var result in results)
             {
                 returnValues.Add(result.ToString());
-                Console.WriteLine(result.ToString());
+                //Console.WriteLine(result.ToString());
             }
         }
 
