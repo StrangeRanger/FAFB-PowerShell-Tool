@@ -13,6 +13,7 @@
         <Button x:Name="Command_Button_3" Content="Command 3" HorizontalAlignment="Left" Margin="400,110,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton3"/>
         <Button x:Name="Command_Button_4" Content="Command 4" HorizontalAlignment="Left" Margin="568,110,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton4"/>
         <Button x:Name="Execute_Button" Content="Execute" HorizontalAlignment="Left" Margin="318,217,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="ExecutionButton"/>
+        <Button x:Name="Execute_Generic_Command" Content="Execute Non-PowerShell Command" HorizontalAlignment="Left" Margin="133,320,0,0" VerticalAlignment="Top" Height="58" Width="542" Click="ExecuteGenericCommand"/>
 
 
     </Grid>

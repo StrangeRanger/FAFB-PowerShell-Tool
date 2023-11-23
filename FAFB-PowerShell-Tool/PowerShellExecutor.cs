@@ -1,26 +1,27 @@
 ﻿using System.Management.Automation;
+using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
 
-class PowerShellExecutor
+// TODO: Should this be made into a singleton rather than a static class?
+public class PowerShellExecutor
 {
     public static List<string> Execute(string commandText)
     {
-        List<string> returnValues = new List<string>();
-        // Create a powershell env and then add the command given to this method.
         using PowerShell ps = PowerShell.Create();
-        ps.AddScript(commandText);
+        List<string> returnValues = new List<string>();
 
-        // Run the script.
+        // TODO: Use a MessageBox to show errors to the user.
+        ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
+        ps.AddScript(commandText); 
+
         var results = ps.Invoke();
 
-        // Error checking if the powershell command fails.
         if (ps.HadErrors)
         {
             foreach (var error in ps.Streams.Error)
             {
                 returnValues.Add("Error: " + error.ToString());
-                //Console.WriteLine("Error: " + error.ToString());
             }
         }
         else
@@ -28,11 +29,28 @@ class PowerShellExecutor
             foreach (var result in results)
             {
                 returnValues.Add(result.ToString());
-                //Console.WriteLine(result.ToString());
             }
         }
 
         return returnValues;
+    }
+
+    private static void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
+    {
+        if (commandText is null)
+        {
+            throw new ArgumentNullException("Command text cannot be null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(commandText))
+        {
+            throw new ArgumentException("Command text cannot be null or whitespace.");
+        }
+    }
+
+    private static void ShowError(string message)
+    {
+        MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
 

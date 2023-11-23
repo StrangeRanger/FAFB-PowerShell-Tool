@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 
 namespace FAFB_PowerShell_Tool
@@ -16,7 +17,7 @@ namespace FAFB_PowerShell_Tool
 
         private void CommandButton1(object sender, RoutedEventArgs e)
         {
-            command = "Get-Process";
+            command = "Get-ADUser -filter * -Properties * | out-gridvie";
         }
 
         private void CommandButton2(object sender, RoutedEventArgs e)
@@ -36,16 +37,29 @@ namespace FAFB_PowerShell_Tool
 
         private void ExecutionButton(object sender, RoutedEventArgs e)
         {
-            List<string> commandOutput = PowerShellExecutor.Execute(command);
-            string fullCommandOutput = "";
-
-
-            foreach (var str in commandOutput)
+            try
             {
-                fullCommandOutput += str;
-            }
+                List<string> commandOutput = PowerShellExecutor.Execute(command);
+                string fullCommandOutput = "";
 
-            MessageBox.Show(fullCommandOutput);
+
+                foreach (var str in commandOutput)
+                {
+                    fullCommandOutput += str;
+                }
+
+                MessageBox.Show(fullCommandOutput);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("INTERNAL ERROR: " + ex.Message);
+            }
+        }
+
+        private void ExecuteGenericCommand(object sender, RoutedEventArgs e)
+        {
+            string hostName = System.Net.Dns.GetHostName();
+            MessageBox.Show("System Host Name: " + hostName);
         }
     }
 }
