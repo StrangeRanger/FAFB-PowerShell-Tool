@@ -61,5 +61,10 @@ namespace FAFB_PowerShell_Tool
             string hostName = System.Net.Dns.GetHostName();
             MessageBox.Show("System Host Name: " + hostName);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
