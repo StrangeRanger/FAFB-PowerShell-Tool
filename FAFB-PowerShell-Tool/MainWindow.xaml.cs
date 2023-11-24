@@ -17,7 +17,7 @@ namespace FAFB_PowerShell_Tool
 
         private void CommandButton1(object sender, RoutedEventArgs e)
         {
-            command = "Get-ADUser -filter * -Properties * | out-gridvie";
+            command = "Get-ADUser -filter * -Properties * | out-gridview";
         }
 
         private void CommandButton2(object sender, RoutedEventArgs e)
