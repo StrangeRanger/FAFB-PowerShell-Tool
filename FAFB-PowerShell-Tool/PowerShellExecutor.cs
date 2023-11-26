@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;
+﻿using System.IO;
+using System.Management.Automation;
 using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
@@ -10,6 +11,7 @@ public class PowerShellExecutor
     {
         using PowerShell ps = PowerShell.Create();
         List<string> returnValues = new List<string>();
+        string filePath = @"C:\FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
         // TODO: Use a MessageBox to show errors to the user.
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
@@ -21,6 +23,7 @@ public class PowerShellExecutor
         {
             foreach (var error in ps.Streams.Error)
             {
+                File.WriteAllText(filePath, "Error: " + error.ToString()); // For testing purposes only.
                 returnValues.Add("Error: " + error.ToString());
             }
         }
@@ -28,6 +31,7 @@ public class PowerShellExecutor
         {
             foreach (var result in results)
             {
+                File.WriteAllText(filePath, result.ToString()); // For testing purposes only.
                 returnValues.Add(result.ToString());
             }
         }
