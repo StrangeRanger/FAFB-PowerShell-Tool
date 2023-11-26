@@ -11,7 +11,9 @@
         <Grid Margin="155,64,0,0" Background="White">
             <Button x:Name="Execute_Button" Content="Execute" HorizontalAlignment="Left" Margin="408,87,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="ExecutionButton"/>
             <Button x:Name="Execute_Generic_Command" Content="Execute Non-PowerShell Command" HorizontalAlignment="Left" Margin="408,28,0,0" VerticalAlignment="Top" Height="43" Width="198" Click="ExecuteGenericCommand"/>
-            <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595"/>
+            <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595">
+
+            </Border>
         </Grid>
         <Grid x:Name="Left_Side_Query_Bar" HorizontalAlignment="Left" Height="370" Margin="0,64,0,0" VerticalAlignment="Top" Width="155">
             <Grid.Background>
@@ -29,11 +31,10 @@
 
         <Grid x:Name="Header_Bar" HorizontalAlignment="Center" Height="64" VerticalAlignment="Top" Width="800">
             <TextBlock x:Name="Title" HorizontalAlignment="Left" Margin="40,0,0,0" TextWrapping="Wrap" Text="Active Directory Queries" VerticalAlignment="Center" FontSize="18" Width="220" FontWeight="Bold"/>
-            <Button Content="Home" HorizontalAlignment="Left" Margin="590,24,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-            <Button x:Name="Settings_Button" HorizontalAlignment="Left" Margin="647,24,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Height="30" Width="85">
-                <Menu  HorizontalAlignment="Left" Height="22" VerticalAlignment="Top" Width="78" FontWeight="Bold"/>
+            <Button Content="Home" HorizontalAlignment="Left" Margin="647,28,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+            <Button HorizontalAlignment="Left" Margin="545,24,0,0" VerticalAlignment="Top">
+                <Button Content="Connect to Ad" Click="Button_Click_1"/>
             </Button>
-            <Button Content="Button" HorizontalAlignment="Left" Margin="545,24,0,0" VerticalAlignment="Top"/>
 
         </Grid>
 
