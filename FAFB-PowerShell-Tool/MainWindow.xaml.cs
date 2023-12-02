@@ -65,12 +65,12 @@ namespace FAFB_PowerShell_Tool
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
+            // TODO: Add method body.
         }
 
         private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-
+            // TODO: Add method body.
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
