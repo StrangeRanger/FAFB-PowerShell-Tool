@@ -6,15 +6,37 @@
         xmlns:local="clr-namespace:FAFB_PowerShell_Tool"
         mc:Ignorable="d"
         Title="Active Directory Queries" Height="450" Width="800">
-    <Grid>
-        <Border BorderBrush="Black" BorderThickness="1"/>
-        <Button x:Name="Command_Button_1" Content="Command 1" HorizontalAlignment="Left" Margin="63,110,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton1"/>
-        <Button x:Name="Command_Button_2" Content="Command 2" HorizontalAlignment="Left" Margin="230,110,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton2"/>
-        <Button x:Name="Command_Button_3" Content="Command 3" HorizontalAlignment="Left" Margin="400,110,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton3"/>
-        <Button x:Name="Command_Button_4" Content="Command 4" HorizontalAlignment="Left" Margin="568,110,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton4"/>
-        <Button x:Name="Execute_Button" Content="Execute" HorizontalAlignment="Left" Margin="318,217,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="ExecutionButton"/>
-        <Button x:Name="Execute_Generic_Command" Content="Execute Non-PowerShell Command" HorizontalAlignment="Left" Margin="133,320,0,0" VerticalAlignment="Top" Height="58" Width="542" Click="ExecuteGenericCommand"/>
 
+    <Grid Background="White">
+        <Grid Margin="155,64,0,0" Background="White">
+            <Button x:Name="Execute_Button" Content="Execute" HorizontalAlignment="Left" Margin="408,87,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="ExecutionButton"/>
+            <Button x:Name="Execute_Generic_Command" Content="Execute Non-PowerShell Command" HorizontalAlignment="Left" Margin="408,28,0,0" VerticalAlignment="Top" Height="43" Width="198" Click="ExecuteGenericCommand"/>
+            <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595">
+
+            </Border>
+        </Grid>
+        <Grid x:Name="Left_Side_Query_Bar" HorizontalAlignment="Left" Height="370" Margin="0,64,0,0" VerticalAlignment="Top" Width="155">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF616161" Offset="0"/>
+                    <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
+                    <GradientStop Color="#FF898989" Offset="0.737"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Button x:Name="Command_Button_1" Content="Command 1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton1"/>
+            <Button x:Name="Command_Button_2" Content="Command 2" HorizontalAlignment="Left" Margin="0,59,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton2"/>
+            <Button x:Name="Command_Button_3" Content="Command 3" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton3"/>
+            <Button x:Name="Command_Button_4" Content="Command 4" HorizontalAlignment="Left" Margin="0,156,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton4"/>
+        </Grid>
+
+        <Grid x:Name="Header_Bar" HorizontalAlignment="Center" Height="64" VerticalAlignment="Top" Width="800">
+            <TextBlock x:Name="Title" HorizontalAlignment="Left" Margin="40,0,0,0" TextWrapping="Wrap" Text="Active Directory Queries" VerticalAlignment="Center" FontSize="18" Width="220" FontWeight="Bold"/>
+            <Button Content="Home" HorizontalAlignment="Left" Margin="647,28,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+            <Button HorizontalAlignment="Left" Margin="545,24,0,0" VerticalAlignment="Top">
+                <Button Content="Connect to Ad" Click="Button_Click_1"/>
+            </Button>
+
+        </Grid>
 
     </Grid>
 </Window>
