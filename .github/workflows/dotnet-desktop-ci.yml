@@ -1,4 +1,4 @@
-name: .NET Core Desktop .EXE (CI)
+name: .NET Core Desktop - CI
 
 on:
   push:
@@ -7,15 +7,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     strategy:
       matrix:
-        targetplatform: [x86, x64]
+        targetplatform: [x64]
+        #targetplatform: [x86, x64]
 
     runs-on: windows-latest
-
     env:
       Project_File: FAFB-PowerShell-Tool\FAFB-PowerShell-Tool.csproj
 
@@ -28,11 +26,11 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Build
-      run: dotnet build $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }}
-
-    - name: Publish Artifact
-      run: dotnet publish -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} -o ./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --self-contained true -p:PublishSingleFile=false -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=embedded
+    - name: Dotnet Build & Publish
+      run: |
+        dotnet restore
+        dotnet build $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --no-restore
+        dotnet publish -c $env:Project_File Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --property:OutputPath=./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
