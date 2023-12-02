@@ -1,4 +1,4 @@
-name: .NET Core Desktop - Release
+name: .NET Core Desktop - Release CI
 
 on:
   push:
@@ -13,6 +13,7 @@ jobs:
         #targetplatform: [x86, x64]
 
     runs-on: windows-latest
+    
     env:
       Project_File: FAFB-PowerShell-Tool\FAFB-PowerShell-Tool.csproj
 
@@ -29,10 +30,18 @@ jobs:
       run: |
         dotnet restore
         dotnet build $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --no-restore
-        dotnet publish -c $env:Project_File Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --property:OutputPath=./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
+        dotnet publish $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} -o .\publish\FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
-        path: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
+        path: .\publish\FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
+
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: .\publish\FAFB_PowerShell_Tool_${{ matrix.targetplatform }}\*
+      env:
+        RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
