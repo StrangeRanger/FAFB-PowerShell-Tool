@@ -1,4 +1,4 @@
-name: Build Test
+name: Built Test
 
 on:
   push:
@@ -31,5 +31,10 @@ jobs:
       run: |
         dotnet restore
         dotnet build $env:Project_File -c Debug -f net8.0-windows -r win-${{ matrix.targetplatform }} --no-restore
-        dotnet publish $env:Project_File -c Debug -f net8.0-windows -r win-${{ matrix.targetplatform }} -o ./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
+        dotnet publish $env:Project_File -c Debug -f net8.0-windows -r win-${{ matrix.targetplatform }} -o ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
 
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
+        path: ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
