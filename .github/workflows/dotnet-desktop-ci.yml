@@ -30,7 +30,7 @@ jobs:
       run: |
         dotnet restore
         dotnet build $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --no-restore
-        dotnet publish -c $env:Project_File Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --property:OutputPath=./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
+        dotnet publish $env:Project_File -c Release -f net8.0-windows -r win-${{ matrix.targetplatform }} --property:OutputPath=./FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
