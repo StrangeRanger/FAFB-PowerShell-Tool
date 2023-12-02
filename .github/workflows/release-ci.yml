@@ -1,4 +1,4 @@
-name: Create and Upload Release (CI)
+name: Create and Upload Release
 
 on:
   workflow_dispatch:
