@@ -63,6 +63,24 @@ namespace FAFB_PowerShell_Tool
             MessageBox.Show("System Host Name: " + hostName, "Command Output");
         }
 
+        private void CommandCmb(object sender, RoutedEventArgs e) {
+
+            try
+            {
+                //Get the command Combo Box to modify
+                ComboBox Cmb = this.cmbCommandList;
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+            }
+        
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Add method body.
