@@ -43,7 +43,6 @@ namespace FAFB_PowerShell_Tool
                 List<string> commandOutput = PowerShellExecutor.Execute(command);
                 string fullCommandOutput = "";
 
-
                 foreach (var str in commandOutput)
                 {
                     fullCommandOutput += str;
@@ -63,22 +62,17 @@ namespace FAFB_PowerShell_Tool
             MessageBox.Show("System Host Name: " + hostName, "Command Output");
         }
 
-        private void CommandCmb(object sender, RoutedEventArgs e) {
-
+        private void CommandCmb(object sender, RoutedEventArgs e)
+        {
             try
             {
-                //Get the command Combo Box to modify
+                // Get the command Combo Box to modify
                 ComboBox Cmb = this.cmbCommandList;
-
-
-
-
             }
             catch (Exception ex)
             {
                 Console.Write(ex);
             }
-        
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -106,19 +100,16 @@ namespace FAFB_PowerShell_Tool
             */
         }
 
+        private void RunRemoteCommand(String command)
+        {
+            // command is the command you want to run like get-aduser
 
-        private void RunRemoteCommand(String command) {
-
-            //command is the command you want to run like get-aduser
-
-            String invokeCommand = "Invoke-Command -Session $sessionAD -ScriptBlock{" + command + "}" ;
-
+            String invokeCommand = "Invoke-Command -Session $sessionAD -ScriptBlock{" + command + "}";
 
             try
             {
                 List<string> commandOutput = PowerShellExecutor.Execute(invokeCommand);
                 string fullCommandOutput = "";
-
 
                 foreach (var str in commandOutput)
                 {
@@ -131,7 +122,6 @@ namespace FAFB_PowerShell_Tool
             {
                 MessageBox.Show("INTERNAL ERROR: " + ex.Message);
             }
-
         }
     }
 }

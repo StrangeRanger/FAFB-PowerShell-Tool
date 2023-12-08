@@ -15,7 +15,7 @@ public class PowerShellExecutor
 
         // TODO: Use a MessageBox to show errors to the user.
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
-        ps.AddScript(commandText); 
+        ps.AddScript(commandText);
 
         var results = ps.Invoke();
 
@@ -57,4 +57,3 @@ public class PowerShellExecutor
         MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
-

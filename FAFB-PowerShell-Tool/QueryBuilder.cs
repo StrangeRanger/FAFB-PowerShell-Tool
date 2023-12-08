@@ -10,9 +10,8 @@ namespace FAFB_PowerShell_Tool
 {
     public class QueryBuilder
     {
-        
-        public static List<string> CommandList() { 
-
+        public static List<string> CommandList()
+        {
             List<string> list = new List<string>();
 
             try
@@ -21,38 +20,31 @@ namespace FAFB_PowerShell_Tool
 
                 StreamReader sr = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read));
 
-                // Read file.  
+                // Read file.
                 while ((line = sr.ReadLine()) != null)
                 {
-                    // Initialization.  
+                    // Initialization.
                     CountryObj obj = new CountryObj();
                     string[] info = line.Split(':');
 
-                    // Setting.  
+                    // Setting.
                     obj.CountryCode = info[0].ToString();
                     obj.CountryName = info[1].ToString();
 
-                    // Adding.  
+                    // Adding.
                     lst.Add(obj);
                 }
 
-                // Closing.  
+                // Closing.
                 sr.Dispose();
                 sr.Close();
             }
-
-            }
-            catch (Exception ex) 
-            { 
-                
-            }
-
-
-            return list;
         }
+        catch (Exception ex)
+        { }
 
-
-
-
+        return list;
     }
+
+}
 }
