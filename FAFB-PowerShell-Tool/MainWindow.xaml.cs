@@ -22,20 +22,9 @@ namespace FAFB_PowerShell_Tool
             {
                 //Get the command Combo Box to modify
                 ComboBox Cmb = this.cmbCommandList;
-
-                ObservableCollection<string> list = new ObservableCollection<string>();
-
-                list.Add("hello");
-                list.Add("he");
-                list.Add("heladso");
-                list.Add("hellasdfo");
-                list.Add("helldfdfo");
-                list.Add("hellfffffo");
-
+                ObservableCollection<Command> list = Command.ReadFileCommandList();
                 Cmb.ItemsSource = list;
-
-
-
+                Cmb.DisplayMemberPath = "commandName";
             }
             catch (Exception ex)
             {

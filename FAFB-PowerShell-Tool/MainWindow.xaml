@@ -19,7 +19,7 @@
                     </TabItem>
                     <TabItem Header="TabItem">
                         <Grid Background="#FFE5E5E5">
-                            <ComboBox x:Name="cmbCommandList" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="120" BorderBrush="#FFD41818" Background="Black" IsEditable="True"/>
+                            <ComboBox x:Name="cmbCommandList" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True"/>
                         </Grid>
                     </TabItem>
                 </TabControl>
