@@ -40,11 +40,8 @@ namespace FAFB_PowerShell_Tool
             }
 
 
-            return list;
-        }
-
-
-
-
+        return list;
     }
+
+}
 }
