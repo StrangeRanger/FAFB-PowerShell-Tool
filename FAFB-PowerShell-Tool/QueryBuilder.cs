@@ -2,49 +2,41 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace FAFB_PowerShell_Tool
 {
     public class QueryBuilder
     {
         
-        public static List<string> CommandList() { 
+        public static ObservableCollection<string> CommandList() { 
 
-            List<string> list = new List<string>();
+            ObservableCollection<string> list = new ObservableCollection<string>();
 
             try
             {
-                string srcFilePath = 'commands.txt';
-
-                StreamReader sr = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read));
+                string srcFilePath = "commands.txt";
+                string[] lines = File.ReadAllLines(srcFilePath);
 
                 // Read file.  
-                while ((line = sr.ReadLine()) != null)
+                foreach (string line in lines)
                 {
-                    // Initialization.  
-                    CountryObj obj = new CountryObj();
-                    string[] info = line.Split(':');
-
-                    // Setting.  
-                    obj.CountryCode = info[0].ToString();
-                    obj.CountryName = info[1].ToString();
-
-                    // Adding.  
-                    lst.Add(obj);
+                    list.Add(line);
                 }
 
                 // Closing.  
-                sr.Dispose();
-                sr.Close();
-            }
-
             }
             catch (Exception ex) 
             { 
-                
+                Console.WriteLine(ex.Message);
             }
 
 

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +15,33 @@ namespace FAFB_PowerShell_Tool
         public MainWindow()
         {
             InitializeComponent();
+
+
+            // This is for the combox containing the commands
+            try
+            {
+                //Get the command Combo Box to modify
+                ComboBox Cmb = this.cmbCommandList;
+
+                ObservableCollection<string> list = new ObservableCollection<string>();
+
+                list.Add("hello");
+                list.Add("he");
+                list.Add("heladso");
+                list.Add("hellasdfo");
+                list.Add("helldfdfo");
+                list.Add("hellfffffo");
+
+                Cmb.ItemsSource = list;
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+            }
+            
         }
 
         private void CommandButton1(object sender, RoutedEventArgs e)
@@ -63,21 +91,7 @@ namespace FAFB_PowerShell_Tool
             MessageBox.Show("System Host Name: " + hostName, "Command Output");
         }
 
-        private void CommandCmb(object sender, RoutedEventArgs e) {
-
-            try
-            {
-                //Get the command Combo Box to modify
-                ComboBox Cmb = this.cmbCommandList;
-
-
-
-
-            }
-            catch (Exception ex)
-            {
-                Console.Write(ex);
-            }
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
         
         }
 
