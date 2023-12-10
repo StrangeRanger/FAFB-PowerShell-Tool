@@ -47,7 +47,8 @@ namespace FAFB_PowerShell_Tool
 
         private void CommandButton3(object sender, RoutedEventArgs e)
         {
-            command = "Get-Process | Out-String -Width 4096";
+            command = "Import-Module ActiveDirectory" +
+                "(Get-Command Get-Process).ParameterSets | Select-Object -Property @{n='ParameterSetName';e={$_.name}}, @{n='Parameters';e={$_.ToString()}} | Out-String -Width 4096";
         }
 
         private void CommandButton4(object sender, RoutedEventArgs e)

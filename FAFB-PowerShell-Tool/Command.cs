@@ -8,6 +8,8 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Management.Automation.Runspaces;
+using System.Windows;
 
 namespace FAFB_PowerShell_Tool
 {
@@ -85,10 +87,28 @@ namespace FAFB_PowerShell_Tool
         /// <returns></returns>
         public static string[] GetParametersArray(Command c)
         {
-            string getParameterSetnames = "(Get-Command " + c.commandName + ").ParameterSets | Select-Object -Property @{n='ParameterSetName';e={$_.name}}, @{n='Parameters';e={$_.ToString()}}";
+            string getParameterSetnames = "Import-Module ActiveDirectory" +
+                "(Get-Command " + c.commandName + ").ParameterSets | Select-Object -Property @{n='ParameterSetName';e={$_.name}}, @{n='Parameters';e={$_.ToString()}}";
 
-            List<string> results = PowerShellExecutor.Execute(getParameterSetnames);
-            Trace.WriteLine(results);
+            //List<string> results = PowerShellExecutor.Execute(getParameterSetnames);
+            //Trace.WriteLine(results.Count);
+
+            try
+            {
+                List<string> commandOutput = PowerShellExecutor.Execute(getParameterSetnames);
+                string fullCommandOutput = "";
+
+                foreach (var str in commandOutput)
+                {
+                    fullCommandOutput += str;
+                }
+
+                MessageBox.Show(fullCommandOutput, "Command Output");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
+            }
 
 
 
