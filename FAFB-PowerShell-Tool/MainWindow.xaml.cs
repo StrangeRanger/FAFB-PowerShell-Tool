@@ -35,7 +35,9 @@ namespace FAFB_PowerShell_Tool
 
         private void CommandButton1(object sender, RoutedEventArgs e)
         {
-            command = "Get-ADUser -filter * -Properties * | Select name, department, title | Out-String -Width 4096";
+            //Seems like you need to import the neccesary module that you are using possibly
+            command = "Import-Module ActiveDirectory" +
+                "Get-ADUser -filter * -Properties * | Select name, department, title | Out-String -Width 4096";
         }
 
         private void CommandButton2(object sender, RoutedEventArgs e)
@@ -86,6 +88,26 @@ namespace FAFB_PowerShell_Tool
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Add method body.
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //Get the combox that we are working with
+            ComboBox? cmb = sender as ComboBox;
+            //Get the command that is selected which is just an object so we have to convert to Command
+            try
+            {
+                Command? selectedCommand = cmb.SelectedValue as Command;
+                Trace.WriteLine("Selcetion changed: " + selectedCommand.commandName);
+
+                string[] test = Command.GetParametersArray(selectedCommand);
+            } catch (Exception ex) 
+            { 
+                Trace.WriteLine(ex); 
+            }
+            //Debug
+
+
         }
 
         private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

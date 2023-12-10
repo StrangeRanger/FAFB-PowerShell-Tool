@@ -83,7 +83,7 @@ namespace FAFB_PowerShell_Tool
         /// <param name="c"> This is the command in question </param>
         /// <param name="getParameterSetnames"> This is the powershell command to get the parameters of the command </param>
         /// <returns></returns>
-        public string[] GetParametersArray(Command c)
+        public static string[] GetParametersArray(Command c)
         {
             string getParameterSetnames = "(Get-Command " + c.commandName + ").ParameterSets | Select-Object -Property @{n='ParameterSetName';e={$_.name}}, @{n='Parameters';e={$_.ToString()}}";
 

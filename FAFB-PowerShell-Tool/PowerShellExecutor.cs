@@ -11,7 +11,7 @@ public class PowerShellExecutor
     {
         using PowerShell ps = PowerShell.Create();
         List<string> returnValues = new List<string>();
-        string filePath = @"C:\FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        string filePath = @"../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
         // TODO: Use a MessageBox to show errors to the user.
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
