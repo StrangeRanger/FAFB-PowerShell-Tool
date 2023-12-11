@@ -4,24 +4,46 @@ using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
 
-// TODO: Should this be made into a singleton rather than a static class?
 public class PowerShellExecutor
 {
-    public static List<string> Execute(string commandText)
+    private static PowerShellExecutor _instance;
+    private PowerShell _powerShell;
+
+    // Private constructor.
+    private PowerShellExecutor()
     {
-        using PowerShell ps = PowerShell.Create();
+        _powerShell = PowerShell.Create();
+        //_powerShell.AddScript("Import-Module ActiveDirectory");
+        //_powerShell.Invoke();
+        //_powerShell.Commands.Clear();
+    }
+
+    // Public static method to get the instance.
+    public static PowerShellExecutor Instance
+    {
+        get {
+            if (_instance is null)
+            {
+                _instance = new PowerShellExecutor();
+            }
+            return _instance;
+        }
+    }
+
+    public List<string> Execute(string commandText)
+    {
         List<string> returnValues = new List<string>();
-        string filePath = @"../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
         // TODO: Use a MessageBox to show errors to the user.
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
-        ps.AddScript(commandText);
+        _powerShell.AddScript(commandText);
 
-        var results = ps.Invoke();
+        var results = _powerShell.Invoke();
 
-        if (ps.HadErrors)
+        if (_powerShell.HadErrors)
         {
-            foreach (var error in ps.Streams.Error)
+            foreach (var error in _powerShell.Streams.Error)
             {
                 File.WriteAllText(filePath, "Error: " + error.ToString()); // For testing purposes only.
                 returnValues.Add("Error: " + error.ToString());
@@ -39,7 +61,7 @@ public class PowerShellExecutor
         return returnValues;
     }
 
-    private static void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
+    private void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
     {
         if (commandText is null)
         {
@@ -52,8 +74,9 @@ public class PowerShellExecutor
         }
     }
 
-    private static void ShowError(string message)
+    private void ShowError(string message)
     {
         MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
+

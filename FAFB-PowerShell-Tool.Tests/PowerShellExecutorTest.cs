@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace FAFB_PowerShell_Tool.Tests;
 
-namespace FAFB_PowerShell_Tool.Tests
+[TestClass]
+public class PowerShellExecutorTest
 {
-    [TestClass]
-    public class PowerShellExecutorTest
+    private readonly PowerShellExecutor _powerShellExecutor = PowerShellExecutor.Instance;
+    
+    [TestMethod]
+    public void ThrowArgumentNullExceptionWhenCommandTextIsNull()
     {
-        [TestMethod]
-        public void ThrowArgumentNullExceptionWhenCommandTextIsNull()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() => PowerShellExecutor.Execute(null!));
-        }
+        Assert.ThrowsException<ArgumentNullException>(() => _powerShellExecutor.Execute(null!));
+    }
 
-        [TestMethod]
-        public void ThrowArgumentExceptionWhenCommandTextIsWhitespace()
-        {
-            Assert.ThrowsException<ArgumentException>(() => PowerShellExecutor.Execute(""));
-            Assert.ThrowsException<ArgumentException>(() => PowerShellExecutor.Execute(" "));
-        }
+    [TestMethod]
+    public void ThrowArgumentExceptionWhenCommandTextIsWhitespace()
+    {
+        Assert.ThrowsException<ArgumentException>(() => _powerShellExecutor.Execute(""));
+        Assert.ThrowsException<ArgumentException>(() => _powerShellExecutor.Execute(" "));
     }
 }
