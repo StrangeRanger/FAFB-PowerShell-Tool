@@ -177,4 +177,30 @@ public partial class MainWindow : Window
         }
 
     }
+
+    private void ExecuteScriptEditorButton(object sender, RoutedEventArgs e)
+    {
+
+        string scriptEditorText = Script_Editor.Text;
+
+        Trace.WriteLine(scriptEditorText);
+
+
+        try
+        {
+            List<string> commandOutput = _powerShellExecutor.Execute(scriptEditorText);
+            string fullCommandOutput = "";
+
+            foreach (var str in commandOutput)
+            {
+                fullCommandOutput += str;
+            }
+
+            MessageBox.Show(fullCommandOutput, "Command Output");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
+        }
+    }
 }
