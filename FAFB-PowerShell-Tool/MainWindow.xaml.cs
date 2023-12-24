@@ -11,10 +11,6 @@ namespace FAFB_PowerShell_Tool;
 public partial class MainWindow : Window
 {
     private string _command = null!;
-    private string _fullCommandOutput = null!;
-    private List<string> _commandOutput = null!;
-    private readonly PowerShellExecutor _powerShellExecutor = PowerShellExecutor.Instance;
-    
 
     public MainWindow()
     {
@@ -57,25 +53,24 @@ public partial class MainWindow : Window
 
     private void ExecutionButton(object sender, RoutedEventArgs e)
     {
+        PowerShellExecutor powerShellExecutor = new();
+
         try
         {
-            _commandOutput = _powerShellExecutor.Execute(_command);
-            _fullCommandOutput = "";
+            List<string> commandOutput = powerShellExecutor.Execute(_command);
+            string fullCommandOutput = "";
 
-            foreach (var str in _commandOutput)
+            foreach (var str in commandOutput)
             {
-                _fullCommandOutput += str;
+                fullCommandOutput += str;
             }
 
-            MessageBox.Show(_fullCommandOutput, "Command Output");
+            MessageBox.Show(fullCommandOutput, "Command Output");
         }
         catch (Exception ex)
         {
             MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
         }
-
-        _commandOutput.Clear();
-        _fullCommandOutput = "";
     }
 
     private void ExecuteGenericCommand(object sender, RoutedEventArgs e)
@@ -136,10 +131,11 @@ public partial class MainWindow : Window
         // command is the command you want to run like get-aduser
 
         String invokeCommand = "Invoke-Command -Session $sessionAD -ScriptBlock{" + command + "}";
+        PowerShellExecutor powerShellExecutor = new();
 
         try
         {
-            List<string> commandOutput = _powerShellExecutor.Execute(invokeCommand);
+            List<string> commandOutput = powerShellExecutor.Execute(invokeCommand);
             string fullCommandOutput = "";
 
             foreach (var str in commandOutput)
@@ -156,7 +152,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Click Handler for the Save query button 
+    /// Click Handler for the Save query button
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -166,8 +162,8 @@ public partial class MainWindow : Window
         try
         {
             // Get the Command
-            Command? commadName = cmbCommandList.SelectedValue as Command;
-            //string commandParameters = cmbParameters.Text;
+            Command? commandName = cmbCommandList.SelectedValue as Command;
+            // string commandParameters = cmbParameters.Text;
 
             Button newButton = new Button();
             newButton.Content = "Special Command";
@@ -180,20 +176,18 @@ public partial class MainWindow : Window
         {
             Console.Write(ex);
         }
-
     }
 
     private void ExecuteScriptEditorButton(object sender, RoutedEventArgs e)
     {
-
         string scriptEditorText = Script_Editor.Text;
+        PowerShellExecutor powerShellExecutor = new();
 
         Trace.WriteLine(scriptEditorText);
 
-
         try
         {
-            List<string> commandOutput = _powerShellExecutor.Execute(scriptEditorText);
+            List<string> commandOutput = powerShellExecutor.Execute(scriptEditorText);
             string fullCommandOutput = "";
 
             foreach (var str in commandOutput)

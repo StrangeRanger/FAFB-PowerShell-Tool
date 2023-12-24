@@ -3,7 +3,7 @@
 [TestClass]
 public class PowerShellExecutorTest
 {
-    private readonly PowerShellExecutor _powerShellExecutor = PowerShellExecutor.Instance;
+    private readonly PowerShellExecutor _powerShellExecutor = new();
     
     [TestMethod]
     public void ThrowArgumentNullExceptionWhenCommandTextIsNull()

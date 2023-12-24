@@ -17,7 +17,7 @@ public class Command
     public string CommandName { get; set; }
     private string[] Parameters { get; set; }
     private int ParameterCount { get; set; }
-    private static readonly PowerShellExecutor PowerShellExecutor = PowerShellExecutor.Instance;
+    private static readonly PowerShellExecutor PowerShellExecutor = PowerShellExecutor;
 
     public Command(string commandName, string[] parameters, int parameterCount)
     {

@@ -6,10 +6,9 @@ namespace FAFB_PowerShell_Tool;
 
 public class PowerShellExecutor
 {
-    private static PowerShellExecutor? _instance;
     private readonly PowerShell _powerShell;
 
-    private PowerShellExecutor()
+    public PowerShellExecutor()
     {
         _powerShell = PowerShell.Create();
         _powerShell.AddScript("Import-Module ActiveDirectory;");
@@ -17,18 +16,11 @@ public class PowerShellExecutor
         _powerShell.Commands.Clear();
     }
 
-    // Public property to get the instance of the class. (Singleton)
-    public static PowerShellExecutor Instance
-    {
-        get { return _instance ??= new PowerShellExecutor(); }
-    }
-
     public List<string> Execute(string commandText)
     {
         List<string> returnValues = new List<string>();
         const string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
-        //returnValues.Clear();
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
         _powerShell.AddScript(commandText);
 

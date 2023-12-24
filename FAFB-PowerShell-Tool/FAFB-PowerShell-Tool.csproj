@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
 	<PlatformTarget>x64</PlatformTarget>
     <RootNamespace>FAFB_PowerShell_Tool</RootNamespace>
     <Nullable>enable</Nullable>
@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.0" />
-    <PackageReference Include="System.Management.Automation" Version="7.4.0" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.17" />
+    <PackageReference Include="System.Management.Automation" Version="7.2.17" />
   </ItemGroup>
 
 </Project>

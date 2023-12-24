@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace FAFB_PowerShell_Tool;
 /// <summary>
-/// This will contain a query that is built 
+/// This will contain a query that is built
 /// </summary>
 public class Query
 {
