@@ -11,13 +11,16 @@ namespace FAFB_PowerShell_Tool;
 public partial class MainWindow : Window
 {
     private string _command = null!;
+    private string _fullCommandOutput = null!;
+    private List<string> _commandOutput = null!;
     private readonly PowerShellExecutor _powerShellExecutor = PowerShellExecutor.Instance;
+    
 
     public MainWindow()
     {
         InitializeComponent();
 
-        // This is for the combox containing the commands
+        // This is for the ComboBox containing the commands.
         try
         {
             // Get the command Combo Box to modify
@@ -34,7 +37,6 @@ public partial class MainWindow : Window
 
     private void CommandButton1(object sender, RoutedEventArgs e)
     {
-        // Seems like you need to import the necessary module that you are using possibly
         _command = "Get-ADUser -filter * -Properties * | Select name, department, title | Out-String";
     }
 
@@ -57,20 +59,23 @@ public partial class MainWindow : Window
     {
         try
         {
-            List<string> commandOutput = _powerShellExecutor.Execute(_command);
-            string fullCommandOutput = "";
+            _commandOutput = _powerShellExecutor.Execute(_command);
+            _fullCommandOutput = "";
 
-            foreach (var str in commandOutput)
+            foreach (var str in _commandOutput)
             {
-                fullCommandOutput += str;
+                _fullCommandOutput += str;
             }
 
-            MessageBox.Show(fullCommandOutput, "Command Output");
+            MessageBox.Show(_fullCommandOutput, "Command Output");
         }
         catch (Exception ex)
         {
             MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
         }
+
+        _commandOutput.Clear();
+        _fullCommandOutput = "";
     }
 
     private void ExecuteGenericCommand(object sender, RoutedEventArgs e)

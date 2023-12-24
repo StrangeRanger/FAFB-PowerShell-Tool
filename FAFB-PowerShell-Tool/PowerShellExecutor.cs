@@ -6,52 +6,40 @@ namespace FAFB_PowerShell_Tool;
 
 public class PowerShellExecutor
 {
-    private static PowerShellExecutor _instance;
-    private PowerShell _powerShell;
+    private static PowerShellExecutor? _instance;
+    private readonly PowerShell _powerShell;
 
-    // Private constructor.
     private PowerShellExecutor()
     {
         _powerShell = PowerShell.Create();
-        //_powerShell.AddScript("Import-Module ActiveDirectory");
-        //_powerShell.Invoke();
-        //_powerShell.Commands.Clear();
+        _powerShell.AddScript("Import-Module ActiveDirectory;");
+        _powerShell.Invoke();
+        _powerShell.Commands.Clear();
     }
 
-    // Public static method to get the instance.
+    // Public property to get the instance of the class. (Singleton)
     public static PowerShellExecutor Instance
     {
-        get {
-            if (_instance is null)
-            {
-                _instance = new PowerShellExecutor();
-            }
-            return _instance;
-        }
+        get { return _instance ??= new PowerShellExecutor(); }
     }
 
     public List<string> Execute(string commandText)
     {
         List<string> returnValues = new List<string>();
-        string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        const string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
-        returnValues.Clear();
-
-        // TODO: Use a MessageBox to show errors to the user.
+        //returnValues.Clear();
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
         _powerShell.AddScript(commandText);
 
         var results = _powerShell.Invoke();
 
-
-
-        
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
             {
-                File.WriteAllText(filePath, "Error: " + error.ToString()); // For testing purposes only.
-                returnValues.Add("Error: " + error.ToString());
+                File.WriteAllText(filePath, "Error: " + error); // For testing purposes only.
+                returnValues.Add("Error: " + error);
             }
         }
         else
@@ -63,25 +51,28 @@ public class PowerShellExecutor
             }
         }
 
-        
-
         return returnValues;
     }
 
-    private void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
+    private static void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
     {
+        const string exceptionMessageOne = "Command text cannot be null.";
+        const string exceptionMessageTwo = "Command text cannot be null or whitespace.";
+
         if (commandText is null)
         {
-            throw new ArgumentNullException("Command text cannot be null.");
+            ShowError(exceptionMessageOne);
+            throw new ArgumentNullException(exceptionMessageOne);
         }
 
         if (string.IsNullOrWhiteSpace(commandText))
         {
-            throw new ArgumentException("Command text cannot be null or whitespace.");
+            ShowError(exceptionMessageTwo);
+            throw new ArgumentException(exceptionMessageTwo);
         }
     }
 
-    private void ShowError(string message)
+    private static void ShowError(string message)
     {
         MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
