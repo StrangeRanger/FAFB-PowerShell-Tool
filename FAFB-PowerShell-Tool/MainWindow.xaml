@@ -21,13 +21,14 @@
                         <Grid Background="#FFE5E5E5">
                             <ComboBox x:Name="cmbCommandList" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" SelectionChanged="ComboBox_SelectionChanged" />
                             <ComboBox x:Name="cmbParameters" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
+                            <Button x:Name="SaveQuery" Content="Save Query" HorizontalAlignment="Left" Margin="459,275,0,0" VerticalAlignment="Top" Height="29" Width="83" Click="SaveQuery_Click" />
                         </Grid>
                     </TabItem>
                 </TabControl>
 
             </Border>
         </Grid>
-        <Grid x:Name="Left_Side_Query_Bar" HorizontalAlignment="Left" Height="370" Margin="0,64,0,0" VerticalAlignment="Top" Width="155">
+        <Grid x:Name="Left_Side_Query_Bar" HorizontalAlignment="Left" Height="370" Margin="0,64,0,0" VerticalAlignment="Top" Width="155" Grid.Row="4" Grid.Column="1">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FF616161" Offset="0"/>
@@ -35,10 +36,10 @@
                     <GradientStop Color="#FF898989" Offset="0.737"/>
                 </LinearGradientBrush>
             </Grid.Background>
-            <Button x:Name="Command_Button_1" Content="Command 1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton1"/>
-            <Button x:Name="Command_Button_2" Content="Command 2" HorizontalAlignment="Left" Margin="0,59,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton2"/>
-            <Button x:Name="Command_Button_3" Content="Command 3" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton3"/>
-            <Button x:Name="Command_Button_4" Content="Command 4" HorizontalAlignment="Left" Margin="0,156,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton4"/>
+            <Button x:Name="Command_Button_1" Content="Command 1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton1" Grid.Row="1"/>
+            <Button x:Name="Command_Button_2" Content="Command 2" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton2" Grid.Row="2"/>
+            <Button x:Name="Command_Button_3" Content="Command 3" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="140" Click="CommandButton3" Margin="0,107,0,0" Grid.Row="3"/>
+            <Button x:Name="Command_Button_4" Content="Command 4" HorizontalAlignment="Left" VerticalAlignment="Center" Height="48" Width="140" Click="CommandButton4" Grid.Row="4"/>
         </Grid>
 
         <Grid x:Name="Header_Bar" HorizontalAlignment="Center" Height="64" VerticalAlignment="Top" Width="800">

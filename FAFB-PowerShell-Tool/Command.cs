@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
+using System.Management.Automation;
 using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
@@ -8,9 +9,9 @@ namespace FAFB_PowerShell_Tool;
 ///  This class is used to organize the all of the powershell commands
 /// </summary>
 ///
-/// <param name="commandName">This is the root commands name ex. "get-aduser" </param>
-/// <param name="parameters">This is an array of the parameter options that the command has</param>
-/// <param name="parameterCount">This is the counr of the parameter array</param>
+/// <param name="CommandName">This is the root commands name ex. "get-aduser" </param>
+/// <param name="Parameters">This is an array of the parameter options that the command has</param>
+/// <param name="ParameterCount">This is the counr of the parameter array</param>
 public class Command
 {
     public string CommandName { get; set; }

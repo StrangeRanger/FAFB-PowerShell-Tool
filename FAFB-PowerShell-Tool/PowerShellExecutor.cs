@@ -35,12 +35,17 @@ public class PowerShellExecutor
         List<string> returnValues = new List<string>();
         string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
+        returnValues.Clear();
+
         // TODO: Use a MessageBox to show errors to the user.
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
         _powerShell.AddScript(commandText);
 
         var results = _powerShell.Invoke();
 
+
+
+        
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
@@ -57,6 +62,8 @@ public class PowerShellExecutor
                 returnValues.Add(result.ToString());
             }
         }
+
+        
 
         return returnValues;
     }

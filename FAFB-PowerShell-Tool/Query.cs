@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 
 namespace FAFB_PowerShell_Tool;
-
-public class QueryBuilder
+/// <summary>
+/// This will contain a query that is built 
+/// </summary>
+public class Query
 {
     public static ObservableCollection<string> CommandList()
     {

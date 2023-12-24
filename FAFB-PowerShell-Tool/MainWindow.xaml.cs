@@ -24,7 +24,7 @@ public partial class MainWindow : Window
             ComboBox cmb = cmbCommandList;
             ObservableCollection<Command> list = Command.ReadFileCommandList();
             cmb.ItemsSource = list;
-            cmb.DisplayMemberPath = "commandName";
+            cmb.DisplayMemberPath = "CommandName";
         }
         catch (Exception ex)
         {
@@ -148,5 +148,33 @@ public partial class MainWindow : Window
         {
             MessageBox.Show("INTERNAL ERROR: " + ex.Message);
         }
+    }
+
+    /// <summary>
+    /// Click Handler for the Save query button 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void SaveQuery_Click(object sender, RoutedEventArgs e)
+    {
+        // Try to get the content within the drop downs
+        try
+        {
+            // Get the Command
+            Command? commadName = cmbCommandList.SelectedValue as Command;
+            //string commandParameters = cmbParameters.Text;
+
+            Button newButton = new Button();
+            newButton.Content = "Special Command";
+            newButton.Width = 140;
+            newButton.Height = 48;
+
+            Left_Side_Query_Bar.Children.Add(newButton);
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+        }
+
     }
 }
