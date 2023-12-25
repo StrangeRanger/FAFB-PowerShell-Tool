@@ -94,12 +94,12 @@ public class Command
             {
                 fullCommandOutput += str;
             }
-
-            MessageBox.Show(fullCommandOutput, "Command Output");
+            
+            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
         }
         catch (Exception ex)
         {
-            MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
+            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
 
         return new string[1];

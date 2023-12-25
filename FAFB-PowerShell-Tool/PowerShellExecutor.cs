@@ -53,20 +53,15 @@ public class PowerShellExecutor
 
         if (commandText is null)
         {
-            ShowError(exceptionMessageOne);
+            MessageBoxOutput.ShowMessageBox(exceptionMessageOne, MessageBoxOutput.OutputType.InternalError);
             throw new ArgumentNullException(exceptionMessageOne);
         }
 
         if (string.IsNullOrWhiteSpace(commandText))
         {
-            ShowError(exceptionMessageTwo);
+            MessageBoxOutput.ShowMessageBox(exceptionMessageTwo, MessageBoxOutput.OutputType.InternalError);
             throw new ArgumentException(exceptionMessageTwo);
         }
-    }
-
-    private static void ShowError(string message)
-    {
-        MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
 

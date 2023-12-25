@@ -65,22 +65,24 @@ public partial class MainWindow : Window
                 fullCommandOutput += str;
             }
 
-            MessageBox.Show(fullCommandOutput, "Command Output");
+            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
         }
         catch (Exception ex)
         {
-            MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
+            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
     }
 
     private void ExecuteGenericCommand(object sender, RoutedEventArgs e)
     {
         string hostName = System.Net.Dns.GetHostName();
-        MessageBox.Show("System Host Name: " + hostName, "Command Output");
+        MessageBoxOutput.ShowMessageBox("System Host Name: " + hostName);
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
-    { }
+    {
+        // TODO: Add method body.
+    }
 
     private void Button_Click(object sender, RoutedEventArgs e)
     {
@@ -143,11 +145,11 @@ public partial class MainWindow : Window
                 fullCommandOutput += str;
             }
 
-            MessageBox.Show(fullCommandOutput);
+            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
         }
         catch (Exception ex)
         {
-            MessageBox.Show("INTERNAL ERROR: " + ex.Message);
+            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
     }
 
@@ -195,11 +197,11 @@ public partial class MainWindow : Window
                 fullCommandOutput += str;
             }
 
-            MessageBox.Show(fullCommandOutput, "Command Output");
+            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
         }
         catch (Exception ex)
         {
-            MessageBox.Show("INTERNAL ERROR: " + ex.Message, "ERROR");
+            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
     }
 }
