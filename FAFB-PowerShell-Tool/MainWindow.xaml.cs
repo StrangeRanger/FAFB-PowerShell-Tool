@@ -12,6 +12,9 @@ public partial class MainWindow : Window
 {
     private string _command = null!;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public MainWindow()
     {
         InitializeComponent();
@@ -19,41 +22,56 @@ public partial class MainWindow : Window
         // This is for the ComboBox containing the commands.
         try
         {
-            // Get the command Combo Box to modify
-            ComboBox cmb = cmbCommandList;
+            // Get the command Combo Box to modify.
+            ComboBox comboBoxCommandList = ComboBoxCommandList;
             ObservableCollection<Command> list = Command.ReadFileCommandList();
-            cmb.ItemsSource = list;
-            cmb.DisplayMemberPath = "CommandName";
+            comboBoxCommandList.ItemsSource = list;
+            comboBoxCommandList.DisplayMemberPath = "CommandName";
         }
         catch (Exception ex)
         {
-            Console.Write(ex);
+            Console.WriteLine(ex);
         }
     }
-
-    private void CommandButton1(object sender, RoutedEventArgs e)
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MSampleOne(object sender, RoutedEventArgs e)
     {
         _command = "Get-ADUser -filter * -Properties * | Select name, department, title | Out-String";
     }
 
-    private void CommandButton2(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MSampleTwo(object sender, RoutedEventArgs e)
     {
         _command = "Get-Process | Out-String";
     }
 
-    private void CommandButton3(object sender, RoutedEventArgs e)
-    {
-        _command = "Get-ChildItem -Path $env:USERPROFILE";
-    }
-
-    private void CommandButton4(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MSampleThree(object sender, RoutedEventArgs e)
     {
         _command = "Get-ChildItem -Path $env:USERPROFILE | Out-String";
     }
 
-    private void ExecutionButton(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MExecutionButton(object sender, RoutedEventArgs e)
     {
-        PowerShellExecutor powerShellExecutor = new();
+        PowerShellExecutor powerShellExecutor = new PowerShellExecutor();
 
         try
         {
@@ -73,27 +91,24 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ExecuteGenericCommand(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MExecuteGenericCommand(object sender, RoutedEventArgs e)
     {
         string hostName = System.Net.Dns.GetHostName();
         MessageBoxOutput.ShowMessageBox("System Host Name: " + hostName);
     }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e)
+    // TODO: Review this method, as it has unused variables...
+    private void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // TODO: Add method body.
-    }
-
-    private void Button_Click(object sender, RoutedEventArgs e)
-    {
-        // TODO: Add method body.
-    }
-
-    private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        // Get the combox that we are working with
+        // Get the ComboBox that was changed.
         ComboBox? cmb = sender as ComboBox;
-        // Get the command that is selected which is just an object so we have to convert to Command
+        
+        // Get the selected command.
         try
         {
             Command? selectedCommand = cmb.SelectedValue as Command;
@@ -105,15 +120,16 @@ public partial class MainWindow : Window
         {
             Trace.WriteLine(ex);
         }
-        // Debug
     }
 
-    private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+    // TODO: Figure out the purpose of this method.
+    private void MTextBoxTextChanged(object sender, TextChangedEventArgs e)
     {
         // TODO: Add method body.
     }
 
-    private void Button_Click_1(object sender, RoutedEventArgs e)
+    // TODO: Review this method, as it has unused variables and is not used...
+    private void MButtonClickOne(object sender, RoutedEventArgs e)
     {
         String computerName = "";
 
@@ -128,6 +144,7 @@ public partial class MainWindow : Window
         */
     }
 
+    // TODO: Review this method, as it is not used...
     private void RunRemoteCommand(String command)
     {
         // command is the command you want to run like get-aduser
@@ -153,18 +170,14 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>
-    /// Click Handler for the Save query button
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void SaveQuery_Click(object sender, RoutedEventArgs e)
+    // TODO: Review this method, as it has unused variables...
+    private void MSaveQueryButton(object sender, RoutedEventArgs e)
     {
         // Try to get the content within the drop downs
         try
         {
             // Get the Command
-            Command? commandName = cmbCommandList.SelectedValue as Command;
+            Command? commandName = ComboBoxCommandList.SelectedValue as Command;
             // string commandParameters = cmbParameters.Text;
 
             Button newButton = new Button();
@@ -172,7 +185,7 @@ public partial class MainWindow : Window
             newButton.Width = 140;
             newButton.Height = 48;
 
-            Left_Side_Query_Bar.Children.Add(newButton);
+            LeftSideQueryGrid.Children.Add(newButton);
         }
         catch (Exception ex)
         {
@@ -180,9 +193,10 @@ public partial class MainWindow : Window
         }
     }
 
+    // TODO: Review this method, as it is not used...
     private void ExecuteScriptEditorButton(object sender, RoutedEventArgs e)
     {
-        string scriptEditorText = Script_Editor.Text;
+        string scriptEditorText = ScriptEditorTextBox.Text;
         PowerShellExecutor powerShellExecutor = new();
 
         Trace.WriteLine(scriptEditorText);
