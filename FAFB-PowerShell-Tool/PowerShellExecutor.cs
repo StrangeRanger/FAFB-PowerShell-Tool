@@ -4,27 +4,34 @@ using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
 
-// TODO: Should this be made into a singleton rather than a static class?
 public class PowerShellExecutor
 {
-    public static List<string> Execute(string commandText)
+    private readonly PowerShell _powerShell;
+
+    public PowerShellExecutor()
     {
-        using PowerShell ps = PowerShell.Create();
+        _powerShell = PowerShell.Create();
+        _powerShell.AddScript("Import-Module ActiveDirectory;");
+        _powerShell.Invoke();
+        _powerShell.Commands.Clear();
+    }
+
+    public List<string> Execute(string commandText)
+    {
         List<string> returnValues = new List<string>();
-        string filePath = @"C:\FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        const string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
-        // TODO: Use a MessageBox to show errors to the user.
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
-        ps.AddScript(commandText); 
+        _powerShell.AddScript(commandText);
 
-        var results = ps.Invoke();
+        var results = _powerShell.Invoke();
 
-        if (ps.HadErrors)
+        if (_powerShell.HadErrors)
         {
-            foreach (var error in ps.Streams.Error)
+            foreach (var error in _powerShell.Streams.Error)
             {
-                File.WriteAllText(filePath, "Error: " + error.ToString()); // For testing purposes only.
-                returnValues.Add("Error: " + error.ToString());
+                File.WriteAllText(filePath, "Error: " + error); // For testing purposes only.
+                returnValues.Add("Error: " + error);
             }
         }
         else
@@ -41,20 +48,20 @@ public class PowerShellExecutor
 
     private static void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
     {
+        const string exceptionMessageOne = "Command text cannot be null.";
+        const string exceptionMessageTwo = "Command text cannot be null or whitespace.";
+
         if (commandText is null)
         {
-            throw new ArgumentNullException("Command text cannot be null.");
+            MessageBoxOutput.ShowMessageBox(exceptionMessageOne, MessageBoxOutput.OutputType.InternalError);
+            throw new ArgumentNullException(exceptionMessageOne);
         }
 
         if (string.IsNullOrWhiteSpace(commandText))
         {
-            throw new ArgumentException("Command text cannot be null or whitespace.");
+            MessageBoxOutput.ShowMessageBox(exceptionMessageTwo, MessageBoxOutput.OutputType.InternalError);
+            throw new ArgumentException(exceptionMessageTwo);
         }
-    }
-
-    private static void ShowError(string message)
-    {
-        MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
 

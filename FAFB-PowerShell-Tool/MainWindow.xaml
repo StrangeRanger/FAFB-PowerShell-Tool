@@ -5,38 +5,83 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FAFB_PowerShell_Tool"
         mc:Ignorable="d"
-        Title="Active Directory Queries" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800">
+    <Grid>
+        <!-- Define Rows -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Row for Header -->
+            <RowDefinition Height="*" />
+            <!-- Remaining space for split grid -->
+        </Grid.RowDefinitions>
 
-    <Grid Background="White">
-        <Grid Margin="155,64,0,0" Background="White">
-            <Button x:Name="Execute_Button" Content="Execute" HorizontalAlignment="Left" Margin="408,87,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="ExecutionButton"/>
-            <Button x:Name="Execute_Generic_Command" Content="Execute Non-PowerShell Command" HorizontalAlignment="Left" Margin="408,28,0,0" VerticalAlignment="Top" Height="43" Width="198" Click="ExecuteGenericCommand"/>
-            <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595">
+        <!-- Static Header Bar -->
+        <Border Grid.Row="0" Background="DarkGray" Height="50">
+            <TextBlock Text="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+        </Border>
 
-            </Border>
+        <!-- Grid for resizable content -->
+        <Grid Grid.Row="1">
+            <!-- Define Columns for resizable area -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="1" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Side Query Bar (Content in first column) -->
+            <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF616161" Offset="0"/>
+                        <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
+                        <GradientStop Color="#FF898989" Offset="0.737"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <!-- Predefined Queries -->
+                <Button x:Name="SampleOne" Content="Sample 1" Click="MSampleOne" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
+                <Button x:Name="SampleTwo" Content="Sample 2" Click="MSampleTwo" Margin="0,49,0,0" VerticalAlignment="Top" Height="48"/>
+                <Button x:Name="SampleThree" Content="Sample 3" Click="MSampleThree" Margin="0,97,0,0" VerticalAlignment="Top" Height="50"/>
+            </Grid>
+
+            <!-- Grid Splitter for resizing -->
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" Background="Gray" />
+
+            <!-- TabControl Grid (Content in third column) -->
+            <Grid x:Name="RightSideQueryGrid" Background="White" Grid.Column="2">
+                <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595">
+                    <TabControl>
+                        <!-- Tab Items -->
+                        <TabItem Header="Main">
+                            <Grid Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="91*"/>
+                                    <ColumnDefinition Width="100*"/>
+                                    <ColumnDefinition Width="446*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="ExecuteGenericCommand" Content="Execute Non-PowerShell Command" Click="MExecuteGenericCommand" HorizontalAlignment="Left" Margin="204,26,0,0" VerticalAlignment="Top" Height="44" Width="198" Grid.Column="2"/>
+                                <Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>
+                            </Grid>
+                        </TabItem>
+                        <!-- Tab Items -->
+                        <TabItem Header="Query Builder">
+                            <Grid Background="#FFE5E5E5">
+                                <ComboBox x:Name="ComboBoxCommandList" SelectionChanged="MComboBoxSelectionChanged" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" />
+                                <ComboBox x:Name="ComboBoxCommandParameters" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
+                                <Button x:Name="SaveQueryButton" Click="MSaveQueryButton" Content="Save Query" HorizontalAlignment="Left" Margin="459,275,0,0" VerticalAlignment="Top" Height="29" Width="83" />
+                            </Grid>
+                        </TabItem>
+                        <!-- Tab Items -->
+                        <TabItem Header="Script Editor" HorizontalAlignment="Center" >
+                            <Grid Background="#FFE5E5E5" Height="406">
+                                <TextBox x:Name="ScriptEditorTextBox" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="568" Height="295" KeyboardNavigation.AcceptsReturn="True" Margin="0,10,0,0"/>
+                                <Button Content="Execute" HorizontalAlignment="Left" Margin="508,345,0,0" VerticalAlignment="Top" Height="25" Width="70"/>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Border>
+            </Grid>
         </Grid>
-        <Grid x:Name="Left_Side_Query_Bar" HorizontalAlignment="Left" Height="370" Margin="0,64,0,0" VerticalAlignment="Top" Width="155">
-            <Grid.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FF616161" Offset="0"/>
-                    <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
-                    <GradientStop Color="#FF898989" Offset="0.737"/>
-                </LinearGradientBrush>
-            </Grid.Background>
-            <Button x:Name="Command_Button_1" Content="Command 1" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton1"/>
-            <Button x:Name="Command_Button_2" Content="Command 2" HorizontalAlignment="Left" Margin="0,59,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton2"/>
-            <Button x:Name="Command_Button_3" Content="Command 3" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Height="49" Width="140" Click="CommandButton3"/>
-            <Button x:Name="Command_Button_4" Content="Command 4" HorizontalAlignment="Left" Margin="0,156,0,0" VerticalAlignment="Top" Height="48" Width="140" Click="CommandButton4"/>
-        </Grid>
-
-        <Grid x:Name="Header_Bar" HorizontalAlignment="Center" Height="64" VerticalAlignment="Top" Width="800">
-            <TextBlock x:Name="Title" HorizontalAlignment="Left" Margin="40,0,0,0" TextWrapping="Wrap" Text="Active Directory Queries" VerticalAlignment="Center" FontSize="18" Width="220" FontWeight="Bold"/>
-            <Button Content="Home" HorizontalAlignment="Left" Margin="647,28,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-            <Button HorizontalAlignment="Left" Margin="545,24,0,0" VerticalAlignment="Top">
-                <Button Content="Connect to Ad" Click="Button_Click_1"/>
-            </Button>
-
-        </Grid>
-
     </Grid>
 </Window>
