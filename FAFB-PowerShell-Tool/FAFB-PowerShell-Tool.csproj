@@ -1,19 +1,34 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-	<PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>FAFB_PowerShell_Tool</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	
+	<!-- Project Info. -->
+    <Version>0.1.0</Version>
+	<Authors>Hunter T., Pieter Landry Sobtafo, Joseph</Authors>
+    <RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
 
-	<!-- TODO: Possibly change the below configurations.-->
+    <!-- TODO: Possibly change the below configurations... -->
+	<!-- Project Compile Time Settings. -->
     <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>true</SelfContained>
+    <SelfContained>false</SelfContained>
     <DebugType>embedded</DebugType>
-	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>full</DebugType>
+    <DocumentationFile>bin\Debug\FAFB-PowerShell-Tool.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DocumentationFile>bin\Release\FAFB-PowerShell-Tool.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
