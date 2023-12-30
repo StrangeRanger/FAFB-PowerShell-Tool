@@ -10,7 +10,7 @@
     <UseWPF>true</UseWPF>
 	
 	<!-- Project Info. -->
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
 	<Authors>Hunter T., Pieter Landry Sobtafo, Joseph</Authors>
     <RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
 
