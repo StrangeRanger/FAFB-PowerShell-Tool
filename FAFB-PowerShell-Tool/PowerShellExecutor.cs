@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Management.Automation;
-using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -19,7 +18,7 @@ public class PowerShellExecutor
     public List<string> Execute(string commandText)
     {
         List<string> returnValues = new List<string>();
-        const string filePath = "../../../../FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
         ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
         _powerShell.AddScript(commandText);
