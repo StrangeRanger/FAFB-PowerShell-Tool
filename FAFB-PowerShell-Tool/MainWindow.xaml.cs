@@ -23,7 +23,7 @@ public partial class MainWindow
         comboBoxCommandList.DisplayMemberPath = "CommandName";
     }
     
-    /*// NOTE: Temporary method for testing purposes only.
+      /* NOTE: Temporary method for testing purposes only.
     private void MSampleOne(object sender, RoutedEventArgs e)
     {
         _command.CommandName = "Get-ADUser";
@@ -65,8 +65,8 @@ public partial class MainWindow
         {
             MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
-    }*/
-    
+    }
+    */
     /// <summary>
     /// This method is used to populate the second ComboBox with the parameters of the selected command.
     /// </summary>
@@ -97,7 +97,6 @@ public partial class MainWindow
             Button newButton = new()
             {
                 Content = "Special Command",
-                Width = 140,
                 Height = 48
             };
 

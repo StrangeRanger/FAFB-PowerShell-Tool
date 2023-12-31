@@ -44,9 +44,9 @@
 
                 <!-- Predefined Queries -->
                 <StackPanel x:Name="ButtonStackPanel">
-                    <Button x:Name="SampleOne" Content="Sample 1" Click="MSampleOne" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
-                    <Button x:Name="SampleTwo" Content="Sample 2" Click="MSampleTwo" Height="48"/>
-                    <Button x:Name="SampleThree" Content="Sample 3" Click="MSampleThree" Height="50"/>
+                    <Button x:Name="SampleOne" Content="Sample 1" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
+                    <Button x:Name="SampleTwo" Content="Sample 2" Height="48"/>
+                    <Button x:Name="SampleThree" Content="Sample 3" Height="50"/>
                 </StackPanel>
             </Grid>
 
