@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
-public static  class ActiveDirectoryCommands
+public static class ActiveDirectoryCommands
 {
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {

@@ -4,8 +4,8 @@ namespace FAFB_PowerShell_Tool.PowerShell;
 
 public class Command
 {
-    private readonly string? _commandName;
-    public string? CommandName
+    private readonly string _commandName = null!;
+    public string CommandName
     {
         get => _commandName;
         init
@@ -16,15 +16,14 @@ public class Command
             }
             
             _commandName = value;
-            GetCommandParametersAsync();
         }
     }
     
-    public ObservableCollection<string>? PossibleParameters { get; } = new();
+    public ObservableCollection<string> PossibleParameters { get; } = new();
     // TODO: Figure out where the 'Parameters' property is used and if it is needed.
     public string[]? Parameters { get; set; }
     
-    public Command(string? commandName, string[]? parameters = null)
+    public Command(string commandName, string[]? parameters = null)
     {
         CommandName = commandName;
         Parameters = parameters;
@@ -34,14 +33,18 @@ public class Command
     /// Retrieves a collection of parameter names for '_commandName'.
     /// </summary>
     /// <returns>A collection of parameter names for '_commandName'</returns>
-    private async void GetCommandParametersAsync()
+    public async Task LoadCommandParametersAsync()
     {
-        PowerShellExecutor powerShellExecutor = new();
-        List<string> tmpList = await powerShellExecutor.ExecuteAsync("Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
-        
-        foreach (var command in tmpList)
+        if (PossibleParameters.Count == 0)
         {
-            PossibleParameters.Add("-" + command);
+            PowerShellExecutor powerShellExecutor = new();
+            List<string> tmpList = await powerShellExecutor.ExecuteAsync("Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
+                    
+            foreach (var command in tmpList)
+            {
+                PossibleParameters.Add("-" + command);
+            }
         }
+        
     }
 }

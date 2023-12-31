@@ -11,11 +11,10 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
-        InitializeAsync();
+        Loaded += MainWindow_Loaded; // Allows for async method to be called in the Loaded event.
     }
     
-    // TODO: Figure out why application still show loading symbol despite being async, here.
-    private async void InitializeAsync()
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         ComboBox comboBoxCommandList = ComboBoxCommandList;
         ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
@@ -23,29 +22,29 @@ public partial class MainWindow
         comboBoxCommandList.DisplayMemberPath = "CommandName";
     }
     
-    // NOTE: Temporary method for testing purposes only.
-    /*private void MSampleOne(object sender, RoutedEventArgs e)
+    /*// NOTE: Temporary method for testing purposes only.
+    private void MSampleOne(object sender, RoutedEventArgs e)
     {
         _command.CommandName = "Get-ADUser";
         _command.Parameters = new[] {"-filter", "*", "-Properties", "*", "| Select name, department, title"};
-    }*/
+    }
     
     // NOTE: Temporary method for testing purposes only.
-    /*private void MSampleTwo(object sender, RoutedEventArgs e)
+    private void MSampleTwo(object sender, RoutedEventArgs e)
     {
         _command.CommandName = "Get-Process";
         _command.Parameters = new[] {"| Select name, id, path"};
-    }*/
+    }
     
     // NOTE: Temporary method for testing purposes only.
-    /*private void MSampleThree(object sender, RoutedEventArgs e)
+    private void MSampleThree(object sender, RoutedEventArgs e)
     {
         _command.CommandName = "Get-ChildItem";
         _command.Parameters = new[] {"-Path", "$env:USERPROFILE"};
-    }*/
+    }
     
     // NOTE: POSSIBLY a temporary method for testing purposes only.
-    /*private void MExecutionButton(object sender, RoutedEventArgs e)
+    private void MExecutionButton(object sender, RoutedEventArgs e)
     {
         PowerShellExecutor powerShellExecutor = new();
 
@@ -72,16 +71,16 @@ public partial class MainWindow
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ComboBox comboBox = sender as ComboBox ?? throw new InvalidOperationException();
+
+        if (comboBox.SelectedItem is not Command selectedCommand) { return; }
         
-        if (comboBox.SelectedItem is Command selectedCommand)
-        {
-            // Set the ItemsSource for your parameters ComboBox.
-            ComboBox comboBoxParameters = ComboBoxCommandParameterList;
-            comboBoxParameters.ItemsSource = selectedCommand.PossibleParameters;
-        }
+        // Set the ItemsSource for the parameters ComboBox.
+        ComboBox comboBoxParameters = ComboBoxCommandParameterList;
+        await selectedCommand.LoadCommandParametersAsync();  // Lazy loading.
+        comboBoxParameters.ItemsSource = selectedCommand.PossibleParameters;
     }
 
     // TODO: Test to see if this works as it should...
@@ -94,10 +93,12 @@ public partial class MainWindow
             Command? commandName = ComboBoxCommandList.SelectedValue as Command;
             // string commandParameters = cmbParameters.Text;
 
-            Button newButton = new Button();
-            newButton.Content = "Special Command";
-            newButton.Width = 140;
-            newButton.Height = 48;
+            Button newButton = new()
+            {
+                Content = "Special Command",
+                Width = 140,
+                Height = 48
+            };
 
             LeftSideQueryGrid.Children.Add(newButton);
         }
