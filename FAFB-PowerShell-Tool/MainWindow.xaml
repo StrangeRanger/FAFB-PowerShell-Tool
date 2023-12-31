@@ -65,14 +65,14 @@
                                     <ColumnDefinition Width="100*"/>
                                     <ColumnDefinition Width="446*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>
+                                <!--<Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>-->
                             </Grid>
                         </TabItem>
                         <!-- Tab Items -->
                         <TabItem Header="Query Builder">
                             <Grid Background="#FFE5E5E5">
                                 <ComboBox x:Name="ComboBoxCommandList" SelectionChanged="MComboBoxSelectionChanged" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" />
-                                <ComboBox x:Name="ComboBoxCommandParameters" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
+                                <ComboBox x:Name="ComboBoxCommandParameterList" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
                                 <Button x:Name="SaveQueryButton" Click="MSaveQueryButton" Content="Save Query" HorizontalAlignment="Left" Margin="459,275,0,0" VerticalAlignment="Top" Height="29" Width="83" />
                             </Grid>
                         </TabItem>

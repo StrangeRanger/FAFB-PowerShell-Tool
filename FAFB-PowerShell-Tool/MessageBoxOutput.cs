@@ -13,7 +13,7 @@ public static class MessageBoxOutput
         Generic
     }
     
-    public static void ShowMessageBox(string message, OutputType type = OutputType.Generic)
+    public static void ShowMessageBox(string message, OutputType type)
     {
         switch (type)
         {
@@ -35,5 +35,10 @@ public static class MessageBoxOutput
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+    }
+    
+    public static void ShowMessageBox(string message)
+    {
+        ShowMessageBox(message, OutputType.Generic);
     }
 }
