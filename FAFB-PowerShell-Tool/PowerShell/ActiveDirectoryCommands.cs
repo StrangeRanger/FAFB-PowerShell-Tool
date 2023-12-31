@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.ObjectModel;
 
-namespace FAFB_PowerShell_Tool;
+namespace FAFB_PowerShell_Tool.PowerShell;
 
 public static  class ActiveDirectoryCommands
 {

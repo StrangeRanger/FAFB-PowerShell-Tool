@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace FAFB_PowerShell_Tool;
+namespace FAFB_PowerShell_Tool.PowerShell;
 
 public class Command
 {

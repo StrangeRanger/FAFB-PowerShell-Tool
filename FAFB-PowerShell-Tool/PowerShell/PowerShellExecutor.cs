@@ -1,15 +1,14 @@
 ﻿using System.IO;
-using System.Management.Automation;
 
-namespace FAFB_PowerShell_Tool;
+namespace FAFB_PowerShell_Tool.PowerShell;
 
 public class PowerShellExecutor
 {
-    private readonly PowerShell _powerShell;
+    private readonly System.Management.Automation.PowerShell _powerShell;
 
     public PowerShellExecutor()
     {
-        _powerShell = PowerShell.Create();
+        _powerShell = System.Management.Automation.PowerShell.Create();
         _powerShell.AddScript("Import-Module ActiveDirectory;");
         _powerShell.Invoke();
         _powerShell.Commands.Clear();

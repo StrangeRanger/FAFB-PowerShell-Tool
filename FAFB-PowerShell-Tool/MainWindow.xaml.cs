@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using FAFB_PowerShell_Tool.PowerShell;
 
 namespace FAFB_PowerShell_Tool;
 
