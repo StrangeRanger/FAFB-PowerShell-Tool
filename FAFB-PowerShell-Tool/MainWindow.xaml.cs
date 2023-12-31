@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using FAFB_PowerShell_Tool.PowerShell;
@@ -119,14 +120,14 @@ public partial class MainWindow
         try
         {
             List<string> commandOutput = powerShellExecutor.Execute(scriptEditorText);
-            string fullCommandOutput = "";
+            StringBuilder fullCommandOutput = new StringBuilder();
 
             foreach (var str in commandOutput)
             {
-                fullCommandOutput += str;
+                fullCommandOutput.Append(str);
             }
 
-            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
+            MessageBoxOutput.ShowMessageBox(fullCommandOutput.ToString());
         }
         catch (Exception ex)
         {
