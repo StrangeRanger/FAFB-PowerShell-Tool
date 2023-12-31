@@ -4,34 +4,44 @@ namespace FAFB_PowerShell_Tool;
 
 public class Command
 {
-    public string CommandName { get; }
-    public string[]? Parameters { get; set; }
-    private int? _parameterCount;
+    private readonly string? _commandName;
+    public string? CommandName
+    {
+        get => _commandName;
+        init
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException("Command name cannot be null or whitespace.", nameof(CommandName));
+            }
+            
+            _commandName = value;
+            GetCommandParametersAsync();
+        }
+    }
     
-    public Command(string commandName, string[]? parameters = null)
+    public ObservableCollection<string>? PossibleParameters { get; } = new();
+    // TODO: Figure out where the 'Parameters' property is used and if it is needed.
+    public string[]? Parameters { get; set; }
+    
+    public Command(string? commandName, string[]? parameters = null)
     {
         CommandName = commandName;
         Parameters = parameters;
-        _parameterCount = parameters?.Length;
-    }
-
-    public static ObservableCollection<Command> GetActiveDirectoryCommands()
-    {
-        PowerShellExecutor powerShellExecutor = new();
-        ObservableCollection<Command> commandList = new();
-        List<string> commandListTemp = powerShellExecutor.Execute("Get-Command -Module ActiveDirectory");
-        
-        foreach (var command in commandListTemp)
-        {
-            commandList.Add(new Command(command));
-        }
-
-        return commandList;
     }
     
-    public static string[] GetCommandParameters(string commandName)
+    /// <summary>
+    /// Retrieves a collection of parameter names for '_commandName'.
+    /// </summary>
+    /// <returns>A collection of parameter names for '_commandName'</returns>
+    private async void GetCommandParametersAsync()
     {
-        // TODO: Implement this method.
-        return null!;
+        PowerShellExecutor powerShellExecutor = new();
+        List<string> tmpList = await powerShellExecutor.ExecuteAsync("Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
+        
+        foreach (var command in tmpList)
+        {
+            PossibleParameters.Add("-" + command);
+        }
     }
 }

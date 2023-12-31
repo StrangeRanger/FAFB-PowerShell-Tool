@@ -5,45 +5,52 @@ using System.Windows.Controls;
 
 namespace FAFB_PowerShell_Tool;
 
-public partial class MainWindow : Window
+public partial class MainWindow
 {
-    private string _command = null!;
-    
     public MainWindow()
     {
         InitializeComponent();
-        
+        InitializeAsync();
+    }
+    
+    // TODO: Figure out why application still show loading symbol despite being async, here.
+    private async void InitializeAsync()
+    {
         ComboBox comboBoxCommandList = ComboBoxCommandList;
-        ObservableCollection<Command> list = Command.GetActiveDirectoryCommands();
+        ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
         comboBoxCommandList.ItemsSource = list;
         comboBoxCommandList.DisplayMemberPath = "CommandName";
     }
     
     // NOTE: Temporary method for testing purposes only.
-    private void MSampleOne(object sender, RoutedEventArgs e)
+    /*private void MSampleOne(object sender, RoutedEventArgs e)
     {
-        _command = "Get-ADUser -filter * -Properties * | Select name, department, title | Out-String";
-    }
+        _command.CommandName = "Get-ADUser";
+        _command.Parameters = new[] {"-filter", "*", "-Properties", "*", "| Select name, department, title"};
+    }*/
     
     // NOTE: Temporary method for testing purposes only.
-    private void MSampleTwo(object sender, RoutedEventArgs e)
+    /*private void MSampleTwo(object sender, RoutedEventArgs e)
     {
-        _command = "Get-Process | Out-String";
-    }
+        _command.CommandName = "Get-Process";
+        _command.Parameters = new[] {"| Select name, id, path"};
+    }*/
     
     // NOTE: Temporary method for testing purposes only.
-    private void MSampleThree(object sender, RoutedEventArgs e)
+    /*private void MSampleThree(object sender, RoutedEventArgs e)
     {
-        _command = "Get-ChildItem -Path $env:USERPROFILE | Out-String";
-    }
+        _command.CommandName = "Get-ChildItem";
+        _command.Parameters = new[] {"-Path", "$env:USERPROFILE"};
+    }*/
     
-    private void MExecutionButton(object sender, RoutedEventArgs e)
+    // NOTE: POSSIBLY a temporary method for testing purposes only.
+    /*private void MExecutionButton(object sender, RoutedEventArgs e)
     {
         PowerShellExecutor powerShellExecutor = new();
 
         try
         {
-            List<string> commandOutput = powerShellExecutor.Execute(_command);
+            List<string> commandOutput = powerShellExecutor.Execute(_command + " | Out-String");
             string fullCommandOutput = "";
 
             foreach (var str in commandOutput)
@@ -57,14 +64,23 @@ public partial class MainWindow : Window
         {
             MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
-    }
-
-    // TODO: Test to see if this works as it should...
+    }*/
+    
+    /// <summary>
+    /// This method is used to populate the second ComboBox with the parameters of the selected command.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        ComboBox? comboBox = sender as ComboBox;
-        Command? selectedCommand = comboBox?.SelectedValue as Command;
-        string[]? commandParameters = Command.GetCommandParameters(selectedCommand?.CommandName);
+        ComboBox comboBox = sender as ComboBox ?? throw new InvalidOperationException();
+        
+        if (comboBox.SelectedItem is Command selectedCommand)
+        {
+            // Set the ItemsSource for your parameters ComboBox.
+            ComboBox comboBoxParameters = ComboBoxCommandParameterList;
+            comboBoxParameters.ItemsSource = selectedCommand.PossibleParameters;
+        }
     }
 
     // TODO: Test to see if this works as it should...
