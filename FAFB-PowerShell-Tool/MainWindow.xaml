@@ -31,6 +31,9 @@
 
             <!-- Left Side Query Bar (Content in first column) -->
             <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
+                <Grid.BindingGroup>
+                    <BindingGroup/>
+                </Grid.BindingGroup>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF616161" Offset="0"/>
@@ -40,9 +43,11 @@
                 </Grid.Background>
 
                 <!-- Predefined Queries -->
-                <Button x:Name="SampleOne" Content="Sample 1" Click="MSampleOne" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
-                <Button x:Name="SampleTwo" Content="Sample 2" Click="MSampleTwo" Margin="0,49,0,0" VerticalAlignment="Top" Height="48"/>
-                <Button x:Name="SampleThree" Content="Sample 3" Click="MSampleThree" Margin="0,97,0,0" VerticalAlignment="Top" Height="50"/>
+                <StackPanel x:Name="ButtonStackPanel">
+                    <Button x:Name="SampleOne" Content="Sample 1" Click="MSampleOne" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
+                    <Button x:Name="SampleTwo" Content="Sample 2" Click="MSampleTwo" Height="48"/>
+                    <Button x:Name="SampleThree" Content="Sample 3" Click="MSampleThree" Height="50"/>
+                </StackPanel>
             </Grid>
 
             <!-- Grid Splitter for resizing -->

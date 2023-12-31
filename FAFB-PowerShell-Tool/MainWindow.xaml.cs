@@ -9,6 +9,9 @@ public partial class MainWindow : Window
 {
     private string _command = null!;
     
+    //This is a list of the buttons that will be in the leftside query bar 
+    List<Button> leftside_buttons = new List<Button>();
+
     public MainWindow()
     {
         InitializeComponent();
@@ -79,10 +82,9 @@ public partial class MainWindow : Window
 
             Button newButton = new Button();
             newButton.Content = "Special Command";
-            newButton.Width = 140;
             newButton.Height = 48;
 
-            LeftSideQueryGrid.Children.Add(newButton);
+            ButtonStackPanel.Children.Add(newButton);
         }
         catch (Exception ex)
         {
