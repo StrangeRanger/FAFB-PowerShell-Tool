@@ -13,7 +13,7 @@ public static class MessageBoxOutput
         Generic
     }
     
-    public static void ShowMessageBox(string message, OutputType type)
+    public static void Show(string message, OutputType type)
     {
         switch (type)
         {
@@ -37,8 +37,8 @@ public static class MessageBoxOutput
         }
     }
     
-    public static void ShowMessageBox(string message)
+    public static void Show(string message)
     {
-        ShowMessageBox(message, OutputType.Generic);
+        Show(message, OutputType.Generic);
     }
 }

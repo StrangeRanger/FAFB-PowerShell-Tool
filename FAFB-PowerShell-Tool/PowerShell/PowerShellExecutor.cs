@@ -81,13 +81,13 @@ public class PowerShellExecutor
 
         if (commandText is null)
         {
-            MessageBoxOutput.ShowMessageBox(exceptionMessageOne, MessageBoxOutput.OutputType.InternalError);
+            MessageBoxOutput.Show(exceptionMessageOne, MessageBoxOutput.OutputType.InternalError);
             throw new ArgumentNullException(exceptionMessageOne);
         }
 
         if (string.IsNullOrWhiteSpace(commandText))
         {
-            MessageBoxOutput.ShowMessageBox(exceptionMessageTwo, MessageBoxOutput.OutputType.InternalError);
+            MessageBoxOutput.Show(exceptionMessageTwo, MessageBoxOutput.OutputType.InternalError);
             throw new ArgumentException(exceptionMessageTwo);
         }
     }
