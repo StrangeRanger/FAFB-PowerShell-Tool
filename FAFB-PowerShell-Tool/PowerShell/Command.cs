@@ -15,7 +15,7 @@ public class Command
                 throw new ArgumentException("Command name cannot be null or whitespace.", nameof(CommandName));
             }
             
-            _commandName = value;
+            _commandName = value.Trim();
         }
     }
     
