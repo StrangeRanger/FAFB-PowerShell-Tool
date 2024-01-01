@@ -2,6 +2,9 @@
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
+
+// TODO: Refactor Execute methods to reduce code duplication.
+// TODO: Modify to ensure it works new method of execution.
 public class PowerShellExecutor
 {
     private readonly System.Management.Automation.PowerShell _powerShell;
@@ -14,22 +17,27 @@ public class PowerShellExecutor
         _powerShell.Commands.Clear();
     }
 
-    public List<string> Execute(string commandText)
+    public ExecuteReturnValues Execute(string commandText)
     {
-        List<string> returnValues = new List<string>();
+        ExecuteReturnValues returnValues = new();
         const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
-        ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
+        if (string.IsNullOrWhiteSpace(commandText))
+        {
+            throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandText));
+        }
+        
         _powerShell.AddScript(commandText);
 
         var results = _powerShell.Invoke();
 
+        // TODO: Possibly include STDERR, STDOUT, etc., streams in the return values...
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
             {
                 File.WriteAllText(filePath, "Error: " + error); // For testing purposes only.
-                returnValues.Add("Error: " + error);
+                returnValues.StdOut.Add("Error: " + error);
             }
         }
         else
@@ -37,59 +45,47 @@ public class PowerShellExecutor
             foreach (var result in results)
             {
                 File.WriteAllText(filePath, result.ToString()); // For testing purposes only.
-                returnValues.Add(result.ToString());
+                returnValues.StdOut.Add(result.ToString());
             }
         }
 
         return returnValues;
     }
     
-    public async Task<List<string>> ExecuteAsync(string commandText)
+    public async Task<ExecuteReturnValues> ExecuteAsync(string commandText)
     {
-        List<string> returnValues = new List<string>();
-        //const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        ExecuteReturnValues executeReturnValues = new();
+        const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
-        ThrowExceptionIfCommandTextIsNullOrWhiteSpace(commandText);
+        if (string.IsNullOrWhiteSpace(commandText))
+        {
+            throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandText));
+        }
+        
         _powerShell.AddScript(commandText);
 
         var results = await _powerShell.InvokeAsync().ConfigureAwait(false);
 
         if (_powerShell.HadErrors)
         {
+            executeReturnValues.HadErrors = true;
             foreach (var error in _powerShell.Streams.Error)
             {
-                //await File.WriteAllTextAsync(filePath, "Error: " + error); // For testing purposes only.
-                returnValues.Add("Error: " + error);
+                await File.WriteAllTextAsync(filePath, "Error: " + error); // For testing purposes only.
+                executeReturnValues.StdOut.Add("Error: " + error);
             }
         }
         else
         {
+            executeReturnValues.HadErrors = false;
             foreach (var result in results)
             {
-                //await File.WriteAllTextAsync(filePath, result.ToString()); // For testing purposes only.
-                returnValues.Add(result.ToString());
+                await File.WriteAllTextAsync(filePath, result.ToString()); // For testing purposes only.
+                executeReturnValues.StdOut.Add(result.ToString());
             }
         }
 
-        return returnValues;
-    }
-
-    private static void ThrowExceptionIfCommandTextIsNullOrWhiteSpace(string commandText)
-    {
-        const string exceptionMessageOne = "Command text cannot be null.";
-        const string exceptionMessageTwo = "Command text cannot be null or whitespace.";
-
-        if (commandText is null)
-        {
-            MessageBoxOutput.Show(exceptionMessageOne, MessageBoxOutput.OutputType.InternalError);
-            throw new ArgumentNullException(exceptionMessageOne);
-        }
-
-        if (string.IsNullOrWhiteSpace(commandText))
-        {
-            MessageBoxOutput.Show(exceptionMessageTwo, MessageBoxOutput.OutputType.InternalError);
-            throw new ArgumentException(exceptionMessageTwo);
-        }
+        return executeReturnValues;
     }
 }
 
