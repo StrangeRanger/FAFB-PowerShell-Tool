@@ -79,10 +79,10 @@ public partial class MainWindow
 
         try
         {
-            List<string> commandOutput = powerShellExecutor.Execute(scriptEditorText);
+            ExecuteReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
             StringBuilder fullCommandOutput = new StringBuilder();
 
-            foreach (var str in commandOutput)
+            foreach (var str in commandOutput.StdOut)
             {
                 fullCommandOutput.Append(str);
             }

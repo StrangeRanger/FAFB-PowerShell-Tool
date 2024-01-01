@@ -32,4 +32,11 @@ public class CommandTest
         Assert.ThrowsException<ArgumentException>(() => new Command(" "));
         Assert.ThrowsException<ArgumentException>(() => new Command(string.Empty));
     }
+    
+    [TestMethod]
+    public void PossibleParametersThrowsInvalidOperationExceptionWhenEmpty()
+    {
+        Command command = new("Get-ADUser");
+        Assert.ThrowsException<InvalidOperationException>(() => command.PossibleParameters);
+    }
 }

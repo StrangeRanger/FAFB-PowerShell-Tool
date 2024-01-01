@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Management.Automation;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
@@ -8,9 +9,15 @@ public static class ActiveDirectoryCommands
     {
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<Command> commandList = new();
-        List<string> commandListTemp = await powerShellExecutor.ExecuteAsync("Get-Command -Module ActiveDirectory");
+        ExecuteReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync("Get-Command -Module ActiveDirectory");
         
-        foreach (var command in commandListTemp)
+         if (commandListTemp.HadErrors)
+         {
+             MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdOut), MessageBoxOutput.OutputType.Error);
+             throw new InvalidPowerShellStateException(); // TODO: ???
+         }
+        
+        foreach (var command in commandListTemp.StdOut)
         {
             commandList.Add(new Command(command));
         }
