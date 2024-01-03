@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <PlatformTarget>win-x64</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>FAFB_PowerShell_Tool</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
