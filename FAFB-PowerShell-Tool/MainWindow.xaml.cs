@@ -1,176 +1,51 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using FAFB_PowerShell_Tool.PowerShell;
 
 namespace FAFB_PowerShell_Tool;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
-    private string _command = null!;
-
-    /// <summary>
-    /// 
-    /// </summary>
     public MainWindow()
     {
         InitializeComponent();
-
-        // This is for the ComboBox containing the commands.
-        try
-        {
-            // Get the command Combo Box to modify.
-            ComboBox comboBoxCommandList = ComboBoxCommandList;
-            ObservableCollection<Command> list = Command.ReadFileCommandList();
-            comboBoxCommandList.ItemsSource = list;
-            comboBoxCommandList.DisplayMemberPath = "CommandName";
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+        Loaded += MainWindow_Loaded; // Allows for async method to be called in the Loaded event.
     }
     
     /// <summary>
-    /// 
+    /// This method is used to populate the first ComboBox with the commands that are available.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void MSampleOne(object sender, RoutedEventArgs e)
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        _command = "Get-ADUser -filter * -Properties * | Select name, department, title | Out-String";
+        ComboBox comboBoxCommandList = ComboBoxCommandList;
+        ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
+        comboBoxCommandList.ItemsSource = list;
+        comboBoxCommandList.DisplayMemberPath = "CommandName";
     }
-
+    
     /// <summary>
-    /// 
+    /// This method is used to populate the second ComboBox with the parameters of the selected command.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void MSampleTwo(object sender, RoutedEventArgs e)
+    private async void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        _command = "Get-Process | Out-String";
-    }
+        ComboBox comboBox = sender as ComboBox ?? throw new InvalidOperationException();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void MSampleThree(object sender, RoutedEventArgs e)
-    {
-        _command = "Get-ChildItem -Path $env:USERPROFILE | Out-String";
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void MExecutionButton(object sender, RoutedEventArgs e)
-    {
-        PowerShellExecutor powerShellExecutor = new PowerShellExecutor();
-
-        try
-        {
-            List<string> commandOutput = powerShellExecutor.Execute(_command);
-            string fullCommandOutput = "";
-
-            foreach (var str in commandOutput)
-            {
-                fullCommandOutput += str;
-            }
-
-            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
-        }
-        catch (Exception ex)
-        {
-            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void MExecuteGenericCommand(object sender, RoutedEventArgs e)
-    {
-        string hostName = System.Net.Dns.GetHostName();
-        MessageBoxOutput.ShowMessageBox("System Host Name: " + hostName);
-    }
-
-    // TODO: Review this method, as it has unused variables...
-    private void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        // Get the ComboBox that was changed.
-        ComboBox? cmb = sender as ComboBox;
+        if (comboBox.SelectedItem is not Command selectedCommand) { return; }
         
-        // Get the selected command.
-        try
-        {
-            Command? selectedCommand = cmb.SelectedValue as Command;
-            Trace.WriteLine("Selcetion changed: " + selectedCommand.CommandName);
-
-            string[] test = Command.GetParametersArray(selectedCommand);
-        }
-        catch (Exception ex)
-        {
-            Trace.WriteLine(ex);
-        }
+        // Set the ItemsSource for the parameters ComboBox.
+        ComboBox comboBoxParameters = ComboBoxCommandParameterList;
+        await selectedCommand.LoadCommandParametersAsync();  // Lazy loading.
+        comboBoxParameters.ItemsSource = selectedCommand.PossibleParameters;
     }
 
-    // TODO: Figure out the purpose of this method.
-    private void MTextBoxTextChanged(object sender, TextChangedEventArgs e)
-    {
-        // TODO: Add method body.
-    }
-
-    // TODO: Review this method, as it has unused variables and is not used...
-    private void MButtonClickOne(object sender, RoutedEventArgs e)
-    {
-        String computerName = "";
-
-        String startRemoteSession = "$sessionAD = New-PSSession -ComputerName" + computerName;
-
-        /*
-        TextBox tbx = new TextBox();
-
-        tbx.Visibility = Visibility.Visible;
-        //tbx.ClearValue
-        tbx.
-        */
-    }
-
-    // TODO: Review this method, as it is not used...
-    private void RunRemoteCommand(String command)
-    {
-        // command is the command you want to run like get-aduser
-
-        String invokeCommand = "Invoke-Command -Session $sessionAD -ScriptBlock{" + command + "}";
-        PowerShellExecutor powerShellExecutor = new();
-
-        try
-        {
-            List<string> commandOutput = powerShellExecutor.Execute(invokeCommand);
-            string fullCommandOutput = "";
-
-            foreach (var str in commandOutput)
-            {
-                fullCommandOutput += str;
-            }
-
-            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
-        }
-        catch (Exception ex)
-        {
-            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
-        }
-    }
-
-    // TODO: Review this method, as it has unused variables...
+    // TODO: Test to see if this works as it should...
     private void MSaveQueryButton(object sender, RoutedEventArgs e)
     {
         // Try to get the content within the drop downs
@@ -180,12 +55,13 @@ public partial class MainWindow : Window
             Command? commandName = ComboBoxCommandList.SelectedValue as Command;
             // string commandParameters = cmbParameters.Text;
 
-            Button newButton = new Button();
-            newButton.Content = "Special Command";
-            newButton.Width = 140;
-            newButton.Height = 48;
+            Button newButton = new()
+            {
+                Content = "Special Command",
+                Height = 48
+            };
 
-            LeftSideQueryGrid.Children.Add(newButton);
+            ButtonStackPanel.Children.Add(newButton);
         }
         catch (Exception ex)
         {
@@ -193,7 +69,7 @@ public partial class MainWindow : Window
         }
     }
 
-    // TODO: Review this method, as it is not used...
+    // TODO: Test to see if this works as it should...
     private void ExecuteScriptEditorButton(object sender, RoutedEventArgs e)
     {
         string scriptEditorText = ScriptEditorTextBox.Text;
@@ -203,19 +79,19 @@ public partial class MainWindow : Window
 
         try
         {
-            List<string> commandOutput = powerShellExecutor.Execute(scriptEditorText);
-            string fullCommandOutput = "";
+            ExecuteReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
+            StringBuilder fullCommandOutput = new StringBuilder();
 
-            foreach (var str in commandOutput)
+            foreach (var str in commandOutput.StdOut)
             {
-                fullCommandOutput += str;
+                fullCommandOutput.Append(str);
             }
 
-            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
+            MessageBoxOutput.Show(fullCommandOutput.ToString());
         }
         catch (Exception ex)
         {
-            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
+            MessageBoxOutput.Show(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
     }
 }

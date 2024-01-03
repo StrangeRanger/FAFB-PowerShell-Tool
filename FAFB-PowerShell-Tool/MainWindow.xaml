@@ -31,6 +31,9 @@
 
             <!-- Left Side Query Bar (Content in first column) -->
             <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
+                <Grid.BindingGroup>
+                    <BindingGroup/>
+                </Grid.BindingGroup>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF616161" Offset="0"/>
@@ -40,9 +43,11 @@
                 </Grid.Background>
 
                 <!-- Predefined Queries -->
-                <Button x:Name="SampleOne" Content="Sample 1" Click="MSampleOne" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
-                <Button x:Name="SampleTwo" Content="Sample 2" Click="MSampleTwo" Margin="0,49,0,0" VerticalAlignment="Top" Height="48"/>
-                <Button x:Name="SampleThree" Content="Sample 3" Click="MSampleThree" Margin="0,97,0,0" VerticalAlignment="Top" Height="50"/>
+                <StackPanel x:Name="ButtonStackPanel">
+                    <Button x:Name="SampleOne" Content="Sample 1" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
+                    <Button x:Name="SampleTwo" Content="Sample 2" Height="48"/>
+                    <Button x:Name="SampleThree" Content="Sample 3" Height="50"/>
+                </StackPanel>
             </Grid>
 
             <!-- Grid Splitter for resizing -->
@@ -60,22 +65,21 @@
                                     <ColumnDefinition Width="100*"/>
                                     <ColumnDefinition Width="446*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="ExecuteGenericCommand" Content="Execute Non-PowerShell Command" Click="MExecuteGenericCommand" HorizontalAlignment="Left" Margin="204,26,0,0" VerticalAlignment="Top" Height="44" Width="198" Grid.Column="2"/>
-                                <Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>
+                                <!--<Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>-->
                             </Grid>
                         </TabItem>
                         <!-- Tab Items -->
                         <TabItem Header="Query Builder">
                             <Grid Background="#FFE5E5E5">
                                 <ComboBox x:Name="ComboBoxCommandList" SelectionChanged="MComboBoxSelectionChanged" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" />
-                                <ComboBox x:Name="ComboBoxCommandParameters" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
+                                <ComboBox x:Name="ComboBoxCommandParameterList" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
                                 <Button x:Name="SaveQueryButton" Click="MSaveQueryButton" Content="Save Query" HorizontalAlignment="Left" Margin="459,275,0,0" VerticalAlignment="Top" Height="29" Width="83" />
                             </Grid>
                         </TabItem>
                         <!-- Tab Items -->
                         <TabItem Header="Script Editor" HorizontalAlignment="Center" >
                             <Grid Background="#FFE5E5E5" Height="406">
-                                <TextBox x:Name="ScriptEditorTextBox" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="568" Height="295" KeyboardNavigation.AcceptsReturn="True" Margin="0,10,0,0"/>
+                                <TextBox x:Name="ScriptEditorTextBox" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="568" Height="295" KeyboardNavigation.AcceptsReturn="True" Margin="0,10,0,0" Text=""/>
                                 <Button Content="Execute" HorizontalAlignment="Left" Margin="508,345,0,0" VerticalAlignment="Top" Height="25" Width="70"/>
                             </Grid>
                         </TabItem>
