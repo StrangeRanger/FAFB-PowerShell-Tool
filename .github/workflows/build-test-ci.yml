@@ -25,13 +25,12 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '8.0.x'
 
     - name: Dotnet Build & Publish
       run: |
-        dotnet restore
-        dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }} --no-restore
-        dotnet publish $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }} -o ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }} --no-restore
+        dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }}
+        dotnet publish $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }} -o ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
 
     #- name: Upload Artifact
     #  uses: actions/upload-artifact@v3
