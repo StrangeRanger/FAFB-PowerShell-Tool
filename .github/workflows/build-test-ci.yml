@@ -27,11 +27,8 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Dotnet build
-      run: dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }} --no-restore
+    - name: Dotnet restore & build
+      run: dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }}
 
     - name: Dotnet test
       run: dotnet test --no-build --verbosity normal
