@@ -27,8 +27,8 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Dotnet restore & build
+    - name: Dotnet Restore & Build
       run: dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }}
 
-    - name: Dotnet test
+    - name: Dotnet Test
       run: dotnet test --no-build --verbosity normal
