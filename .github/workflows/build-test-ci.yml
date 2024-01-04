@@ -2,7 +2,7 @@ name: Built Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main" ]
 
@@ -27,13 +27,11 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Dotnet Build & Publish
-      run: |
-        dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }}
-        dotnet publish $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }} -o ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
+    - name: Restore dependencies
+      run: dotnet restore
 
-    #- name: Upload Artifact
-    #  uses: actions/upload-artifact@v3
-    #  with:
-    #    name: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
-    #    path: ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
+    - name: Dotnet build
+      run: dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }} --no-restore
+
+    - name: Dotnet test
+      run: dotnet test --no-build --verbosity normal
