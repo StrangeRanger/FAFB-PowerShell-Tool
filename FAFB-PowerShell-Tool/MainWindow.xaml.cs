@@ -25,6 +25,11 @@ public partial class MainWindow
         Loaded += MainWindow_Loaded; // Allows for async method to be called in the Loaded event.
     }
     
+    /// <summary>
+    /// This method is used to populate the first ComboBox with the commands that are available.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         ComboBox comboBoxCommandList = ComboBoxCommandList;
@@ -36,50 +41,6 @@ public partial class MainWindow
         FillCustomQueries();
     }
     
-      /* NOTE: Temporary method for testing purposes only.
-    private void MSampleOne(object sender, RoutedEventArgs e)
-    {
-        _command.CommandName = "Get-ADUser";
-        _command.Parameters = new[] {"-filter", "*", "-Properties", "*", "| Select name, department, title"};
-    }
-    
-    // NOTE: Temporary method for testing purposes only.
-    private void MSampleTwo(object sender, RoutedEventArgs e)
-    {
-        _command.CommandName = "Get-Process";
-        _command.Parameters = new[] {"| Select name, id, path"};
-    }
-    
-    // NOTE: Temporary method for testing purposes only.
-    private void MSampleThree(object sender, RoutedEventArgs e)
-    {
-        _command.CommandName = "Get-ChildItem";
-        _command.Parameters = new[] {"-Path", "$env:USERPROFILE"};
-    }
-    
-    // NOTE: POSSIBLY a temporary method for testing purposes only.
-    private void MExecutionButton(object sender, RoutedEventArgs e)
-    {
-        PowerShellExecutor powerShellExecutor = new();
-
-        try
-        {
-            List<string> commandOutput = powerShellExecutor.Execute(_command + " | Out-String");
-            string fullCommandOutput = "";
-
-            foreach (var str in commandOutput)
-            {
-                fullCommandOutput += str;
-            }
-
-            MessageBoxOutput.ShowMessageBox(fullCommandOutput);
-        }
-        catch (Exception ex)
-        {
-            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
-        }
-    }
-    */
     /// <summary>
     /// This method is used to populate the second ComboBox with the parameters of the selected command.
     /// </summary>
@@ -154,19 +115,19 @@ public partial class MainWindow
 
         try
         {
-            List<string> commandOutput = powerShellExecutor.Execute(scriptEditorText);
+            ExecuteReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
             StringBuilder fullCommandOutput = new StringBuilder();
 
-            foreach (var str in commandOutput)
+            foreach (var str in commandOutput.StdOut)
             {
                 fullCommandOutput.Append(str);
             }
 
-            MessageBoxOutput.ShowMessageBox(fullCommandOutput.ToString());
+            MessageBoxOutput.Show(fullCommandOutput.ToString());
         }
         catch (Exception ex)
         {
-            MessageBoxOutput.ShowMessageBox(ex.Message, MessageBoxOutput.OutputType.InternalError);
+            MessageBoxOutput.Show(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
     }
 }

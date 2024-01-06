@@ -15,13 +15,22 @@ public class Command
                 throw new ArgumentException("Command name cannot be null or whitespace.", nameof(CommandName));
             }
             
-            _commandName = value;
+            _commandName = value.Trim();
         }
     }
-    
-    public ObservableCollection<string> PossibleParameters { get; } = new();
+
     // TODO: Figure out where the 'Parameters' property is used and if it is needed.
     public string[]? Parameters { get; set; }
+
+    private readonly ObservableCollection<string> _possibleParameters = new();
+    public ObservableCollection<string> PossibleParameters
+    {
+        get
+        {
+            if (_possibleParameters.Count != 0) { return _possibleParameters; }
+            throw new InvalidOperationException("PossibleParameters has not been populated via 'LoadCommandParametersAsync'.");
+        }
+    }
     
     public Command(string commandName, string[]? parameters = null)
     {
@@ -35,14 +44,14 @@ public class Command
     /// <returns>A collection of parameter names for '_commandName'</returns>
     public async Task LoadCommandParametersAsync()
     {
-        if (PossibleParameters.Count == 0)
+        if (_possibleParameters.Count == 0)
         {
             PowerShellExecutor powerShellExecutor = new();
-            List<string> tmpList = await powerShellExecutor.ExecuteAsync("Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
+            ExecuteReturnValues tmpList = await powerShellExecutor.ExecuteAsync("Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
                     
-            foreach (var command in tmpList)
+            foreach (var command in tmpList.StdOut)
             {
-                PossibleParameters.Add("-" + command);
+                _possibleParameters.Add("-" + command);
             }
         }
         
