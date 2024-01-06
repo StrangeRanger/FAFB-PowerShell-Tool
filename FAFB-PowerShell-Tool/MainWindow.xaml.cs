@@ -12,20 +12,19 @@ using System.Xml.Serialization;
 using System.Text.Json;
 using System.Net.Security;
 
-
 namespace FAFB_PowerShell_Tool;
 
 public partial class MainWindow
 {
-    //Creates an instance to be able to serialize the queries 
+    // Creates an instance to be able to serialize the queries
     CustomQueries CQ = new CustomQueries();
-    
+
     public MainWindow()
     {
         InitializeComponent();
         Loaded += MainWindow_Loaded; // Allows for async method to be called in the Loaded event.
     }
-    
+
     /// <summary>
     /// This method is used to populate the first ComboBox with the commands that are available.
     /// </summary>
@@ -38,10 +37,9 @@ public partial class MainWindow
         comboBoxCommandList.ItemsSource = list;
         comboBoxCommandList.DisplayMemberPath = "CommandName";
 
-
         FillCustomQueries();
     }
-    
+
     /// <summary>
     /// This method is used to populate the second ComboBox with the parameters of the selected command.
     /// </summary>
@@ -51,11 +49,14 @@ public partial class MainWindow
     {
         ComboBox comboBox = sender as ComboBox ?? throw new InvalidOperationException();
 
-        if (comboBox.SelectedItem is not Command selectedCommand) { return; }
-        
+        if (comboBox.SelectedItem is not Command selectedCommand)
+        {
+            return;
+        }
+
         // Set the ItemsSource for the parameters ComboBox.
         ComboBox comboBoxParameters = ComboBoxCommandParameterList;
-        await selectedCommand.LoadCommandParametersAsync();  // Lazy loading.
+        await selectedCommand.LoadCommandParametersAsync(); // Lazy loading.
         comboBoxParameters.ItemsSource = selectedCommand.PossibleParameters;
     }
 
@@ -70,19 +71,17 @@ public partial class MainWindow
             Command? command = ComboBoxCommandList.SelectedValue as Command;
             // string commandParameters = cmbParameters.Text;
 
-            Button newButton = new()
-            {
-               
+            Button newButton = new() {
+
                 Content = "Special Command",
                 Height = 48
             };
-            //Adds the query to the Queries serializable list
+            // Adds the query to the Queries serializable list
             CQ.Queries.Add(command.CommandName);
-            //Adds the button in the stack panel
+            // Adds the button in the stack panel
             ButtonStackPanel.Children.Add(newButton);
-            //Saves the Queries to the file
+            // Saves the Queries to the file
             CQ.SerializeMethod();
-            
         }
         catch (Exception ex)
         {
@@ -92,22 +91,21 @@ public partial class MainWindow
     /// <summary>
     /// This Method is to fill the left had side query bar
     /// </summary>
-    private void FillCustomQueries() {
+    private void FillCustomQueries()
+    {
         try
         {
             CQ.LoadData();
 
             foreach (string cQuery in CQ.Queries)
             {
-                Button newButton = new()
-                {
-                    Content = "Special Command",
-                    Height = 48
-                };
+                Button newButton = new() { Content = "Special Command", Height = 48 };
 
                 ButtonStackPanel.Children.Add(newButton);
             }
-        }catch (Exception ex){ 
+        }
+        catch (Exception ex)
+        {
             Trace.WriteLine(ex);
         }
     }

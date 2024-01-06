@@ -2,7 +2,6 @@
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
-
 // TODO: Refactor Execute methods to reduce code duplication.
 // TODO: Modify to ensure it works new method of execution.
 public class PowerShellExecutor
@@ -26,7 +25,7 @@ public class PowerShellExecutor
         {
             throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandText));
         }
-        
+
         _powerShell.AddScript(commandText);
 
         var results = _powerShell.Invoke();
@@ -51,7 +50,7 @@ public class PowerShellExecutor
 
         return returnValues;
     }
-    
+
     public async Task<ExecuteReturnValues> ExecuteAsync(string commandText)
     {
         ExecuteReturnValues executeReturnValues = new();
@@ -61,7 +60,7 @@ public class PowerShellExecutor
         {
             throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandText));
         }
-        
+
         _powerShell.AddScript(commandText);
 
         var results = await _powerShell.InvokeAsync().ConfigureAwait(false);

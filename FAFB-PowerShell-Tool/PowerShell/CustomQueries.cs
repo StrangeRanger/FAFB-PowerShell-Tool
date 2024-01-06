@@ -11,12 +11,11 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-
 namespace FAFB_PowerShell_Tool.PowerShell
 {
     /// <summary>
-    /// This class is used to save a json file named "CustomQueries.dat" inside of \FAFB-PowerShell-Tool\FAFB-PowerShell-Tool\bin\Debug\net6.0-windows
-    /// This 
+    /// This class is used to save a json file named "CustomQueries.dat" inside of
+    /// \FAFB-PowerShell-Tool\FAFB-PowerShell-Tool\bin\Debug\net6.0-windows This
     /// </summary>
     /// <param name="Queries"></param>
     internal class CustomQueries
@@ -25,8 +24,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// <summary>
         /// This a variable for feeding options to the Json serializer
         /// </summary>
-        private static readonly JsonSerializerOptions _options = new()
-        {
+        private static readonly JsonSerializerOptions _options = new() {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true,
             ReferenceHandler = ReferenceHandler.Preserve,
@@ -34,7 +32,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// <summary>
         /// Emtpy Contructor
         /// </summary>
-        public CustomQueries() { }
+        public CustomQueries()
+        { }
         /// <summary>
         /// This takes the Queries List and serializes it to a file
         /// </summary>
@@ -45,7 +44,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
                 string json = JsonSerializer.Serialize(Queries, _options);
                 File.WriteAllText("CustomQueries.dat", json);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Trace.WriteLine(ex);
             }
@@ -53,7 +52,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// <summary>
         /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
         /// </summary>
-        public void LoadData() {
+        public void LoadData()
+        {
             try
             {
                 string json = File.ReadAllText("CustomQueries.dat");
@@ -61,7 +61,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex);    
+                Trace.WriteLine(ex);
             }
         }
     }

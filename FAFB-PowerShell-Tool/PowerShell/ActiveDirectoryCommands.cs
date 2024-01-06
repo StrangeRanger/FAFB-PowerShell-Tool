@@ -9,14 +9,15 @@ public static class ActiveDirectoryCommands
     {
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<Command> commandList = new();
-        ExecuteReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync("Get-Command -Module ActiveDirectory");
-        
-         if (commandListTemp.HadErrors)
-         {
-             MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdOut), MessageBoxOutput.OutputType.Error);
-             throw new InvalidPowerShellStateException(); // TODO: ???
-         }
-        
+        ExecuteReturnValues commandListTemp =
+            await powerShellExecutor.ExecuteAsync("Get-Command -Module ActiveDirectory");
+
+        if (commandListTemp.HadErrors)
+        {
+            MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdOut), MessageBoxOutput.OutputType.Error);
+            throw new InvalidPowerShellStateException(); // TODO: ???
+        }
+
         foreach (var command in commandListTemp.StdOut)
         {
             commandList.Add(new Command(command));

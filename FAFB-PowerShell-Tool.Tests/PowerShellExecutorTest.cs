@@ -6,7 +6,7 @@ namespace FAFB_PowerShell_Tool.Tests;
 public class PowerShellExecutorTest
 {
     private readonly PowerShellExecutor _powerShellExecutor = new();
-    
+
     [TestMethod]
     public void ThrowArgumentNullExceptionWhenCommandTextIsNullOrWhitespace()
     {

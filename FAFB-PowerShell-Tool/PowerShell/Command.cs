@@ -8,13 +8,12 @@ public class Command
     public string CommandName
     {
         get => _commandName;
-        init
-        {
+        init {
             if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentException("Command name cannot be null or whitespace.", nameof(CommandName));
             }
-            
+
             _commandName = value.Trim();
         }
     }
@@ -25,19 +24,22 @@ public class Command
     private readonly ObservableCollection<string> _possibleParameters = new();
     public ObservableCollection<string> PossibleParameters
     {
-        get
-        {
-            if (_possibleParameters.Count != 0) { return _possibleParameters; }
-            throw new InvalidOperationException("PossibleParameters has not been populated via 'LoadCommandParametersAsync'.");
+        get {
+            if (_possibleParameters.Count != 0)
+            {
+                return _possibleParameters;
+            }
+            throw new InvalidOperationException(
+                "PossibleParameters has not been populated via 'LoadCommandParametersAsync'.");
         }
     }
-    
+
     public Command(string commandName, string[]? parameters = null)
     {
         CommandName = commandName;
         Parameters = parameters;
     }
-    
+
     /// <summary>
     /// Retrieves a collection of parameter names for '_commandName'.
     /// </summary>
@@ -47,13 +49,13 @@ public class Command
         if (_possibleParameters.Count == 0)
         {
             PowerShellExecutor powerShellExecutor = new();
-            ExecuteReturnValues tmpList = await powerShellExecutor.ExecuteAsync("Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
-                    
+            ExecuteReturnValues tmpList = await powerShellExecutor.ExecuteAsync(
+                "Get-Command " + _commandName + " | Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }");
+
             foreach (var command in tmpList.StdOut)
             {
                 _possibleParameters.Add("-" + command);
             }
         }
-        
     }
 }
