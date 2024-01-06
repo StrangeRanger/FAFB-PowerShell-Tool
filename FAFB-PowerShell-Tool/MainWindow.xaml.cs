@@ -17,8 +17,9 @@ namespace FAFB_PowerShell_Tool;
 
 public partial class MainWindow
 {
-    ObservableCollection<Command> saved_commands = new ObservableCollection<Command>();
-    List<Button> custom_buttons = new List<Button>();
+    //Creates an instance to be able to serialize the queries 
+    CustomQueries CQ = new CustomQueries();
+    
     public MainWindow()
     {
         InitializeComponent();
@@ -66,7 +67,7 @@ public partial class MainWindow
         try
         {
             // Get the Command
-            Command? commandName = ComboBoxCommandList.SelectedValue as Command;
+            Command? command = ComboBoxCommandList.SelectedValue as Command;
             // string commandParameters = cmbParameters.Text;
 
             Button newButton = new()
@@ -75,12 +76,12 @@ public partial class MainWindow
                 Content = "Special Command",
                 Height = 48
             };
-
-            CustomQueries.CustomQueryButtons.Add(newButton);
+            //Adds the query to the Queries serializable list
+            CQ.Queries.Add(command.CommandName);
+            //Adds the button in the stack panel
             ButtonStackPanel.Children.Add(newButton);
-
-            //Stream stream = File.Open("CustomQueries.dat", FileMode.Create);
-            CustomQueries.SerializeMethod();
+            //Saves the Queries to the file
+            CQ.SerializeMethod();
             
         }
         catch (Exception ex)
@@ -94,11 +95,17 @@ public partial class MainWindow
     private void FillCustomQueries() {
         try
         {
-            CustomQueries.LoadData();
+            CQ.LoadData();
 
-            foreach (Button btn in CustomQueries.CustomQueryButtons)
+            foreach (string cQuery in CQ.Queries)
             {
-                ButtonStackPanel.Children.Add(btn);
+                Button newButton = new()
+                {
+                    Content = "Special Command",
+                    Height = 48
+                };
+
+                ButtonStackPanel.Children.Add(newButton);
             }
         }catch (Exception ex){ 
             Trace.WriteLine(ex);
