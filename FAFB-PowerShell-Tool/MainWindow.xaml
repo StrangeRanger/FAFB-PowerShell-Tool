@@ -89,9 +89,10 @@
                                 <!-- GridSplitter for resizing console area in the second row -->
                                 <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="White" Grid.Row="2"/>
 
+                                <!-- TODO: Figure out why I can't get the console to be resizable to the min height... -->
                                 <Grid Grid.Row="3">
-                                        <!-- TextBox as Console Output -->
-                                        <TextBox x:Name="ConsoleOutputTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                                    <!-- TextBox as Console Output -->
+                                    <TextBox x:Name="ConsoleOutputTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                                 </Grid>
                             </Grid>
 
