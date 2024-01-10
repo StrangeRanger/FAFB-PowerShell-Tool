@@ -24,9 +24,9 @@
         <Grid Grid.Row="1">
             <!-- Define Columns for resizable area -->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="1" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="*" MinWidth="150" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="3*" MinWidth="150"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left Side Query Bar (Content in first column) -->
@@ -34,6 +34,7 @@
                 <Grid.BindingGroup>
                     <BindingGroup/>
                 </Grid.BindingGroup>
+
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF616161" Offset="0"/>
@@ -44,7 +45,7 @@
 
                 <!-- Predefined Queries -->
                 <StackPanel x:Name="ButtonStackPanel" >
-                    <Button x:Name="SampleOne" Content="Sample 1" VerticalAlignment="Top" Height="49" Grid.Row="0"/>
+                    <Button x:Name="SampleOne" Content="Sample 1" VerticalAlignment="Top" Height="49"/>
                     <Button x:Name="SampleTwo" Content="Sample 2" Height="48"/>
                     <Button x:Name="SampleThree" Content="Sample 3" Height="50"/>
                 </StackPanel>
@@ -58,23 +59,42 @@
                 <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595">
                     <TabControl>
                         <!-- Tab Items -->
-                        <TabItem Header="Main">
-                            <Grid Background="White">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="91*"/>
-                                    <ColumnDefinition Width="100*"/>
-                                    <ColumnDefinition Width="446*"/>
-                                </Grid.ColumnDefinitions>
-                                <!--<Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>-->
-                            </Grid>
+                        <TabItem Header="Query Information">
+                            <!--<Grid Background="White">
+                                <Button x:Name="ExecutionButton" Content="Execute" Click="MExecutionButton" HorizontalAlignment="Left" Margin="206,88,0,0" VerticalAlignment="Top" Height="49" Width="140"  Grid.Column="2"/>
+                            </Grid>-->
                         </TabItem>
                         <!-- Tab Items -->
                         <TabItem Header="Query Builder">
-                            <Grid Background="#FFE5E5E5">
-                                <ComboBox x:Name="ComboBoxCommandList" SelectionChanged="MComboBoxSelectionChanged" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" />
-                                <ComboBox x:Name="ComboBoxCommandParameterList" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True"/>
-                                <Button x:Name="SaveQueryButton" Click="MSaveQueryButton" Content="Save Query" HorizontalAlignment="Left" Margin="459,275,0,0" VerticalAlignment="Top" Height="29" Width="83" />
+                            <Grid Background="#FFE5E5E5" MinHeight="100">
+                                <!-- Define Rows -->
+                                <Grid.RowDefinitions>
+                                    <!-- TODO: Figure out why the bottom row isn't stopping at the specified min height!!! -->
+                                    <RowDefinition Height="Auto" MinHeight="100"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="3*" MinHeight="100"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <!-- Existing Controls -->
+                                    <ComboBox x:Name="ComboBoxCommandList" SelectionChanged="MComboBoxSelectionChanged" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" Grid.Row="0"/>
+                                    <ComboBox x:Name="ComboBoxCommandParameterList" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True" Grid.Row="0"/>
+                                </Grid>
+
+                                <Grid Grid.Row="1" Margin="12,16">
+                                    <Button x:Name="SaveQueryButton" Click="MSaveQueryButton" Content="Save Query" HorizontalAlignment="Right" VerticalAlignment="Top" Height="29" Width="83"/>
+                                </Grid>
+
+                                <!-- GridSplitter for resizing console area in the second row -->
+                                <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="White" Grid.Row="2"/>
+
+                                <Grid Grid.Row="3">
+                                        <!-- TextBox as Console Output -->
+                                        <TextBox x:Name="ConsoleOutputTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                                </Grid>
                             </Grid>
+
                         </TabItem>
                         <!-- Tab Items -->
                         <TabItem Header="Script Editor" HorizontalAlignment="Center" >
