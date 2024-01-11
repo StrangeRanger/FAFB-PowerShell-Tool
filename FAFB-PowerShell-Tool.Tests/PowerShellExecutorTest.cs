@@ -2,27 +2,27 @@
 
 namespace FAFB_PowerShell_Tool.Tests;
 
-[TestClass]
+[Collection("PowerShell Executor Tests")]
 public class PowerShellExecutorTest
 {
-    [TestMethod]
+    [Fact]
     public void CommandNameIsCorrect()
     {
         InternalCommand command = new("Get-ADUser");
-        Assert.AreEqual("Get-ADUser",  command.CommandName);
+        Assert.Equal("Get-ADUser",  command.CommandName);
     }
 
-    [TestMethod]
+    [Fact]
     public void CommandNameThrowsArgumentExceptionWhenNull()
     {
-        Assert.ThrowsException<ArgumentException>(() => new InternalCommand(null!));
+        Assert.Throws<ArgumentException>(() => new InternalCommand(null!));
     }
 
-    [TestMethod]
+    [Fact]
     public void CommandNameThrowsArgumentExceptionWhenWhitespace()
     {
-        Assert.ThrowsException<ArgumentException>(() => new InternalCommand(""));
-        Assert.ThrowsException<ArgumentException>(() => new InternalCommand(" "));
-        Assert.ThrowsException<ArgumentException>(() => new InternalCommand(string.Empty));
+        Assert.Throws<ArgumentException>(() => new InternalCommand(""));
+        Assert.Throws<ArgumentException>(() => new InternalCommand(" "));
+        Assert.Throws<ArgumentException>(() => new InternalCommand(string.Empty));
     }
 }

@@ -2,72 +2,72 @@ using FAFB_PowerShell_Tool.PowerShell;
 
 namespace FAFB_PowerShell_Tool.Tests;
 
-[TestClass]
+[Collection("Gui Command Tests")]
 public class GuiCommandTest
 {
-    [TestMethod]
+    [Fact]
     public void CommandNameIsCorrect()
     {
         GuiCommand command = new("Get-ADUser");
-        Assert.AreEqual("Get-ADUser",  command.CommandName);
+        Assert.Equal("Get-ADUser",  command.CommandName);
     }
 
-    [TestMethod]
+    [Fact]
     public void CommandNameThrowsArgumentExceptionWhenNull()
     {
-        Assert.ThrowsException<ArgumentException>(() => new GuiCommand(null!));
+        Assert.Throws<ArgumentException>(() => new GuiCommand(null!));
     }
 
-    [TestMethod]
+    [Fact]
     public void CommandNameThrowsArgumentExceptionWhenWhitespace()
     {
-        Assert.ThrowsException<ArgumentException>(() => new GuiCommand(""));
-        Assert.ThrowsException<ArgumentException>(() => new GuiCommand(" "));
-        Assert.ThrowsException<ArgumentException>(() => new GuiCommand(string.Empty));
+        Assert.Throws<ArgumentException>(() => new GuiCommand(""));
+        Assert.Throws<ArgumentException>(() => new GuiCommand(" "));
+        Assert.Throws<ArgumentException>(() => new GuiCommand(string.Empty));
     }
 
-    [TestMethod]
+    [Fact]
     public void PossibleParametersThrowsInvalidOperationExceptionWhenEmpty()
     {
         GuiCommand command = new("Get-ADUser");
-        Assert.ThrowsException<InvalidOperationException>(() => command.PossibleParameters);
+        Assert.Throws<InvalidOperationException>(() => command.PossibleParameters);
     }
     
-    [TestMethod]
-    public async void PossibleParametersReturnsCorrectly()
+    [Fact]
+    public async Task PossibleParametersReturnsCorrectly()
     {
         GuiCommand command = new("Get-ADUser");
         await command.LoadCommandParametersAsync();
-        Assert.IsTrue(command.PossibleParameters.Contains("-Identity"));
-        Assert.IsTrue(command.PossibleParameters.Count > 0);
+        Assert.Contains("-Identity", command.PossibleParameters);
+        Assert.True(command.PossibleParameters.Count > 0);
     }
     
-    [TestMethod]
-    public async void PossibleParametersReturnsCorrectlyWhenCalledTwice()
+    [Fact]
+    public async Task PossibleParametersReturnsCorrectlyWhenCalledTwice()
     {
         GuiCommand command = new("Get-ADUser");
         await command.LoadCommandParametersAsync();
         await command.LoadCommandParametersAsync();
-        Assert.IsTrue(command.PossibleParameters.Contains("-Identity"));
-        Assert.IsTrue(command.PossibleParameters.Count > 0);
-        Assert.AreEqual(command.PossibleParameters.Count, command.PossibleParameters.Distinct().Count());
+        Assert.Contains("-Identity", command.PossibleParameters);
+        Assert.True(command.PossibleParameters.Count > 0);
+        Assert.Equal(command.PossibleParameters.Count, command.PossibleParameters.Distinct().Count());
     }
     
-    [TestMethod]
+    [Fact]
     public void TestParameters()
     {
         GuiCommand command = new("Get-ADUser")
         {
             Parameters = new[] {"-Identity", "FAFB-Admin"}
         };
-        Assert.AreEqual(command.Parameters[0], "-Identity");
-        Assert.AreEqual(command.Parameters[1], "FAFB-Admin");
+        Assert.Equal("-Identity", command.Parameters[0]);
+        Assert.Equal("FAFB-Admin", command.Parameters[1]);
     }
 
-    [TestMethod]
+    [Fact]
     public void ThrowExceptionWhenLoadCommandParametersAsyncIsNotCalled()
     {
         GuiCommand command = new("Get-ADUser");
-        Assert.ThrowsException<InvalidOperationException>(() => command.PossibleParameters);
+        Assert.Throws<InvalidOperationException>(() => command.PossibleParameters);
     }
 }
