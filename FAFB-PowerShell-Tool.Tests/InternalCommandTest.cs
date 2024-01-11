@@ -2,7 +2,6 @@
 
 namespace FAFB_PowerShell_Tool.Tests;
 
-[Collection("Internal Command Tests")]
 public class InternalCommandTest
 {
     [Fact]

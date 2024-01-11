@@ -2,7 +2,6 @@ using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool.Tests;
 
-[Collection("Gui Command Tests")]
 public class GuiCommandTest
 {
     [Fact]

@@ -2,7 +2,6 @@
 
 namespace FAFB_PowerShell_Tool.Tests;
 
-[Collection("PowerShell Executor Tests")]
 public class PowerShellExecutorTest
 {
     [Fact]
