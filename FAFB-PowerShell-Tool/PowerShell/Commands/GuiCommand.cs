@@ -37,7 +37,7 @@ public class GuiCommand : InternalCommand
         if (_possibleParameters.Count == 0)
         {
             PowerShellExecutor powerShellExecutor = new();
-            ExecuteReturnValues tmpList = await powerShellExecutor.ExecuteAsync(guiCommandString);
+            ReturnValues tmpList = await powerShellExecutor.ExecuteAsync(guiCommandString);
 
             foreach (var command in tmpList.StdOut)
             {

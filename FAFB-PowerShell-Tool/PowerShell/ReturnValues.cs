@@ -1,6 +1,6 @@
 namespace FAFB_PowerShell_Tool.PowerShell;
 
-public class ExecuteReturnValues
+public class ReturnValues
 {
     public bool HadErrors { get; set; }
     public List<string> StdOut { get; set; } = new();

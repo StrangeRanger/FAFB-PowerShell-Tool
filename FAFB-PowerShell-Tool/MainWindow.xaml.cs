@@ -113,7 +113,7 @@ public partial class MainWindow
 
         try
         {
-            ExecuteReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
+            ReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
             StringBuilder fullCommandOutput = new StringBuilder();
 
             foreach (var str in commandOutput.StdOut)

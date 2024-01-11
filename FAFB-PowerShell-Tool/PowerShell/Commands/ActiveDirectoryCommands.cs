@@ -10,7 +10,7 @@ public static class ActiveDirectoryCommands
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<GuiCommand> commandList = new();
         InternalCommand commandString = new("Get-Command", new[] { "-Module", "ActiveDirectory" });
-        ExecuteReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(commandString);
+        ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(commandString);
 
         if (commandListTemp.HadErrors)
         {

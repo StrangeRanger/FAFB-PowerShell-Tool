@@ -17,7 +17,7 @@ public class PowerShellExecutor
         _powerShell.Commands.Clear();
     }
 
-    public ExecuteReturnValues Execute<T>(T commandString) where T : ICommand
+    public ReturnValues Execute<T>(T commandString) where T : ICommand
     {
         ValidateCommandString(commandString);
         _powerShell.AddScript(commandString.CommandString);
@@ -25,7 +25,7 @@ public class PowerShellExecutor
         return ProcessPowerShellResults(results, false);
     }
 
-    public async Task<ExecuteReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
+    public async Task<ReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
     {
         ValidateCommandString(commandString);
         _powerShell.AddScript(commandString.CommandString);
@@ -42,9 +42,9 @@ public class PowerShellExecutor
         }
     }
 
-    private ExecuteReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results, bool isAsync)
+    private ReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results, bool isAsync)
     {
-        ExecuteReturnValues returnValues = new();
+        ReturnValues returnValues = new();
         const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
         if (_powerShell.HadErrors)
@@ -81,7 +81,7 @@ public class PowerShellExecutor
         return returnValues;
     }
 
-    private Task<ExecuteReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
+    private Task<ReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
         return Task.FromResult(ProcessPowerShellResults(results, true));
     }
