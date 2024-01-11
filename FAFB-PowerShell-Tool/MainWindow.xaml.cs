@@ -33,7 +33,7 @@ public partial class MainWindow
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         ComboBox comboBoxCommandList = ComboBoxCommandList;
-        ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
+        ObservableCollection<GuiCommand> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
         comboBoxCommandList.ItemsSource = list;
         comboBoxCommandList.DisplayMemberPath = "CommandName";
 
@@ -49,7 +49,7 @@ public partial class MainWindow
     {
         ComboBox comboBox = sender as ComboBox ?? throw new InvalidOperationException();
 
-        if (comboBox.SelectedItem is not Command selectedCommand)
+        if (comboBox.SelectedItem is not GuiCommand selectedCommand)
         {
             return;
         }
@@ -68,7 +68,7 @@ public partial class MainWindow
         try
         {
             // Get the Command
-            Command? command = ComboBoxCommandList.SelectedValue as Command;
+            GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
             // string commandParameters = cmbParameters.Text;
 
             Button newButton = new() {
@@ -111,7 +111,7 @@ public partial class MainWindow
     }
 
     // TODO: Test to see if this works as it should...
-    private void ExecuteScriptEditorButton(object sender, RoutedEventArgs e)
+    /*private void ExecuteScriptEditorButton(object sender, RoutedEventArgs e)
     {
         string scriptEditorText = ScriptEditorTextBox.Text;
         PowerShellExecutor powerShellExecutor = new();
@@ -134,5 +134,5 @@ public partial class MainWindow
         {
             MessageBoxOutput.Show(ex.Message, MessageBoxOutput.OutputType.InternalError);
         }
-    }
+    }*/
 }

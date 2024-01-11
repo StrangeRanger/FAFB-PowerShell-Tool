@@ -1,8 +1,8 @@
 ﻿using System.IO;
+using System.Management.Automation;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
-// TODO: Refactor Execute methods to reduce code duplication.
 // TODO: Modify to ensure it works new method of execution.
 public class PowerShellExecutor
 {
@@ -16,34 +16,63 @@ public class PowerShellExecutor
         _powerShell.Commands.Clear();
     }
 
-    public ExecuteReturnValues Execute(string commandText)
+    public ExecuteReturnValues Execute<T>(T commandString) where T : ICommand
+    {
+        ValidateCommandString(commandString);
+        _powerShell.AddScript(commandString.CommandString);
+        var results = _powerShell.Invoke();
+        return ProcessPowerShellResults(results, false);
+    }
+
+    public async Task<ExecuteReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
+    {
+        ValidateCommandString(commandString);
+        _powerShell.AddScript(commandString.CommandString);
+        var results = await _powerShell.InvokeAsync();
+        return await ProcessPowerShellResultsAsync(results);
+    }
+
+    private void ValidateCommandString<T>(T commandString) where T : ICommand
+    {
+        if (string.IsNullOrWhiteSpace(commandString.CommandString))
+        {
+            MessageBoxOutput.Show("Command text cannot be null or whitespace.", MessageBoxOutput.OutputType.InternalError);
+            throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandString));
+        }
+    }
+
+    private ExecuteReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results, bool isAsync)
     {
         ExecuteReturnValues returnValues = new();
         const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
-        if (string.IsNullOrWhiteSpace(commandText))
-        {
-            throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandText));
-        }
-
-        _powerShell.AddScript(commandText);
-
-        var results = _powerShell.Invoke();
-
-        // TODO: Possibly include STDERR, STDOUT, etc., streams in the return values...
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
             {
-                File.WriteAllText(filePath, "Error: " + error); // For testing purposes only.
-                returnValues.StdOut.Add("Error: " + error);
+                if (isAsync)
+                {
+                    File.WriteAllTextAsync(filePath, $"Error: {error}").Wait(); // For testing purposes only.
+                }
+                else
+                {
+                    File.WriteAllText(filePath, $"Error: {error}"); // For testing purposes only.
+                }
+                returnValues.StdErr.Add($"Error: {error}");
             }
         }
         else
         {
             foreach (var result in results)
             {
-                File.WriteAllText(filePath, result.ToString()); // For testing purposes only.
+                if (isAsync)
+                {
+                    File.WriteAllTextAsync(filePath, result.ToString()).Wait(); // For testing purposes only.
+                }
+                else
+                {
+                    File.WriteAllText(filePath, result.ToString()); // For testing purposes only.
+                }
                 returnValues.StdOut.Add(result.ToString());
             }
         }
@@ -51,40 +80,10 @@ public class PowerShellExecutor
         return returnValues;
     }
 
-    public async Task<ExecuteReturnValues> ExecuteAsync(string commandText)
+    private Task<ExecuteReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
-        ExecuteReturnValues executeReturnValues = new();
-        const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
-
-        if (string.IsNullOrWhiteSpace(commandText))
-        {
-            throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandText));
-        }
-
-        _powerShell.AddScript(commandText);
-
-        var results = await _powerShell.InvokeAsync().ConfigureAwait(false);
-
-        if (_powerShell.HadErrors)
-        {
-            executeReturnValues.HadErrors = true;
-            foreach (var error in _powerShell.Streams.Error)
-            {
-                await File.WriteAllTextAsync(filePath, "Error: " + error); // For testing purposes only.
-                executeReturnValues.StdOut.Add("Error: " + error);
-            }
-        }
-        else
-        {
-            executeReturnValues.HadErrors = false;
-            foreach (var result in results)
-            {
-                await File.WriteAllTextAsync(filePath, result.ToString()); // For testing purposes only.
-                executeReturnValues.StdOut.Add(result.ToString());
-            }
-        }
-
-        return executeReturnValues;
+        return Task.FromResult(ProcessPowerShellResults(results, true));
     }
+
 }
 

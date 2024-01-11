@@ -5,12 +5,12 @@ namespace FAFB_PowerShell_Tool.PowerShell;
 
 public static class ActiveDirectoryCommands
 {
-    public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
+    public static async Task<ObservableCollection<GuiCommand>> GetActiveDirectoryCommands()
     {
         PowerShellExecutor powerShellExecutor = new();
-        ObservableCollection<Command> commandList = new();
-        ExecuteReturnValues commandListTemp =
-            await powerShellExecutor.ExecuteAsync("Get-Command -Module ActiveDirectory");
+        ObservableCollection<GuiCommand> commandList = new();
+        InternalCommand commandString = new("Get-Command", new[] { "-Module", "ActiveDirectory" });
+        ExecuteReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(commandString);
 
         if (commandListTemp.HadErrors)
         {
@@ -20,7 +20,7 @@ public static class ActiveDirectoryCommands
 
         foreach (var command in commandListTemp.StdOut)
         {
-            commandList.Add(new Command(command));
+            commandList.Add(new GuiCommand(command));
         }
 
         return commandList;
