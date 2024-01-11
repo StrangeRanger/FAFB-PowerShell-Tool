@@ -8,8 +8,8 @@ public class GuiCommandTest
     [TestMethod]
     public void CommandNameIsCorrect()
     {
-        GuiCommand guiCommand = new("Get-ADUser");
-        Assert.AreEqual("Get-ADUser", guiCommand.CommandName);
+        InternalCommand internalCommand = new("Get-ADUser");
+        Assert.AreEqual("Get-ADUser",  internalCommand.CommandName);
     }
 
     [TestMethod]
