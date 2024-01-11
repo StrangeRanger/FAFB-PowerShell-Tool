@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Management.Automation;
+using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 

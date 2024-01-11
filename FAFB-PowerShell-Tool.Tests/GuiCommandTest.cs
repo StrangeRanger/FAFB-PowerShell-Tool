@@ -1,4 +1,5 @@
 using FAFB_PowerShell_Tool.PowerShell;
+using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool.Tests;
 

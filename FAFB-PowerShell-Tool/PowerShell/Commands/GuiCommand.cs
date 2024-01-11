@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace FAFB_PowerShell_Tool.PowerShell.Commands;
 
 public class GuiCommand : InternalCommand
 {

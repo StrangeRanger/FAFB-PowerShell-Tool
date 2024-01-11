@@ -1,4 +1,4 @@
-﻿namespace FAFB_PowerShell_Tool.PowerShell;
+﻿namespace FAFB_PowerShell_Tool.PowerShell.Commands;
 
 public interface ICommand
 {
