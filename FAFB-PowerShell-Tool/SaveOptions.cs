@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FAFB_PowerShell_Tool.PowerShell.Commands
+﻿namespace FAFB_PowerShell_Tool
 {
     /// <summary>
     /// This class *might* be used for housing the save options 
