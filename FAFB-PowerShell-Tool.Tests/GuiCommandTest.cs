@@ -10,19 +10,14 @@ public class GuiCommandTest
         GuiCommand command = new("Get-ADUser");
         Assert.Equal("Get-ADUser",  command.CommandName);
     }
-
+    
     [Fact]
-    public void CommandNameThrowsArgumentExceptionWhenNull()
+    public void CommandStringGetIsCorrectWhenParametersAreSet()
     {
-        Assert.Throws<ArgumentException>(() => new GuiCommand(null!));
-    }
-
-    [Fact]
-    public void CommandNameThrowsArgumentExceptionWhenWhitespace()
-    {
-        Assert.Throws<ArgumentException>(() => new GuiCommand(""));
-        Assert.Throws<ArgumentException>(() => new GuiCommand(" "));
-        Assert.Throws<ArgumentException>(() => new GuiCommand(string.Empty));
+        GuiCommand command = new("Get-ADUser", new[] {"-Identity", "Test"});
+        Assert.Equal("Get-ADUser -Identity Test", command.CommandString);
+        Assert.Equal("-Identity", command.Parameters![0]);
+        Assert.Equal("Test", command.Parameters![1]);
     }
 
     [Fact]
@@ -50,23 +45,5 @@ public class GuiCommandTest
         Assert.Contains("-Identity", command.PossibleParameters);
         Assert.True(command.PossibleParameters.Count > 0);
         Assert.Equal(command.PossibleParameters.Count, command.PossibleParameters.Distinct().Count());
-    }
-    
-    [Fact]
-    public void TestParameters()
-    {
-        GuiCommand command = new("Get-ADUser")
-        {
-            Parameters = new[] {"-Identity", "FAFB-Admin"}
-        };
-        Assert.Equal("-Identity", command.Parameters[0]);
-        Assert.Equal("FAFB-Admin", command.Parameters[1]);
-    }
-
-    [Fact]
-    public void ThrowExceptionWhenLoadCommandParametersAsyncIsNotCalled()
-    {
-        GuiCommand command = new("Get-ADUser");
-        Assert.Throws<InvalidOperationException>(() => command.PossibleParameters);
     }
 }

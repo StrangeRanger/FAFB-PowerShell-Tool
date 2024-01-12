@@ -1,27 +1,39 @@
-﻿using FAFB_PowerShell_Tool.PowerShell.Commands;
+﻿using FAFB_PowerShell_Tool.PowerShell;
+using FAFB_PowerShell_Tool.PowerShell.Commands;
+using ArgumentException = System.ArgumentException;
 
 namespace FAFB_PowerShell_Tool.Tests;
 
 public class PowerShellExecutorTest
 {
     [Fact]
-    public void CommandNameIsCorrect()
+    public void ExecuteCommandReturnsAreCorrect()
     {
-        InternalCommand command = new("Get-ADUser");
-        Assert.Equal("Get-ADUser",  command.CommandName);
+        PowerShellExecutor powerShell = new();
+        ReturnValues values = powerShell.Execute(new InternalCommand("Get-Process"));
+        Assert.False(values.HadErrors);
+        Assert.NotEmpty(values.StdOut);
+        Assert.Empty(values.StdErr);
+    }
+    
+    [Fact]
+    public void ExecuteBadCommandReturnsAreCorrect()
+    {
+        PowerShellExecutor powerShell = new();
+        ReturnValues values = powerShell.Execute(new InternalCommand("BadCommand"));
+        Assert.True(values.HadErrors);
+        Assert.Empty(values.StdOut);
+        Assert.NotEmpty(values.StdErr);
+    }
+    
+    [Fact]
+    public void ExecuteBadInternalCommandThrowsInvalidOperationException()
+    {
+        PowerShellExecutor powerShell = new();
+        Assert.Throws<ArgumentException>(() => powerShell.Execute(new InternalCommand("")));
+        Assert.Throws<ArgumentException>(() => powerShell.Execute(new InternalCommand(" ")));
+        Assert.Throws<ArgumentException>(() => powerShell.Execute(new InternalCommand(null!)));
+        Assert.Throws<ArgumentException>(() => powerShell.Execute(new InternalCommand(string.Empty)));
     }
 
-    [Fact]
-    public void CommandNameThrowsArgumentExceptionWhenNull()
-    {
-        Assert.Throws<ArgumentException>(() => new InternalCommand(null!));
-    }
-
-    [Fact]
-    public void CommandNameThrowsArgumentExceptionWhenWhitespace()
-    {
-        Assert.Throws<ArgumentException>(() => new InternalCommand(""));
-        Assert.Throws<ArgumentException>(() => new InternalCommand(" "));
-        Assert.Throws<ArgumentException>(() => new InternalCommand(string.Empty));
-    }
 }

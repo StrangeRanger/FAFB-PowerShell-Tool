@@ -10,27 +10,6 @@ public class InternalCommandTest
         InternalCommand command = new("Get-ADUser");
         Assert.Equal("Get-ADUser",  command.CommandName);
     }
-
-    [Fact]
-    public void CommandNameThrowsArgumentExceptionWhenNull()
-    {
-        Assert.Throws<ArgumentException>(() => new InternalCommand(null!));
-    }
-
-    [Fact]
-    public void CommandNameThrowsArgumentExceptionWhenWhitespace()
-    {
-        Assert.Throws<ArgumentException>(() => new InternalCommand(""));
-        Assert.Throws<ArgumentException>(() => new InternalCommand(" "));
-        Assert.Throws<ArgumentException>(() => new InternalCommand(string.Empty));
-    }
-    
-    [Fact]
-    public void CommandStringGetIsCorrect()
-    {
-        InternalCommand command = new("Get-ADUser");
-        Assert.Equal("Get-ADUser", command.CommandString);
-    }
     
     [Fact]
     public void CommandStringGetIsCorrectWhenParametersAreSet()

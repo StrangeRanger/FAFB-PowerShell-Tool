@@ -22,7 +22,7 @@ public class PowerShellExecutor
         ValidateCommandString(commandString);
         _powerShell.AddScript(commandString.CommandString);
         var results = _powerShell.Invoke();
-        return ProcessPowerShellResults(results, false);
+        return ProcessPowerShellResults(results);
     }
 
     public async Task<ReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
@@ -42,23 +42,14 @@ public class PowerShellExecutor
         }
     }
 
-    private ReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results, bool isAsync)
+    private ReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results)
     {
         ReturnValues returnValues = new();
-        const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
 
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
             {
-                if (isAsync)
-                {
-                    File.WriteAllTextAsync(filePath, $"Error: {error}").Wait(); // For testing purposes only.
-                }
-                else
-                {
-                    File.WriteAllText(filePath, $"Error: {error}"); // For testing purposes only.
-                }
                 returnValues.StdErr.Add($"Error: {error}");
             }
         }
@@ -66,14 +57,6 @@ public class PowerShellExecutor
         {
             foreach (var result in results)
             {
-                if (isAsync)
-                {
-                    File.WriteAllTextAsync(filePath, result.ToString()).Wait(); // For testing purposes only.
-                }
-                else
-                {
-                    File.WriteAllText(filePath, result.ToString()); // For testing purposes only.
-                }
                 returnValues.StdOut.Add(result.ToString());
             }
         }
@@ -83,8 +66,7 @@ public class PowerShellExecutor
 
     private Task<ReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
-        return Task.FromResult(ProcessPowerShellResults(results, true));
+        return Task.FromResult(ProcessPowerShellResults(results));
     }
-
 }
 
