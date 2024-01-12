@@ -31,8 +31,7 @@ public class GuiCommand : InternalCommand
     /// <returns>A collection of parameter names for 'CommandName'</returns>
     public async Task LoadCommandParametersAsync()
     {
-        
-        GuiCommand guiCommandString = new("Get-Command", new[] { CommandName, $"| Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}" });
+        GuiCommand guiCommandString = new("Get-Command", new[] { CommandName, "| Select -ExpandProperty Parameters | ForEach-Object { $_.Keys }" });
         
         if (_possibleParameters.Count == 0)
         {

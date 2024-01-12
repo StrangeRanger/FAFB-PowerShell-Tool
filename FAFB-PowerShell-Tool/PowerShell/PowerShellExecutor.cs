@@ -37,7 +37,7 @@ public class PowerShellExecutor
     {
         if (string.IsNullOrWhiteSpace(commandString.CommandString))
         {
-            MessageBoxOutput.Show("Command text cannot be null or whitespace.", MessageBoxOutput.OutputType.InternalError);
+            MessageBoxOutput.Show("Command text cannot be null or whitespace.", MessageBoxOutput.OutputType.Error);
             throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandString));
         }
     }

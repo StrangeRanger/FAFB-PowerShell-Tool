@@ -14,8 +14,8 @@ public static class ActiveDirectoryCommands
 
         if (commandListTemp.HadErrors)
         {
-            MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdOut), MessageBoxOutput.OutputType.Error);
-            throw new InvalidPowerShellStateException(); // TODO: ???
+            MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdErr), MessageBoxOutput.OutputType.Error);
+            throw new InvalidPowerShellStateException();  // TODO: Make exception output more info...
         }
 
         foreach (var command in commandListTemp.StdOut)
