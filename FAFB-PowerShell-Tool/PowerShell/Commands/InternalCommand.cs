@@ -1,5 +1,7 @@
 ﻿namespace FAFB_PowerShell_Tool.PowerShell.Commands;
-
+/// <summary>
+/// Class that implements ICommand and is specifically for Interally used command
+/// </summary>
 public class InternalCommand : ICommand
 {
     public string CommandName { get; }

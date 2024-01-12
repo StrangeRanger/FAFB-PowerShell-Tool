@@ -77,7 +77,23 @@
                                 <Grid Grid.Row="0">
                                     <!-- Existing Controls -->
                                     <ComboBox x:Name="ComboBoxCommandList" SelectionChanged="MComboBoxSelectionChanged" HorizontalAlignment="Left" Margin="26,48,0,0" VerticalAlignment="Top" Width="216" BorderBrush="#FFD41818" Background="Black" IsEditable="True" Grid.Row="0"/>
-                                    <ComboBox x:Name="ComboBoxCommandParameterList" HorizontalAlignment="Left" Margin="278,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True" Grid.Row="0"/>
+                                    <ComboBox x:Name="ComboBoxCommandParameterList" HorizontalAlignment="Left" Margin="283,48,0,0" VerticalAlignment="Top" Width="212" IsEditable="True">
+                                        <ComboBox.Background>
+                                            <LinearGradientBrush EndPoint="0,1">
+                                                <GradientStop Color="#FFF0F0F0"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </ComboBox.Background>
+                                    </ComboBox>
+                                    <!-- This will be used for picking how you would like to output the query **not implemented yet** -->
+                                    <ComboBox x:Name="ComboBoxOutputOptions" HorizontalAlignment="Left" Margin="26,100,0,0" VerticalAlignment="Top" Width="216" IsEditable="True">
+                                        <ComboBox.Background>
+                                            <LinearGradientBrush EndPoint="0,1">
+                                                <GradientStop Color="#FFF0F0F0"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </ComboBox.Background>
+                                    </ComboBox>
                                 </Grid>
 
                                 <Grid Grid.Row="1" Margin="12,16">
