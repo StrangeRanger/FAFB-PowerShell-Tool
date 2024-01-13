@@ -1,7 +1,12 @@
 ﻿namespace FAFB_PowerShell_Tool.PowerShell.Commands;
+
 /// <summary>
-/// Class that implements ICommand and is specifically for Interally used command
+/// Commands that are not intended to be used by the user/GUI, but rather by the program itself.
 /// </summary>
+/// <remarks>
+/// The separation of commands into 'InternalCommand' and 'GuiCommand' is because the internal commands don't need to
+/// know the possible parameters for the command, whereas the GUI commands do.
+/// </remarks>
 public class InternalCommand : ICommand
 {
     public string CommandName { get; }
@@ -11,9 +16,9 @@ public class InternalCommand : ICommand
     /// <summary>
     /// Commands that are not intended to be used by the user, but rather by the program itself.
     /// </summary>
-    /// <param name="commandName">...</param>
-    /// <param name="parameters">...</param>
-    /// <exception cref="ArgumentException">...</exception>
+    /// <param name="commandName">The selected command.</param>
+    /// <param name="parameters">Selected parameters for 'commandName'.</param>
+    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is blank</exception>
     public InternalCommand(string commandName, string[]? parameters = null)
     {
         if (string.IsNullOrWhiteSpace(commandName))
@@ -21,7 +26,7 @@ public class InternalCommand : ICommand
             //MessageBoxOutput.Show("Command name cannot be null or whitespace.", MessageBoxOutput.OutputType.Error);
             throw new ArgumentException("Command name cannot be null or whitespace.", nameof(commandName));
         }
-        
+
         CommandName = commandName;
         Parameters = parameters;
     }

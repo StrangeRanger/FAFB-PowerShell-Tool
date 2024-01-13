@@ -4,7 +4,9 @@ using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
-// TODO: Modify to ensure it works new method of execution.
+/// <summary>
+/// This class is used for executing PowerShell commands.
+/// </summary>
 public class PowerShellExecutor
 {
     private readonly System.Management.Automation.PowerShell _powerShell;
@@ -12,11 +14,18 @@ public class PowerShellExecutor
     public PowerShellExecutor()
     {
         _powerShell = System.Management.Automation.PowerShell.Create();
+        // ActiveDirectory module must be imported before executing any commands from the module.
         _powerShell.AddScript("Import-Module ActiveDirectory;");
         _powerShell.Invoke();
         _powerShell.Commands.Clear();
     }
 
+    /// <summary>
+    /// Executes a PowerShell command synchronously.
+    /// </summary>
+    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
+    /// <param name="commandString">The command and parameters in a single string.</param>
+    /// <returns>The processed and formatted results of the executed PowerShell command.</returns>
     public ReturnValues Execute<T>(T commandString) where T : ICommand
     {
         ValidateCommandString(commandString);
@@ -25,6 +34,12 @@ public class PowerShellExecutor
         return ProcessPowerShellResults(results);
     }
 
+    /// <summary>
+    /// Executes a PowerShell command asynchronously.
+    /// </summary>
+    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
+    /// <param name="commandString">The command and parameters in a single string.</param>
+    /// <returns>The processed and formatted results of the executed PowerShell command.</returns>
     public async Task<ReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
     {
         ValidateCommandString(commandString);
@@ -33,6 +48,12 @@ public class PowerShellExecutor
         return await ProcessPowerShellResultsAsync(results);
     }
 
+    /// <summary>
+    /// Checks if the command string is null, contains whitespace, or is blank.
+    /// </summary>
+    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
+    /// <param name="commandString">The command and parameters in a single string.</param>
+    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is blank</exception>
     private void ValidateCommandString<T>(T commandString) where T : ICommand
     {
         if (string.IsNullOrWhiteSpace(commandString.CommandString))
@@ -42,6 +63,11 @@ public class PowerShellExecutor
         }
     }
 
+    /// <summary>
+    /// Processes the results from the PowerShell command synchronously.
+    /// </summary>
+    /// <param name="results">The results of the PowerShell command.</param>
+    /// <returns>The processed and formatted results from the executed PowerShell command</returns>
     private ReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results)
     {
         ReturnValues returnValues = new();
@@ -64,6 +90,11 @@ public class PowerShellExecutor
         return returnValues;
     }
 
+    /// <summary>
+    /// Processes the results from the PowerShell command asynchronously.
+    /// </summary>
+    /// <param name="results">The results of the PowerShell command.</param>
+    /// <returns>The processed and formatted results from the executed PowerShell command</returns>
     private Task<ReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
         return Task.FromResult(ProcessPowerShellResults(results));

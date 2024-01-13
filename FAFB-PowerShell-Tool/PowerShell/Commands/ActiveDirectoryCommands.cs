@@ -3,8 +3,16 @@ using System.Management.Automation;
 
 namespace FAFB_PowerShell_Tool.PowerShell.Commands;
 
+/// <summary>
+/// Commands from the ActiveDirectory PowerShell module.
+/// </summary>
 public static class ActiveDirectoryCommands
 {
+    /// <summary>
+    /// This method will return a list of commands in the ActiveDirectory PowerShell module.
+    /// </summary>
+    /// <returns>Returns a list of commands in the ActiveDirectory PowerShell module.</returns>
+    /// <exception cref="InvalidPowerShellStateException">Thrown when an error has occurred when executing PowerShell commands.</exception>
     public static async Task<ObservableCollection<GuiCommand>> GetActiveDirectoryCommands()
     {
         PowerShellExecutor powerShellExecutor = new();
