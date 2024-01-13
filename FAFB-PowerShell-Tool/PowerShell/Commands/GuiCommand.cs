@@ -11,7 +11,7 @@ namespace FAFB_PowerShell_Tool.PowerShell.Commands;
 /// </remarks>
 /// <param name="commandName">The selected command.</param>
 /// <param name="parameters">Selected parameters for 'commandName'.</param>
-public class GuiCommand(string commandName, string[]? parameters = null) : InternalCommand(commandName, parameters)
+public class GuiCommand : InternalCommand
 {
     private readonly ObservableCollection<string> _possibleParameters = new();
     // NOTE: Calling 'LoadCommandParametersAsync' from this property's getter will cause the application to hang. This
@@ -29,6 +29,9 @@ public class GuiCommand(string commandName, string[]? parameters = null) : Inter
                 "PossibleParameters has not been populated via 'LoadCommandParametersAsync'.");
         }
     }
+    
+    public GuiCommand(string commandName, string[]? parameters = null) : base(commandName, parameters)
+    { }
 
     /// <summary>
     /// Loads the possible parameters for the selected command into the '_possibleParameters' collection.
