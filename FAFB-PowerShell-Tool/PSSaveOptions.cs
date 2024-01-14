@@ -1,6 +1,5 @@
 ﻿using FAFB_PowerShell_Tool.PowerShell;
 using FAFB_PowerShell_Tool.PowerShell.Commands;
-using FAFB_PowerShell_Tool.PowerShell.Commands;
 using System;
 
 namespace FAFB_PowerShell_Tool
@@ -15,9 +14,9 @@ namespace FAFB_PowerShell_Tool
         /// </summary>
         public PSSaveOptions() { }
         /// <summary>
-        /// This would be to output the query to a csv
+        /// This would be to output the query to a csv, will need to eventually adapt to a guicommand as well most likely 
         /// </summary>
-        /// <param name="results"> This is a ReturnValues object that houses the output after executing a command specificall results.StdOut </param>
+        /// <param name="commandString"> This is the internal command that we want to output to a csv </param>
         public InternalCommand OutputToCSV(InternalCommand commandString)
         {
             //Checks to see if the parameters are null, 
