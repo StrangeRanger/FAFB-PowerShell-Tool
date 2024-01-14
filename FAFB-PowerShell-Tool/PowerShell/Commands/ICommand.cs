@@ -10,6 +10,7 @@
 public interface ICommand
 {
     string CommandName { get; }
+    //want to change this into a list 
     string[]? Parameters { get; set; }
     string CommandString { get; }
 }
