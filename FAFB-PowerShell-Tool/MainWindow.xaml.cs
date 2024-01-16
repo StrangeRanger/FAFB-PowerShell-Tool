@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Management.Automation.Runspaces;
 using System.Windows;
 using System.Windows.Controls;
 using FAFB_PowerShell_Tool.PowerShell;
-using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -26,9 +26,9 @@ public partial class MainWindow
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         ComboBox comboBoxCommandList = ComboBoxCommandList;
-        ObservableCollection<GuiCommand> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
+        ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
         comboBoxCommandList.ItemsSource = list;
-        comboBoxCommandList.DisplayMemberPath = "CommandName";
+        comboBoxCommandList.DisplayMemberPath = "CommandText";
 
         FillCustomQueries();
     }
@@ -41,16 +41,17 @@ public partial class MainWindow
     private async void MComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ComboBox comboBox = sender as ComboBox ?? throw new InvalidOperationException();
+        CommandParameters commandParameters = new();
 
-        if (comboBox.SelectedItem is not GuiCommand selectedCommand)
+        if (comboBox.SelectedItem is not Command selectedCommand)
         {
             return;
         }
 
         // Set the ItemsSource for the parameters ComboBox.
         ComboBox comboBoxParameters = ComboBoxCommandParameterList;
-        await selectedCommand.LoadCommandParametersAsync(); // Lazy loading.
-        comboBoxParameters.ItemsSource = selectedCommand.PossibleParameters;
+        await commandParameters.LoadCommandParametersAsync(selectedCommand); // Lazy loading.
+        comboBoxParameters.ItemsSource = commandParameters.PossibleParameters;
     }
 
     // TODO: Test to see if this works as it should...
@@ -61,7 +62,7 @@ public partial class MainWindow
         try
         {
             // Get the Command
-            GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
+            Command? command = ComboBoxCommandList.SelectedValue as Command;
             // string commandParameters = cmbParameters.Text;
 
             Button newButton = new() {
@@ -70,7 +71,7 @@ public partial class MainWindow
                 Height = 48
             };
             // Adds the query to the Queries serializable list
-            CQ.Queries.Add(command.CommandName);
+            CQ.Queries.Add(command.CommandText);
             // Adds the button in the stack panel
             ButtonStackPanel.Children.Add(newButton);
             // Saves the Queries to the file
