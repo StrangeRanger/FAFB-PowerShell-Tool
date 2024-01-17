@@ -1,9 +1,12 @@
 ﻿using System.IO;
 using System.Management.Automation;
+using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
-// TODO: Modify to ensure it works new method of execution.
+/// <summary>
+/// This class is used for executing PowerShell commands.
+/// </summary>
 public class PowerShellExecutor
 {
     private readonly System.Management.Automation.PowerShell _powerShell;
@@ -11,20 +14,33 @@ public class PowerShellExecutor
     public PowerShellExecutor()
     {
         _powerShell = System.Management.Automation.PowerShell.Create();
+        // ActiveDirectory module must be imported before executing any commands from the module.
         _powerShell.AddScript("Import-Module ActiveDirectory;");
         _powerShell.Invoke();
         _powerShell.Commands.Clear();
     }
 
-    public ExecuteReturnValues Execute<T>(T commandString) where T : ICommand
+    /// <summary>
+    /// Executes a PowerShell command synchronously.
+    /// </summary>
+    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
+    /// <param name="commandString">The command and parameters in a single string.</param>
+    /// <returns>The processed and formatted results of the executed PowerShell command.</returns>
+    public ReturnValues Execute<T>(T commandString) where T : ICommand
     {
         ValidateCommandString(commandString);
         _powerShell.AddScript(commandString.CommandString);
         var results = _powerShell.Invoke();
-        return ProcessPowerShellResults(results, false);
+        return ProcessPowerShellResults(results);
     }
 
-    public async Task<ExecuteReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
+    /// <summary>
+    /// Executes a PowerShell command asynchronously.
+    /// </summary>
+    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
+    /// <param name="commandString">The command and parameters in a single string.</param>
+    /// <returns>The processed and formatted results of the executed PowerShell command.</returns>
+    public async Task<ReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
     {
         ValidateCommandString(commandString);
         _powerShell.AddScript(commandString.CommandString);
@@ -32,32 +48,34 @@ public class PowerShellExecutor
         return await ProcessPowerShellResultsAsync(results);
     }
 
+    /// <summary>
+    /// Checks if the command string is null, contains whitespace, or is blank.
+    /// </summary>
+    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
+    /// <param name="commandString">The command and parameters in a single string.</param>
+    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is blank</exception>
     private void ValidateCommandString<T>(T commandString) where T : ICommand
     {
         if (string.IsNullOrWhiteSpace(commandString.CommandString))
         {
-            MessageBoxOutput.Show("Command text cannot be null or whitespace.", MessageBoxOutput.OutputType.InternalError);
+            MessageBoxOutput.Show("Command text cannot be null or whitespace.", MessageBoxOutput.OutputType.Error);
             throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandString));
         }
     }
 
-    private ExecuteReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results, bool isAsync)
+    /// <summary>
+    /// Processes the results from the PowerShell command synchronously.
+    /// </summary>
+    /// <param name="results">The results of the PowerShell command.</param>
+    /// <returns>The processed and formatted results from the executed PowerShell command</returns>
+    private ReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results)
     {
-        ExecuteReturnValues returnValues = new();
-        const string filePath = "FAFB-PowerShell-Tool-Output.txt"; // For testing purposes only.
+        ReturnValues returnValues = new();
 
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
             {
-                if (isAsync)
-                {
-                    File.WriteAllTextAsync(filePath, $"Error: {error}").Wait(); // For testing purposes only.
-                }
-                else
-                {
-                    File.WriteAllText(filePath, $"Error: {error}"); // For testing purposes only.
-                }
                 returnValues.StdErr.Add($"Error: {error}");
             }
         }
@@ -65,14 +83,6 @@ public class PowerShellExecutor
         {
             foreach (var result in results)
             {
-                if (isAsync)
-                {
-                    File.WriteAllTextAsync(filePath, result.ToString()).Wait(); // For testing purposes only.
-                }
-                else
-                {
-                    File.WriteAllText(filePath, result.ToString()); // For testing purposes only.
-                }
                 returnValues.StdOut.Add(result.ToString());
             }
         }
@@ -80,10 +90,14 @@ public class PowerShellExecutor
         return returnValues;
     }
 
-    private Task<ExecuteReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
+    /// <summary>
+    /// Processes the results from the PowerShell command asynchronously.
+    /// </summary>
+    /// <param name="results">The results of the PowerShell command.</param>
+    /// <returns>The processed and formatted results from the executed PowerShell command</returns>
+    private Task<ReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
-        return Task.FromResult(ProcessPowerShellResults(results, true));
+        return Task.FromResult(ProcessPowerShellResults(results));
     }
-
 }
 

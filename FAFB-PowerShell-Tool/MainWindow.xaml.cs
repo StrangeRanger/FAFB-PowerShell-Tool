@@ -1,16 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Management.Automation;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using FAFB_PowerShell_Tool.PowerShell;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
-using System.Text.Json;
-using System.Net.Security;
+using FAFB_PowerShell_Tool.PowerShell.Commands;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -120,7 +113,7 @@ public partial class MainWindow
 
         try
         {
-            ExecuteReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
+            ReturnValues commandOutput = powerShellExecutor.Execute(scriptEditorText);
             StringBuilder fullCommandOutput = new StringBuilder();
 
             foreach (var str in commandOutput.StdOut)

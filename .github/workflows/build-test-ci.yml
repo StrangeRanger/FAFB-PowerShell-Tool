@@ -22,8 +22,13 @@ jobs:
 
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
-      with:
+      with: 
         dotnet-version: '8.0.x'
+
+    - name: Install Active Directory Module
+      run: |
+        Install-WindowsFeature RSAT-AD-PowerShell
+        Import-Module ActiveDirectory
 
     - name: Dotnet Restore & Build
       run: dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }}
