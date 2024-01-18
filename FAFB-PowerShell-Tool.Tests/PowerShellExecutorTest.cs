@@ -15,7 +15,7 @@ public class PowerShellExecutorTest
         Assert.NotEmpty(values.StdOut);
         Assert.Empty(values.StdErr);
     }
-    
+
     [Fact]
     public void ExecuteBadCommandReturnsAreCorrect()
     {
@@ -25,7 +25,7 @@ public class PowerShellExecutorTest
         Assert.Empty(values.StdOut);
         Assert.NotEmpty(values.StdErr);
     }
-    
+
     [Fact]
     public void ExecuteBadInternalCommandThrowsInvalidOperationException()
     {

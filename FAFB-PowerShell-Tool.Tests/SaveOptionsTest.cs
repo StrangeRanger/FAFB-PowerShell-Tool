@@ -1,4 +1,4 @@
-﻿using System.Management.Automation.Internal;
+using System.Management.Automation.Internal;
 using System.Management.Automation.Runspaces;
 using FAFB_PowerShell_Tool;
 using FAFB_PowerShell_Tool.PowerShell;
@@ -17,9 +17,10 @@ public class SaveOptionsTest
         InternalCommand returnedCommand = saveOptions.OutputToCSV(commandString);
 
 
-        Assert.Equal("Get-ADUser -Identity Test | Export-CSV ..\\..\\..\\SavedOutput\\output.csv", returnedCommand.CommandString);
+        Assert.Equal("Get-ADUser -Identity Test | Export-CSV ..\\..\\..\\SavedOutput\\output.csv",
+            returnedCommand.CommandString);
     }*/
-    
+
     /*[Fact]
     public void ExecuteOutputToCSV()
     {
@@ -28,12 +29,8 @@ public class SaveOptionsTest
         InternalCommand test_command = new("get-process");
         ReturnValues temprv = executor.Execute(pssave.OutputToCSV(test_command));
 
-        //Check if a csv was made 
+        //Check if a csv was made
         Assert.True(File.Exists("..\\..\\..\\SavedOutput\\output.csv"));
         //File.Delete("..\\..\\..\\FAFB-PowerShell-Tool\\SavedOutput\\output.csv");
     }*/
-
-
-
-
 }

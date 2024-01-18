@@ -12,7 +12,6 @@ public class PowerShellExecutor
 {
     private readonly System.Management.Automation.PowerShell _powerShell;
 
-
     public PowerShellExecutor()
     {
         _powerShell = System.Management.Automation.PowerShell.Create();
@@ -62,7 +61,8 @@ public class PowerShellExecutor
     /// Checks if the command string is null, contains whitespace, or is blank.
     /// </summary>
     /// <param name="commandString">The command and parameters in a single string.</param>
-    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is blank</exception>
+    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is
+    /// blank</exception>
     private void ValidateCommandString(string commandString)
     {
         if (string.IsNullOrWhiteSpace(commandString))
@@ -107,7 +107,7 @@ public class PowerShellExecutor
     {
         return Task.FromResult(ProcessPowerShellResults(results));
     }
-    
+
     public string CommandToString(Command command)
     {
         StringBuilder commandString = new StringBuilder();

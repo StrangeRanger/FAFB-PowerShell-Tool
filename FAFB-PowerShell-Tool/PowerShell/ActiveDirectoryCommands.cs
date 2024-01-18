@@ -14,7 +14,8 @@ public static class ActiveDirectoryCommands
     /// This method will return a list of commands in the ActiveDirectory PowerShell module.
     /// </summary>
     /// <returns>Returns a list of commands in the ActiveDirectory PowerShell module.</returns>
-    /// <exception cref="InvalidPowerShellStateException">Thrown when an error has occurred when executing PowerShell commands.</exception>
+    /// <exception cref="InvalidPowerShellStateException">Thrown when an error has occurred when executing PowerShell
+    /// commands.</exception>
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {
         PowerShellExecutor powerShellExecutor = new();
@@ -25,7 +26,7 @@ public static class ActiveDirectoryCommands
         if (commandListTemp.HadErrors)
         {
             MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdErr), MessageBoxOutput.OutputType.Error);
-            throw new InvalidPowerShellStateException();  // TODO: Make exception output more info...
+            throw new InvalidPowerShellStateException(); // TODO: Make exception output more info...
         }
 
         foreach (var command in commandListTemp.StdOut)
