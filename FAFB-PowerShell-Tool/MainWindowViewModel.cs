@@ -42,7 +42,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public MainWindowViewModel()
     {
         _powerShellExecutor = new PowerShellExecutor();
-        
         InitializeCommandsAsync();
         LoadCustomQueries();
     }
@@ -82,8 +81,17 @@ public class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Write logic to load queries...
     }
     
+    // ....BELOW CODE.... //
 
+    /// <summary>
+    /// This is the event handler for the INotifyPropertyChanged interface.
+    /// </summary>
     public event PropertyChangedEventHandler? PropertyChanged;
+    
+    /// <summary>
+    /// This is the method that is called when a property is changed.
+    /// </summary>
+    /// <param name="propertyName"></param>
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
