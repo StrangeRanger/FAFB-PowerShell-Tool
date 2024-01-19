@@ -6,7 +6,7 @@ using System.Reflection.Metadata;
 namespace FAFB_PowerShell_Tool.PowerShell;
 
 /// <summary>
-/// Commands from the ActiveDirectory PowerShell module.
+/// ActiveDirectoryCommandList from the ActiveDirectory PowerShell module.
 /// </summary>
 public static class ActiveDirectoryCommands
 {
