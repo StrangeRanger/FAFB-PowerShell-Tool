@@ -1,11 +1,13 @@
 ---
 name: Requirement Specification/Issue
 about: For specifying requirements of the project.
-title: "[ Backend | FrontEnd ] – Requirement Title"
+title: "[Area] – [Requirement Description]"
 labels: requirement
 assignees: ''
 
 ---
+
+<!-- Title should be prefixed with either "Backend –" or "Frontend –" followed by the Title/Description of the requirement. -->
 
 - **Brief Overview**: 
   - [A short summary of the requirement.]
