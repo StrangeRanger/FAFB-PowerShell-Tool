@@ -1,6 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
 using System.Management.Automation;
-using FAFB_PowerShell_Tool.PowerShell.Commands;
+using System.Management.Automation.Runspaces;
+using System.Text;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 
@@ -20,46 +21,53 @@ public class PowerShellExecutor
         _powerShell.Commands.Clear();
     }
 
-    /// <summary>
-    /// Executes a PowerShell command synchronously.
-    /// </summary>
-    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
-    /// <param name="commandString">The command and parameters in a single string.</param>
-    /// <returns>The processed and formatted results of the executed PowerShell command.</returns>
-    public ReturnValues Execute<T>(T commandString) where T : ICommand
+    public ReturnValues Execute(Command commandString)
     {
-        ValidateCommandString(commandString);
-        _powerShell.AddScript(commandString.CommandString);
-        var results = _powerShell.Invoke();
+        return ExecuteInternal(CommandToString(commandString));
+    }
+
+    public ReturnValues Execute(string commandString)
+    {
+        return ExecuteInternal(commandString);
+    }
+
+    public async Task<ReturnValues> ExecuteAsync(Command commandString)
+    {
+        return await ExecuteInternalAsync(CommandToString(commandString));
+    }
+
+    public async Task<ReturnValues> ExecuteAsync(string commandString)
+    {
+        return await ExecuteInternalAsync(commandString);
+    }
+
+    private ReturnValues ExecuteInternal(string command)
+    {
+        ValidateCommandString(command);
+        _powerShell.AddScript(command);
+        Collection<PSObject> results = _powerShell.Invoke();
         return ProcessPowerShellResults(results);
     }
 
-    /// <summary>
-    /// Executes a PowerShell command asynchronously.
-    /// </summary>
-    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
-    /// <param name="commandString">The command and parameters in a single string.</param>
-    /// <returns>The processed and formatted results of the executed PowerShell command.</returns>
-    public async Task<ReturnValues> ExecuteAsync<T>(T commandString) where T : ICommand
+    private async Task<ReturnValues> ExecuteInternalAsync(string command)
     {
-        ValidateCommandString(commandString);
-        _powerShell.AddScript(commandString.CommandString);
-        var results = await _powerShell.InvokeAsync();
+        ValidateCommandString(command);
+        _powerShell.AddScript(command);
+        PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
         return await ProcessPowerShellResultsAsync(results);
     }
 
     /// <summary>
     /// Checks if the command string is null, contains whitespace, or is blank.
     /// </summary>
-    /// <typeparam name="T">Of type 'ICommand'.</typeparam>
     /// <param name="commandString">The command and parameters in a single string.</param>
-    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is blank</exception>
-    private void ValidateCommandString<T>(T commandString) where T : ICommand
+    /// <exception cref="ArgumentException">Thrown when 'commandName' is null, contains whitespace, or is
+    /// blank</exception>
+    private void ValidateCommandString(string commandString)
     {
-        if (string.IsNullOrWhiteSpace(commandString.CommandString))
+        if (string.IsNullOrWhiteSpace(commandString))
         {
-            MessageBoxOutput.Show("Command text cannot be null or whitespace.", MessageBoxOutput.OutputType.Error);
-            throw new ArgumentException("Command text cannot be null or whitespace.", nameof(commandString));
+            throw new ArgumentException("Command string cannot be null, contain whitespace, or be blank.");
         }
     }
 
@@ -98,6 +106,22 @@ public class PowerShellExecutor
     private Task<ReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
         return Task.FromResult(ProcessPowerShellResults(results));
+    }
+
+    public string CommandToString(Command command)
+    {
+        StringBuilder commandString = new StringBuilder();
+
+        // Add the command name
+        commandString.Append(command.CommandText);
+
+        // Iterate over the parameters and add them to the string
+        foreach (var param in command.Parameters)
+        {
+            commandString.Append($" -{param.Name} {param.Value}");
+        }
+
+        return commandString.ToString();
     }
 }
 
