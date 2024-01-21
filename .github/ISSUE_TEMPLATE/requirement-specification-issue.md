@@ -9,26 +9,34 @@ assignees: ''
 
 <!-- Title should be prefixed with either "Backend –" or "Frontend –" followed by the Title/Description of the requirement. -->
 
-- **Brief Overview**: 
-  - [A short summary of the requirement.]
+## Brief Overview
 
-- **Detailed Description**: 
-  - [Expanded details about the requirement.]
+<!-- A short summary of the requirement. -->
 
-- **User Stories / Use Cases**: 
-  - [If applicable, include user stories or use cases.]
+## Detailed Description: 
 
-- **Acceptance Criteria**: 
-  - [List of criteria to meet for the requirement to be considered complete.]
+<!-- Expanded details about the requirement. -->
 
-- **Dependencies**: 
-  - [List any dependencies.]
+## User Stories / Use Cases 
 
-- **Mockups / Diagrams**: 
-  - [Attach or link to any relevant visual aids.]
+<!-- If applicable, include user stories or use cases. -->
 
-- **Priority and Deadlines**: 
-  - [Indicate priority and any deadlines.]
+## Acceptance Criteria
 
-- **Additional Notes**:
-  - [Any other important information.]
+<!-- List of criteria to meet for the requirement to be considered complete. -->
+
+## Dependencies
+
+<!-- List any dependencies. -->
+
+## Mockups / Diagrams 
+
+<!--Attach or link to any relevant visual aids. -->
+
+## Priority and Deadlines
+
+<!-- Indicate priority and any deadlines. -->
+
+## Additional Notes
+
+<!-- Any other important information. ->
