@@ -8,17 +8,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-	
+
 	<!-- Project Info. -->
     <Title>Active Directory Querier</Title>
     <Version>0.3.0</Version>
 	<Authors>Hunter T., Pieter Landry Sobtafo, Joseph</Authors>
     <RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
 
-    <!-- TODO: Possibly change the below configurations... -->
 	<!-- Project Compile Time Settings. -->
     <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>false</SelfContained>
+    <SelfContained>true</SelfContained>
     <DebugType>embedded</DebugType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
