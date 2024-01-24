@@ -1,3 +1,4 @@
+using FAFB_PowerShell_Tool;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -127,5 +128,40 @@ public class MainWindowViewModel : INotifyPropertyChanged
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+    //This 
+    private RelayCommand savedQueries;
+    //
+    public ICommand SavedQueries => savedQueries ??= new RelayCommand(PerformSavedQueries);
+    //
+    private void PerformSavedQueries(object commandParameter)
+    {
+        // Try to get the content within the drop downs
+        try
+        {
+            // Get the Command
+            //GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
+            string commandString = SelectedCommand.CommandText + SelectedCommand.Parameters.ToString();
+            query
+
+            Trace.WriteLine(commandString);
+            // string commandParameters = cmbParameters.Text;
+
+            Button newButton = new()
+            {
+                Content = "Special Command",
+                Height = 48
+            };
+            // Adds the query to the Queries serializable list
+            
+            // Adds the button in the stack panel
+            
+            // Saves the Queries to the file
+            
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+        }
     }
 }
