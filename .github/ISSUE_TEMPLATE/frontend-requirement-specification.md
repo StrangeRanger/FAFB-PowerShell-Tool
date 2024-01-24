@@ -1,7 +1,7 @@
 ---
 name: Frontend Requirement Specification
 about: For specifying the frontend requirements of the project.
-title: Frontend – [Requirement Description]
+title: Frontend – [Requirement Description] : [Gui Element]
 labels: requirement
 assignees: ''
 
