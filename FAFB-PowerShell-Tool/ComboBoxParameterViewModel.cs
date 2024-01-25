@@ -8,7 +8,6 @@ namespace FAFB_PowerShell_Tool;
 /// </summary>
 public class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private ObservableCollection<string> _possibleParameterList;

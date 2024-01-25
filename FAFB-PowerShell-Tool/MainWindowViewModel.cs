@@ -1,4 +1,3 @@
-using FAFB_PowerShell_Tool;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,9 +13,6 @@ namespace FAFB_PowerShell_Tool;
 /// </summary>
 public class MainWindowViewModel : INotifyPropertyChanged
 {
-    /// <summary>
-    /// This is the event handler for the INotifyPropertyChanged interface.
-    /// </summary>
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
     public ObservableCollection<string> PossibleParameterList { get; private set; }
