@@ -5,27 +5,31 @@ using System.Management.Automation.Runspaces;
 namespace FAFB_PowerShell_Tool.PowerShell;
 
 /// <summary>
-/// ActiveDirectoryCommandList from the ActiveDirectory PowerShell module.
+/// Provides functionalities related to the ActiveDirectory PowerShell module.
 /// </summary>
 public static class ActiveDirectoryCommands
 {
     /// <summary>
-    /// This method will return a list of commands in the ActiveDirectory PowerShell module.
+    /// Retrieves a list of commands available in the ActiveDirectory PowerShell module.
     /// </summary>
-    /// <returns>Returns a list of commands in the ActiveDirectory PowerShell module.</returns>
-    /// <exception cref="InvalidPowerShellStateException">Thrown when an error has occurred when executing PowerShell
-    /// commands.</exception>
+    /// <returns>
+    /// An ObservableCollection of Command objects representing each command in the ActiveDirectory module.
+    /// </returns>
+    /// <exception cref="InvalidPowerShellStateException">
+    /// Thrown if an error occurs during the execution of the PowerShell command.
+    /// </exception>
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {
+        string commandString = "Get-Command -Module ActiveDirectory";
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<Command> commandList = new();
-        string commandString = "Get-Command -Module ActiveDirectory";
         ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(commandString);
 
+        // TODO: Enhance exception handling with more detailed information.
         if (commandListTemp.HadErrors)
         {
             MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdErr), MessageBoxOutput.OutputType.Error);
-            throw new InvalidPowerShellStateException(); // TODO: Make exception output more info...
+            throw new InvalidPowerShellStateException();
         }
 
         foreach (var command in commandListTemp.StdOut)

@@ -2,15 +2,26 @@ using System.Windows;
 
 namespace FAFB_PowerShell_Tool;
 
+/// <summary>
+/// Provides a utility class for displaying MessageBoxes with different types of outputs.
+/// </summary>
 public static class MessageBoxOutput
 {
+    /// <summary>
+    /// Defines the type of output to display in the MessageBox.
+    /// </summary>
     public enum OutputType
     {
         Error,
         Generic
     }
 
-    public static void Show(string message, OutputType type)
+    /// <summary>
+    /// Shows a MessageBox with a specified message and output type.
+    /// </summary>
+    /// <param name="message">The message to be displayed in the MessageBox.</param>
+    /// <param name="type">The type of MessageBox to display, defaulted to Generic.</param>
+    public static void Show(string message, OutputType type = OutputType.Generic)
     {
         switch (type)
         {
@@ -23,10 +34,5 @@ public static class MessageBoxOutput
         default:
             throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
-    }
-
-    public static void Show(string message)
-    {
-        Show(message, OutputType.Generic);
     }
 }

@@ -4,14 +4,18 @@ using System.ComponentModel;
 namespace FAFB_PowerShell_Tool;
 
 /// <summary>
-/// This class implements a custom ComboBox that is used to display the possible parameters for a command. This is
-/// specifically used when the user adds a new parameter slot to a command.
+/// ViewModel for a ComboBox that displays possible parameters for a PowerShell command.
+/// It is used when adding a new parameter slot to a command in the UI.
 /// </summary>
 public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private ObservableCollection<string> _possibleParameterList;
+    private ObservableCollection<string> _possibleParameterList = new();
+
+    /// <summary>
+    /// Gets or sets the list of possible parameters that can be selected for a command.
+    /// </summary>
     public ObservableCollection<string> PossibleParameterList
     {
         get => _possibleParameterList;
@@ -30,22 +34,20 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Class constructor.
+    /// Initializes a new instance of the ComboBoxParameterViewModel class.
     /// </summary>
-    /// <todo>Ensure that _possibleParameterList is not null.</todo>
-    /// <param name="possibleParameterList">List of possible parameters for the corresponding command.</param>
+    /// <param name="possibleParameterList">Initial list of possible parameters for the ComboBox.</param>
     public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameterList)
     {
-        PossibleParameterList = possibleParameterList;
+        PossibleParameterList = possibleParameterList ?? throw new ArgumentNullException(nameof(possibleParameterList));
     }
 
     /// <summary>
-    /// This is the method that is called when a property is changed.
+    /// Invokes the PropertyChanged event for the specified property name.
     /// </summary>
-    /// <param name="propertyName">Property that changed.</param>
+    /// <param name="propertyName">Name of the property that has changed.</param>
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
-
