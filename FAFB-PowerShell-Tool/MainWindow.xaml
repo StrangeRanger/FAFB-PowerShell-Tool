@@ -5,32 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FAFB_PowerShell_Tool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="Active Directory Querier" Height="720" Width="1280">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
 
     <Grid>
-        <!-- Define Rows -->
+        <!-- Define Columns. -->
+        <!--<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="119*"/>
+            <ColumnDefinition Width="681*"/>
+        </Grid.ColumnDefinitions>-->
+
+        <!-- Define Rows. -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <!-- Row for Header -->
             <RowDefinition Height="*" />
-            <!-- Remaining space for split grid -->
         </Grid.RowDefinitions>
 
-        <!-- Static Header Bar -->
-        <Border Grid.Row="0" Background="DarkGray" Height="50">
-            <TextBlock Text="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+        <!-- Static Header Bar. -->
+        <Border Grid.Row="0" Grid.Column="0" Background="DarkGray" Height="42">
+
         </Border>
 
-        <!-- Grid for resizable content -->
+        <!-- Grid for resizable content. -->
         <Grid Grid.Row="1">
-            <!-- Define Columns for resizable area -->
+            <!-- Define Columns for resizable area. -->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="150" />
+                <ColumnDefinition Width="250" MinWidth="200"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="3*" MinWidth="150"/>
+                <ColumnDefinition Width="3*" MinWidth="400"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left Side Query Bar (Content in first column) -->
@@ -48,117 +52,136 @@
                 </Grid.Background>
 
                 <!-- Stacked Queries are placed here. -->
-                <StackPanel x:Name="ButtonStackPanel"></StackPanel>
-                <!--<ItemsControl ItemsSource="{Binding SavedQueries}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding}" Height="48" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>-->
+                <StackPanel x:Name="ButtonStackPanel">
+                    <!-- TODO: Put something in here, or leave it blank? -->
+                </StackPanel>
             </Grid>
 
-            <!-- Grid Splitter for resizing -->
+            <!-- Grid Splitter for resizing. -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" Background="Gray" />
 
-            <!-- TabControl Grid (Content in third column) -->
-            <Grid x:Name="RightSideQueryGrid" Background="White" Grid.Column="2">
-                <Border BorderThickness="1" BorderBrush="Black" RenderTransformOrigin="0.516,0.595">
-                    <TabControl>
-                        <!-- Tab Items -->
-                        <TabItem Header="Query Information">
-                            <Grid Background="White">
-                                <TextBox HorizontalAlignment="Center" Margin="0,27,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="568" Height="49"/>
-                                <RichTextBox Margin="10,108,10,148">
-                                    <FlowDocument>
-                                        <Paragraph>
-                                            <Run Text="RichTextBox"/>
-                                        </Paragraph>
-                                    </FlowDocument>
-                                </RichTextBox>
-                            </Grid>
-                        </TabItem>
-                        <!-- Tab Items -->
-                        <TabItem Header="Query Builder">
-                            <Grid Background="#FFE5E5E5" MinHeight="100">
-                                <!-- Define Rows -->
-                                <Grid.RowDefinitions>
-                                    <!-- TODO: Figure out why the bottom row isn't stopping at the specified min height!!! -->
-                                    <RowDefinition Height="Auto" MinHeight="100"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="3*" MinHeight="100"/>
-                                </Grid.RowDefinitions>
+            <!-- TabControl Grid (Content in third column). -->
+            <Grid Background="White" Grid.Column="2">
+                <!-- Query Information Tab Control. -->
+                <TabControl>
+                    <TabItem Header="Query Information">
+                        <Grid Background="#FFE5E5E5">
+                            <TextBox Text="Query Title" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50"/>
+                            <RichTextBox Margin="10,108,10,200">
+                                <FlowDocument>
+                                    <Paragraph>
+                                        <Run Text="Query Descriptions"/>
+                                    </Paragraph>
+                                </FlowDocument>
+                            </RichTextBox>
+                        </Grid>
+                    </TabItem>
+                    <!-- Query Builder Tab Control. -->
+                    <TabItem Header="Query Builder">
+                        <Grid Background="#FFE5E5E5">
+                            <!-- Define Rows. -->
+                            <Grid.RowDefinitions>
+                                <!-- TODO: Figure out why the bottom row isn't stopping at the specified min height!!! -->
+                                <RowDefinition Height="Auto" MinHeight="100"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="5"/>
+                                <RowDefinition Height="3*" MinHeight="100"/>
+                            </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="271*"/>
-                                        <ColumnDefinition Width="318*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <ComboBox x:Name="ComboBoxCommandList" 
+                            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,100" Grid.RowSpan="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <ComboBox x:Name="ComboBoxCommandList" 
                                               ItemsSource="{Binding ActiveDirectoryCommandList}" 
                                               SelectedItem="{Binding SelectedCommand}"
                                               DisplayMemberPath="CommandText" 
-                                              HorizontalAlignment="Left" 
-                                              Margin="26,48,0,0" 
-                                              VerticalAlignment="Top" 
-                                              Width="216"  
-                                              IsEditable="True"/>
-                                    <ComboBox x:Name="ComboBoxCommandParameterList" 
+                                              HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center" 
+                                              Width="212"  
+                                              IsEditable="True"
+                                              Grid.Column="0"/>
+                                <ComboBox x:Name="ComboBoxCommandParameterList" 
                                               ItemsSource="{Binding PossibleParameterList}" 
-                                              HorizontalAlignment="Left" 
-                                              Margin="12,48,0,0" 
-                                              VerticalAlignment="Top" 
+                                              HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center" 
                                               Width="212" 
-                                              IsEditable="True" Grid.Column="1" />
-                                    <!-- This will be used for picking how you would like to output the query **not implemented yet** -->
-                                    <ComboBox x:Name="ComboBoxOutputOptions" HorizontalAlignment="Left" Margin="26,100,0,0" VerticalAlignment="Top" Width="216" IsEditable="True">
-                                        <ComboBox.Background>
-                                            <LinearGradientBrush EndPoint="0,1">
-                                                <GradientStop Color="#FFF0F0F0"/>
-                                                <GradientStop Color="White" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </ComboBox.Background>
-                                    </ComboBox>
-                                </Grid>
+                                              IsEditable="True" 
+                                              Grid.Column="1"/>
 
-                                <Grid Grid.Row="1" Margin="12,16">
-                                    <Grid.ColumnDefinitions>
-                                        <!-- Define two columns with equal width -->
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
+                                <!-- ItemsControl for Dynamic ComboBoxes -->
+                                <ItemsControl x:Name="DynamicComboBoxes" 
+                                              ItemsSource="{Binding DynamicParameterCollection}"
+                                              Grid.Column="2">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <ComboBox Width="212"
+                                                      IsEditable="True"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      Margin="5"
+                                                      ItemsSource="{Binding PossibleParameterList}" 
+                                                      />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
 
-                                    <!-- TODO: Joseph - Update to ensure binding and everything works correctly. -->
-                                    <Button x:Name="SaveQueryButton"
+                            <Grid Grid.Row="1" Margin="12,16,12,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Button to Add New ComboBox -->
+                                <Button Content="Add New Command Slot"
+                                        Command="{Binding AddCommandComboBox}"
+                                        Grid.Column="0"/>
+                                <Button Content="Add New Parameter Slot"
+                                        Command="{Binding AddNewParameterComboBox}"
+                                        Grid.Column="1"/>
+                                <!-- TODO: Joseph - Update to ensure binding and everything works correctly. -->
+                                <Button x:Name="SaveQueryButton"
                                             Content="Save Query"
                                             Command="{Binding SavedQueries}"
                                             CommandParameter="{Binding SelectedItem.Content, ElementName=ComboBoxCommandList}"
-                                            Grid.Column="0" />
-                                    <Button Content="Execute"
+                                            Grid.Column="2" />
+                                <Button Content="Execute"
                                             Command="{Binding ExecuteCommand}"
-                                            Grid.Column="1" />
-                                </Grid>
-
-                                <!-- GridSplitter for resizing console area in the second row -->
-                                <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="White" Grid.Row="2"/>
-
-                                <!-- TODO: Figure out why I can't get the console to be resizable to the min height... -->
-                                <Grid Grid.Row="3">
-                                    <!-- TextBox as Console Output -->
-                                    <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
-                                </Grid>
+                                            Grid.Column="3" />
+                                <Button Content="Export Console Output"
+                                        Command="{Binding ExportConsoleOutput}"
+                                        Grid.Column="4" />
+                                <Button Content="Clear Console Output"
+                                        Command="{Binding ClearConsoleOutput}"
+                                        Grid.Column="5" />
                             </Grid>
-                        </TabItem>
-                        <TabItem Header="Active Directory Information">
-                            <Grid Background="#FFE5E5E5">
-                                <Button Content="Execute" HorizontalAlignment="Left" Margin="368,43,0,0" VerticalAlignment="Top" Height="23" Width="95"/>
-                                <ComboBox HorizontalAlignment="Left" Margin="31,44,0,0" VerticalAlignment="Top" Width="207" Height="26"/>
-                                <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,157,0,0"/>
+
+                            <!-- GridSplitter for resizing console area in the second row -->
+                            <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White" Grid.Row="2" Grid.ColumnSpan="2"/>
+
+                            <!-- TODO: Figure out why I can't get the console to be resizable to the min height... -->
+                            <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                                <!-- TextBox as Console Output -->
+                                <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
-                        </TabItem>
-                    </TabControl>
-                </Border>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Active Directory Information">
+                        <Grid Background="#FFE5E5E5">
+                            <Button Content="Execute" HorizontalAlignment="Left" Margin="368,43,0,0" VerticalAlignment="Top" Height="23" Width="95"/>
+                            <ComboBox HorizontalAlignment="Left" Margin="31,44,0,0" VerticalAlignment="Top" Width="207" Height="26"/>
+                            <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,157,0,0"/>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </Grid>
     </Grid>

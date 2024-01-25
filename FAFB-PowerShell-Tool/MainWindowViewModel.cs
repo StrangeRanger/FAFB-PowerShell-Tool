@@ -13,7 +13,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
     public ObservableCollection<string> PossibleParameterList { get; private set; }
+    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; private set; }
+
     public ICommand ExecuteCommand { get; }
+    public ICommand AddNewParameterComboBox { get;  }
 
     private readonly PowerShellExecutor _powerShellExecutor;
 
@@ -38,14 +41,25 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Constructor...
+    /// </summary>
     public MainWindowViewModel()
     {
         _powerShellExecutor = new PowerShellExecutor();
         ExecuteCommand = new RelayCommand(Execute);
+        AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
+
+        DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
+
         InitializeCommandsAsync();
         LoadCustomQueries();
     }
 
+    /// <summary>
+    /// Executes the selected command.
+    /// </summary>
+    /// <param name="_">...</param>
     private async void Execute(object _)
     {
         await ExecuteSelectedCommand();
@@ -64,18 +78,27 @@ public class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Loads the parameters for the selected command into the PossibleParameterList property.
     /// </summary>
-    /// <param name="selectedCommand"></param>
+    /// <param name="selectedCommand">...</param>
     private async void LoadParametersAsync(Command selectedCommand)
     {
-        if (selectedCommand is not null)
+
+        CommandParameters commandParameters = new CommandParameters();
+        await commandParameters.LoadCommandParametersAsync(selectedCommand);
+        PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
+        OnPropertyChanged(nameof(PossibleParameterList));
+
+        // Update the possible properties of the ComboBoxParameterViewModels
+        foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicParameterCollection)
         {
-            CommandParameters commandParameters = new CommandParameters();
-            await commandParameters.LoadCommandParametersAsync(selectedCommand);
-            PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
-            OnPropertyChanged(nameof(PossibleParameterList));
+            comboBoxParameterViewModel.PossibleParameterList = PossibleParameterList;
         }
     }
 
+    /// <summary>
+    /// TODO: Update comments of method...
+    /// Executes the selected command and updates the PowerShellOutput property.
+    /// </summary>
+    /// <returns>...</returns>
     private async Task ExecuteSelectedCommand()
     {
         try
@@ -104,6 +127,14 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Adds a new ComboBox to the DynamicComboBoxCollection, for the user to select a parameter.
+    /// </summary>
+    private void AddParameterComboBox(object _)
+    {
+        DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
+    }
+
     public void SaveQueryCommand(string query)
     {
         // TODO: Write logic to save queries...
@@ -124,15 +155,17 @@ public class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// This is the method that is called when a property is changed.
     /// </summary>
-    /// <param name="propertyName"></param>
+    /// <param name="propertyName">...</param>
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
     //This 
     private RelayCommand savedQueries;
     //
     public ICommand SavedQueries => savedQueries ??= new RelayCommand(PerformSavedQueries);
+
     //
     private void PerformSavedQueries(object commandParameter)
     {
@@ -142,7 +175,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
             // Get the Command
             //GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
             string commandString = SelectedCommand.CommandText + SelectedCommand.Parameters.ToString();
-            query
 
             Trace.WriteLine(commandString);
             // string commandParameters = cmbParameters.Text;
