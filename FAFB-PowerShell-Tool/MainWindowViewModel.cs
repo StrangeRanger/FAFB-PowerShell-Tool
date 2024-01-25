@@ -9,8 +9,15 @@ using FAFB_PowerShell_Tool.PowerShell;
 
 namespace FAFB_PowerShell_Tool;
 
+/// <summary>
+/// Primary view model for the MainWindow.
+/// </summary>
 public class MainWindowViewModel : INotifyPropertyChanged
 {
+    /// <summary>
+    /// This is the event handler for the INotifyPropertyChanged interface.
+    /// </summary>
+    public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
     public ObservableCollection<string> PossibleParameterList { get; private set; }
     public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; private set; }
@@ -42,7 +49,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Constructor...
+    /// Class constructor.
     /// </summary>
     public MainWindowViewModel()
     {
@@ -87,7 +94,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleParameterList));
 
-        // Update the possible properties of the ComboBoxParameterViewModels
+        // Update the possible properties of the ComboBoxParameterViewModels.
         foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicParameterCollection)
         {
             comboBoxParameterViewModel.PossibleParameterList = PossibleParameterList;
@@ -145,21 +152,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Write logic to load queries...
     }
 
-    // ....BELOW CODE.... //
-
-    /// <summary>
-    /// This is the event handler for the INotifyPropertyChanged interface.
-    /// </summary>
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    /// <summary>
-    /// This is the method that is called when a property is changed.
-    /// </summary>
-    /// <param name="propertyName">...</param>
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
 
     //This 
     private RelayCommand savedQueries;
@@ -202,5 +194,14 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             Console.Write(ex);
         }
+    }
+
+    /// <summary>
+    /// This is the method that is called when a property is changed.
+    /// </summary>
+    /// <param name="propertyName">...</param>
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

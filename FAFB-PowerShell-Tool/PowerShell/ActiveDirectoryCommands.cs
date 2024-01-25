@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Reflection.Metadata;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
 

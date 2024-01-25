@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Controls;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -9,9 +8,7 @@ namespace FAFB_PowerShell_Tool;
 /// </summary>
 public class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
-    /// <summary>
-    /// This is the event handler for the INotifyPropertyChanged interface.
-    /// </summary>
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private ObservableCollection<string> _possibleParameterList;
@@ -28,7 +25,10 @@ public class ComboBoxParameterViewModel : INotifyPropertyChanged
         }
     }
 
-    // Constructor
+    /// <summary>
+    /// Class constructor.
+    /// </summary>
+    /// <param name="possibleParameterList">List of possible parameters for the corresponding command.</param>
     public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameterList)
     {
         PossibleParameterList = possibleParameterList;
@@ -37,7 +37,7 @@ public class ComboBoxParameterViewModel : INotifyPropertyChanged
     /// <summary>
     /// This is the method that is called when a property is changed.
     /// </summary>
-    /// <param name="propertyName">...</param>
+    /// <param name="propertyName">Property that changed.</param>
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

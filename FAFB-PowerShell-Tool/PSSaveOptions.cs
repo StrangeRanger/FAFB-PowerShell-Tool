@@ -1,7 +1,5 @@
 ﻿using FAFB_PowerShell_Tool.PowerShell;
-using System;
 using System.Management.Automation.Internal;
-using System.Management.Automation.Runspaces;
 
 namespace FAFB_PowerShell_Tool;
 
