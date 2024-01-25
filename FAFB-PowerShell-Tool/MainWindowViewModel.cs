@@ -175,8 +175,15 @@ public class MainWindowViewModel : INotifyPropertyChanged
             // Get the Command
             //GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
             string commandString = SelectedCommand.CommandText + SelectedCommand.Parameters.ToString();
+            //query
 
             Trace.WriteLine(commandString);
+
+            CustomQueries cq = new CustomQueries();
+
+            cq.SerializeCommand(SelectedCommand);
+
+            
             // string commandParameters = cmbParameters.Text;
 
             Button newButton = new()

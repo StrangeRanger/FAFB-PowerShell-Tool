@@ -14,8 +14,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
     internal class CustomQueries
     {
         public class query {
-            string commandName;
-            string[] commandParams;
+            public string commandName { get; set; }
+            public string[] commandParams { get; set; }
 
             public query(string cN, string[] commandParams) {
                 this.commandName = cN;
@@ -67,9 +67,14 @@ namespace FAFB_PowerShell_Tool.PowerShell
             foreach (var param in cmnd.Parameters)
             {
                 //need to adjust this filling out 
-                cparams[i] = param.Name;
-                i++;
+                //cparams[i] = param.Name;
+                //i++;
             }
+            newQuery.commandParams = cparams;
+            Queries.Add(newQuery);
+
+            CustomQueries customQueries = new CustomQueries();
+            customQueries.SerializeMethod();
 
         }
         /// <summary>
