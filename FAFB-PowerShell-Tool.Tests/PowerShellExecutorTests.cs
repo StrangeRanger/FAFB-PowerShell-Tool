@@ -1,6 +1,5 @@
 ﻿using System.Management.Automation.Runspaces;
 using FAFB_PowerShell_Tool.PowerShell;
-using ArgumentException = System.ArgumentException;
 
 namespace FAFB_PowerShell_Tool.Tests;
 
