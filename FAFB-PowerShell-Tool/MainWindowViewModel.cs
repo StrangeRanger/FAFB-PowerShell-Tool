@@ -19,7 +19,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; private set; }
 
     public ICommand ExecuteCommand { get; }
-    public ICommand AddNewParameterComboBox { get;  }
+    public ICommand AddNewParameterComboBox { get; }
 
     private readonly PowerShellExecutor _powerShellExecutor;
 
@@ -84,7 +84,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="selectedCommand">...</param>
     private async void LoadParametersAsync(Command selectedCommand)
     {
-
         CommandParameters commandParameters = new CommandParameters();
         await commandParameters.LoadCommandParametersAsync(selectedCommand);
         PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
@@ -148,8 +147,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Write logic to load queries...
     }
 
-
-    //This 
+    // This
     private RelayCommand savedQueries;
     //
     public ICommand SavedQueries => savedQueries ??= new RelayCommand(PerformSavedQueries);
@@ -161,9 +159,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
         try
         {
             // Get the Command
-            //GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
+            // GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
             string commandString = SelectedCommand.CommandText + SelectedCommand.Parameters.ToString();
-            //query
+            // query
 
             Trace.WriteLine(commandString);
 
@@ -171,20 +169,14 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
             cq.SerializeCommand(SelectedCommand);
 
-            
             // string commandParameters = cmbParameters.Text;
 
-            Button newButton = new()
-            {
-                Content = "Special Command",
-                Height = 48
-            };
+            Button newButton = new() { Content = "Special Command", Height = 48 };
             // Adds the query to the Queries serializable list
-            
+
             // Adds the button in the stack panel
-            
+
             // Saves the Queries to the file
-            
         }
         catch (Exception ex)
         {

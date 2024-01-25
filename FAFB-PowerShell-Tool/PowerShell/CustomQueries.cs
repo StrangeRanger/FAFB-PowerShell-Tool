@@ -13,15 +13,18 @@ namespace FAFB_PowerShell_Tool.PowerShell
     /// <param name="Queries"></param>
     internal class CustomQueries
     {
-        public class query {
+        public class query
+        {
             public string commandName { get; set; }
             public string[] commandParams { get; set; }
 
-            public query(string cN, string[] commandParams) {
+            public query(string cN, string[] commandParams)
+            {
                 this.commandName = cN;
                 this.commandParams = commandParams;
             }
-            public query(string cN) {
+            public query(string cN)
+            {
                 this.commandName = cN;
             }
         }
@@ -58,7 +61,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// <summary>
         /// This method is for serializing a command type, so it converts the type to a query and then serializes it
         /// </summary>
-        public void SerializeCommand(Command cmnd) {
+        public void SerializeCommand(Command cmnd)
+        {
             string[] cparams = new string[cmnd.Parameters.Count];
             query newQuery = new query(cmnd.CommandText);
 
@@ -66,16 +70,15 @@ namespace FAFB_PowerShell_Tool.PowerShell
             int i = 0;
             foreach (var param in cmnd.Parameters)
             {
-                //need to adjust this filling out 
-                //cparams[i] = param.Name;
-                //i++;
+                // need to adjust this filling out
+                // cparams[i] = param.Name;
+                // i++;
             }
             newQuery.commandParams = cparams;
             Queries.Add(newQuery);
 
             CustomQueries customQueries = new CustomQueries();
             customQueries.SerializeMethod();
-
         }
         /// <summary>
         /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
