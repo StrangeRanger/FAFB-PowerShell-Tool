@@ -4,7 +4,7 @@ using ArgumentException = System.ArgumentException;
 
 namespace FAFB_PowerShell_Tool.Tests;
 
-public class PowerShellExecutorTest
+public class PowerShellExecutorTests
 {
     [Fact]
     public void ReturnValues_WithGoodCommand_NoErrorsAndStdOut()
