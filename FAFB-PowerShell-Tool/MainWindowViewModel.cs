@@ -11,19 +11,41 @@ namespace FAFB_PowerShell_Tool;
 /// <summary>
 /// Primary view model for the MainWindow.
 /// </summary>
-public class MainWindowViewModel : INotifyPropertyChanged
+public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
-    public ObservableCollection<string> PossibleParameterList { get; private set; }
-    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; private set; }
+    private readonly PowerShellExecutor _powerShellExecutor;
+    private Command _selectedCommand;
+    private string _powerShellOutput;
 
+    /// <summary>
+    /// Collection of Active Directory commands available for execution.
+    /// </summary>
+    public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
+
+    /// <summary>
+    /// Collection of possible parameters for the currently selected command.
+    /// </summary>
+    public ObservableCollection<string> PossibleParameterList { get; private set; }
+
+    /// <summary>
+    /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter selections.
+    /// </summary>
+    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; }
+
+    /// <summary>
+    /// Command to execute the selected PowerShell command.
+    /// </summary>
     public ICommand ExecuteCommand { get; }
+
+    /// <summary>
+    /// Command to add a new parameter ComboBox to the UI.
+    /// </summary>
     public ICommand AddNewParameterComboBox { get; }
 
-    private readonly PowerShellExecutor _powerShellExecutor;
-
-    private Command _selectedCommand;
+    /// <summary>
+    /// Gets or sets the currently selected PowerShell command.
+    /// </summary>
     public Command SelectedCommand
     {
         get => _selectedCommand;
@@ -34,7 +56,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _powerShellOutput;
+    /// <summary>
+    /// Gets or sets the output of the executed PowerShell command.
+    /// </summary>
     public string PowerShellOutput
     {
         get => _powerShellOutput;
@@ -47,6 +71,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Class constructor.
     /// </summary>
+    /// <todo>Fix warnings about possible null values.</todo>
     public MainWindowViewModel()
     {
         _powerShellExecutor = new PowerShellExecutor();
@@ -60,16 +85,16 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Executes the selected command.
+    /// Executes the selected PowerShell command asynchronously.
     /// </summary>
-    /// <param name="_">...</param>
+    /// <param name="_">Parameter is not used, but required for the ICommand interface.</param>
     private async void Execute(object _)
     {
         await ExecuteSelectedCommand();
     }
 
     /// <summary>
-    /// Loads the Active Directory commands into the ActiveDirectoryCommandList property.
+    /// Initializes the list of Active Directory commands asynchronously.
     /// </summary>
     private async void InitializeCommandsAsync()
     {
@@ -79,9 +104,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Loads the parameters for the selected command into the PossibleParameterList property.
+    /// Loads the parameters for the selected PowerShell command asynchronously.
     /// </summary>
-    /// <param name="selectedCommand">...</param>
+    /// <param name="selectedCommand">The PowerShell command whose parameters are to be loaded.</param>
     private async void LoadParametersAsync(Command selectedCommand)
     {
         CommandParameters commandParameters = new CommandParameters();
@@ -97,40 +122,31 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Update comments of method...
-    /// Executes the selected command and updates the PowerShellOutput property.
+    /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
     /// </summary>
-    /// <returns>...</returns>
+    /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
     private async Task ExecuteSelectedCommand()
     {
         try
         {
-            // Execute the command and get the results
             ReturnValues result = await _powerShellExecutor.ExecuteAsync(SelectedCommand);
 
             if (result.HadErrors)
             {
-                // Handle errors here
-                // For example, display an error message in the UI
                 PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
                 return;
             }
 
-            // Process the results here
-            // For example, you might want to display them in the UI
-            // Update a property that is bound to the UI
             PowerShellOutput = string.Join(Environment.NewLine, result.StdOut);
         }
         catch (Exception ex)
         {
-            // Handle any exceptions that occurred during execution
-            // For example, display an error message in the UI
             PowerShellOutput = $"Error executing command: {ex.Message}";
         }
     }
 
     /// <summary>
-    /// Adds a new ComboBox to the DynamicComboBoxCollection, for the user to select a parameter.
+    /// Adds a new parameter selection ComboBox to the DynamicParameterCollection.
     /// </summary>
     private void AddParameterComboBox(object _)
     {
@@ -185,10 +201,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// This is the method that is called when a property is changed.
+    /// Handles property change notifications.
     /// </summary>
-    /// <param name="propertyName">...</param>
-    protected virtual void OnPropertyChanged(string propertyName)
+    /// <param name="propertyName">Name of the property that changed.</param>
+    private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
