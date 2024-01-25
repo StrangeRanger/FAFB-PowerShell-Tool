@@ -5,6 +5,7 @@
         <RootNamespace>FAFB_PowerShell_Tool.Tests</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
