@@ -83,6 +83,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteCommand = new RelayCommand(Execute);
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
+        SavedQueries = new RelayCommand(PerformSavedQueries);
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
@@ -184,10 +185,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Write logic to load queries...
     }
 
-    // This
-    private RelayCommand savedQueries;
-    //
-    public ICommand SavedQueries => savedQueries ??= new RelayCommand(PerformSavedQueries);
+    public ICommand SavedQueries { get; }
 
     //
     private void PerformSavedQueries(object commandParameter)
@@ -199,21 +197,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
             string commandString = SelectedCommand.CommandText + SelectedCommand.Parameters.ToString();
             // query
-
-            Trace.WriteLine(commandString);
+            Trace.WriteLine(SelectedCommand.Parameters.Count);
+            foreach (var p in SelectedCommand.Parameters) {
+                
+                Trace.WriteLine(p.ToString());
+            }
+            //Trace.WriteLine(commandString);
 
             CustomQueries cq = new CustomQueries();
 
             cq.SerializeCommand(SelectedCommand);
 
-            // string commandParameters = cmbParameters.Text;
-
             Button newButton = new() { Content = "Special Command", Height = 48 };
-            // Adds the query to the Queries serializable list
 
-            // Adds the button in the stack panel
-
-            // Saves the Queries to the file
         }
         catch (Exception ex)
         {

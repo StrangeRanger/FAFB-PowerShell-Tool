@@ -159,7 +159,6 @@
                                 <Button x:Name="SaveQueryButton"
                                             Content="Save Query"
                                             Command="{Binding SavedQueries}"
-                                            CommandParameter="{Binding SelectedItem.Content, ElementName=ComboBoxCommandList}"
                                             Grid.Column="3" />
                                 <Button Content="Execute"
                                             Command="{Binding ExecuteCommand}"

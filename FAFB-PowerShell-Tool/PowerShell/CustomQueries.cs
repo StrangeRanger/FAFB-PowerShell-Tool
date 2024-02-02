@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
 using System.Text.Json;
@@ -30,6 +31,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
         }
 
         public List<query> Queries = new List<query>();
+        public List<String> QueriesNames = new List<String>();
+        public List<String> QueriesParams = new List<String>();
         /// <summary>
         /// This a variable for feeding options to the Json serializer
         /// </summary>
@@ -50,7 +53,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
         {
             try
             {
-                string json = JsonSerializer.Serialize(Queries, _options);
+                string json = JsonSerializer.Serialize(QueriesNames, _options);
+                Trace.WriteLine(QueriesNames[0] + "\n" + json);
                 File.WriteAllText("CustomQueries.dat", json);
             }
             catch (Exception ex)
@@ -58,6 +62,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
                 Trace.WriteLine(ex);
             }
         }
+
         /// <summary>
         /// This method is for serializing a command type, so it converts the type to a query and then serializes it
         /// </summary>
@@ -65,20 +70,32 @@ namespace FAFB_PowerShell_Tool.PowerShell
         {
             string[] cparams = new string[cmnd.Parameters.Count];
             query newQuery = new query(cmnd.CommandText);
+            QueriesNames.Add(cmnd.CommandText);
+            
 
             // Iterate over the parameters and add them to the string
             int i = 0;
             foreach (var param in cmnd.Parameters)
             {
                 // need to adjust this filling out
-                // cparams[i] = param.Name;
-                // i++;
+                Trace.WriteLine(param.ToString);
+                 cparams[i] = param.Name;
+                 i++;
             }
             newQuery.commandParams = cparams;
+
             Queries.Add(newQuery);
 
-            CustomQueries customQueries = new CustomQueries();
-            customQueries.SerializeMethod();
+            try
+            {
+                string json = JsonSerializer.Serialize(Queries, _options);
+                Trace.WriteLine(json);
+                File.WriteAllText("CustomQueries.dat", json);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
         /// <summary>
         /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
@@ -88,7 +105,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
             try
             {
                 string json = File.ReadAllText("CustomQueries.dat");
-                Queries = JsonSerializer.Deserialize<List<query>>(json, _options);
+                //Queries = JsonSerializer.Deserialize<List<query>>(json, _options);
             }
             catch (Exception ex)
             {
