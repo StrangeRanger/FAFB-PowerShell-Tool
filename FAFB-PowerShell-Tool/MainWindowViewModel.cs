@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -163,7 +164,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_"></param>
     private void RemoveParameterComboBox(object _)
     {
-        DynamicParameterCollection.RemoveAt(DynamicParameterCollection.Count - 1);
+
+        if (DynamicParameterCollection.Count != 0) 
+        {
+            DynamicParameterCollection.RemoveAt(DynamicParameterCollection.Count - 1);
+        } else 
+        {
+
+        }
     }
 
     public void SaveQueryCommand(string query)
