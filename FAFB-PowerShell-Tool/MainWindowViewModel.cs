@@ -42,6 +42,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
     public ICommand AddNewParameterComboBox { get; }
+    /// <summary>
+    /// Command to add a new parameter ComboBox to the UI.
+    /// </summary>
+    public ICommand Remove_ParameterComboBox { get; }
 
     /// <summary>
     /// Gets or sets the currently selected PowerShell command.
@@ -77,6 +81,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _powerShellExecutor = new PowerShellExecutor();
         ExecuteCommand = new RelayCommand(Execute);
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
+        Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
@@ -151,6 +156,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void AddParameterComboBox(object _)
     {
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
+    }
+    /// <summary>
+    /// Removes the parameter box after adding them
+    /// </summary>
+    /// <param name="_"></param>
+    private void RemoveParameterComboBox(object _)
+    {
+        DynamicParameterCollection.RemoveAt(DynamicParameterCollection.Count - 1);
     }
 
     public void SaveQueryCommand(string query)

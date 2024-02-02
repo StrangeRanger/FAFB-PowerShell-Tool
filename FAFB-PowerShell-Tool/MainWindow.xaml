@@ -24,9 +24,7 @@
         </Grid.RowDefinitions>
 
         <!-- Static Header Bar. -->
-        <Border Grid.Row="0" Grid.Column="0" Background="DarkGray" Height="42">
-
-        </Border>
+        <Border Grid.Row="0" Grid.Column="0" Background="DarkGray" Height="42"/>
 
         <!-- Grid for resizable content. -->
         <Grid Grid.Row="1">
@@ -66,8 +64,12 @@
                 <TabControl>
                     <TabItem Header="Query Information">
                         <Grid Background="#FFE5E5E5">
-                            <TextBox Text="Query Title" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50"/>
-                            <RichTextBox Margin="10,108,10,200">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="163*"/>
+                                <ColumnDefinition Width="856*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="Query Title" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50" Grid.ColumnSpan="2"/>
+                            <RichTextBox Margin="10,108,10,200" Grid.ColumnSpan="2">
                                 <FlowDocument>
                                     <Paragraph>
                                         <Run Text="Query Descriptions"/>
@@ -138,6 +140,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Button to Add New ComboBox -->
@@ -147,21 +150,26 @@
                                 <Button Content="Add New Parameter Slot"
                                         Command="{Binding AddNewParameterComboBox}"
                                         Grid.Column="1"/>
+                                <Button Content="Remove Parameter Slot"
+                                        Command="{Binding Remove_ParameterComboBox}"
+                                        Grid.Column="2"
+                                        Grid.Row="1"
+                                        />
                                 <!-- TODO: Joseph - Update to ensure binding and everything works correctly. -->
                                 <Button x:Name="SaveQueryButton"
                                             Content="Save Query"
                                             Command="{Binding SavedQueries}"
                                             CommandParameter="{Binding SelectedItem.Content, ElementName=ComboBoxCommandList}"
-                                            Grid.Column="2" />
+                                            Grid.Column="3" />
                                 <Button Content="Execute"
                                             Command="{Binding ExecuteCommand}"
-                                            Grid.Column="3" />
+                                            Grid.Column="4" />
                                 <Button Content="Export Console Output"
                                         Command="{Binding ExportConsoleOutput}"
-                                        Grid.Column="4" />
+                                        Grid.Column="5" />
                                 <Button Content="Clear Console Output"
                                         Command="{Binding ClearConsoleOutput}"
-                                        Grid.Column="5" />
+                                        Grid.Column="6" />
                             </Grid>
 
                             <!-- GridSplitter for resizing console area in the second row -->
@@ -172,6 +180,33 @@
                                 <!-- TextBox as Console Output -->
                                 <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
+                            <!-- Menu options  -->
+                                <Menu x:Name="OptionsMenu" Width="Auto" Height="Auto" Margin="10,15,934,64">
+                                <MenuItem Header="Options">
+                                    <MenuItem Header="Add New Command Slot"
+                                              Command="{Binding AddCommandComboBox}"
+                                              />
+                                    <MenuItem Header="Add New Parameter Slot"
+                                              Command="{Binding AddNewParameterComboBox}"
+                                              />
+                                    <MenuItem Header="Remove Parameter Slot"
+                                              Command="{Binding Remove_ParameterComboBox}"
+                                              />
+                                    <MenuItem Header="Save Query"
+                                              Command="{Binding SavedQueries}"
+                                              />
+                                    <MenuItem Header="Execute"
+                                              Command="{Binding ExecuteCommand}"
+                                              />
+                                    <MenuItem Header="Export Console Output"
+                                              Command="{Binding ExportConsoleOutput}"
+                                              />
+                                    <MenuItem Header="Clear Console Output"
+                                              Command="{Binding ClearConsoleOutput}"
+                                              />
+
+                                </MenuItem>
+                            </Menu>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Active Directory Information">
