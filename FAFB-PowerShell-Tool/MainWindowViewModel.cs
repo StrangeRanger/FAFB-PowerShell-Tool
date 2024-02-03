@@ -23,6 +23,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Collection of Active Directory commands available for execution.
     /// </summary>
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
+    /// <summary>
+    /// Collection of Buttons for the stack panel
+    /// </summary>
+    public ObservableCollection<Button> _ButtonStackPanel
+    {
+        get
+        {
+            if (_buttons == null)
+                _buttons = new ObservableCollection<Button>();
+            return _buttons;
+        }
+    }
+    private ObservableCollection<Button> _buttons;
 
     /// <summary>
     /// Collection of possible parameters for the currently selected command.
@@ -55,6 +68,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsv { get; }
+    /// <summary>
+    /// Command to output to a csv when executing
+    /// </summary>
+    public ICommand _AddButton { get; }
 
     /// <summary>
     /// Gets or sets the currently selected PowerShell command.
@@ -92,11 +109,37 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
+        _AddButton = new RelayCommand(addButtonToStackPanel);
+
+        //calls method to deserialize and load buttons
+        //loadCommands();
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
         InitializeCommandsAsync();
         LoadCustomQueries();
+    }
+    private void loadCommands()
+    {
+        /*
+        try
+        {
+            CustomQueries cq = new CustomQueries();
+            cq.LoadData();
+
+            foreach (string cQuery in CQ.Queries)
+            {
+                Button newButton = new() { Content = "Special Command", Height = 48 };
+                
+
+                ButtonStackPanel.Children.Add(newButton);
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine(ex);
+        }
+        */
     }
 
     /// <summary>
@@ -106,6 +149,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async void Execute(object _)
     {
         await ExecuteSelectedCommand();
+    }
+    private void addButtonToStackPanel(object _)
+    {
+
+        Button newButton = new()
+        {
+            Content = "Special Command",
+            Height = 48
+        };
+        _ButtonStackPanel.Add(newButton);
     }
 
     /// <summary>
