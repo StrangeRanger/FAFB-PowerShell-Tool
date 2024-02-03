@@ -135,6 +135,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             comboBoxParameterViewModel.PossibleParameterList = PossibleParameterList;
         }
     }
+    
 
     /// <summary>
     /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
@@ -166,6 +167,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void AddParameterComboBox(object _)
     {
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
+    }
+    /// <summary>
+    /// This will be to Execute a query to a text file 
+    /// </summary>
+    /// <param name="_"></param>
+    private void _OutputToText(object _) { 
+
+    }
+    /// <summary>
+    /// This will be to Execute a query to csv
+    /// </summary>
+    /// <param name="_"></param>
+    private void _OutputToCsv(object _) { 
+
     }
     /// <summary>
     /// Removes the parameter box after adding them
