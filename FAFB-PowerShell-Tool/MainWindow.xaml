@@ -196,7 +196,15 @@
                                               />
                                     <MenuItem Header="Execute"
                                               Command="{Binding ExecuteCommand}"
-                                              />
+                                              >
+                                        <MenuItem Header="Output to console"
+                                                  Command="{Binding ExecuteCommand}"
+                                                  />
+                                        <MenuItem Header="Output to Csv"
+                                                  Command="{Binding OutputToCsv}"/>
+                                        <MenuItem Header="Output to Text"
+                                                  Command="{Binding OutputToText}"/>
+                                    </MenuItem>
                                     <MenuItem Header="Export Console Output"
                                               Command="{Binding ExportConsoleOutput}"
                                               />

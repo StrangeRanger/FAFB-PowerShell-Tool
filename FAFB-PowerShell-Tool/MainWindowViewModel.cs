@@ -47,6 +47,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
     public ICommand Remove_ParameterComboBox { get; }
+    /// <summary>
+    /// Command to have the output send to a text file when executing
+    /// </summary>
+    public ICommand OutputToText { get; }
+    /// <summary>
+    /// Command to output to a csv when executing
+    /// </summary>
+    public ICommand OutputToCsv { get; }
 
     /// <summary>
     /// Gets or sets the currently selected PowerShell command.
