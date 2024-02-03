@@ -131,7 +131,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Grid>
-
+                            <!--
                             <Grid Grid.Row="1" Margin="12,16,12,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -142,8 +142,8 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-
-                                <!-- Button to Add New ComboBox -->
+                                
+                                
                                 <Button Content="Add New Command Slot"
                                         Command="{Binding AddCommandComboBox}"
                                         Grid.Column="0"/>
@@ -155,7 +155,7 @@
                                         Grid.Column="2"
                                         Grid.Row="1"
                                         />
-                                <!-- TODO: Joseph - Update to ensure binding and everything works correctly. -->
+                                
                                 <Button x:Name="SaveQueryButton"
                                             Content="Save Query"
                                             Command="{Binding SavedQueries}"
@@ -170,7 +170,7 @@
                                         Command="{Binding ClearConsoleOutput}"
                                         Grid.Column="6" />
                             </Grid>
-
+                             -->
                             <!-- GridSplitter for resizing console area in the second row -->
                             <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White" Grid.Row="2" Grid.ColumnSpan="2"/>
 
