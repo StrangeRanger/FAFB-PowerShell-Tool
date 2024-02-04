@@ -24,6 +24,9 @@ namespace FAFB_PowerShell_Tool.PowerShell
             public query(string cN) {
                 this.commandName = cN;
             }
+            //Empty Constructor
+            public query() { 
+            }
         }
 
         public List<query> Queries = new List<query>();
@@ -58,7 +61,8 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// <summary>
         /// This method is for serializing a command type, so it converts the type to a query and then serializes it
         /// </summary>
-        public void SerializeCommand(Command cmnd) {
+        public void SerializeCommand(Command cmnd)
+        {
             string[] cparams = new string[cmnd.Parameters.Count];
             query newQuery = new query(cmnd.CommandText);
 
@@ -66,16 +70,29 @@ namespace FAFB_PowerShell_Tool.PowerShell
             int i = 0;
             foreach (var param in cmnd.Parameters)
             {
-                //need to adjust this filling out 
-                //cparams[i] = param.Name;
-                //i++;
+                // need to adjust this filling out
+                // cparams[i] = param.Name;
+                // i++;
+                Trace.WriteLine(param.ToString);
+                cparams[i] = param.Name;
+                i++;
             }
             newQuery.commandParams = cparams;
+
             Queries.Add(newQuery);
 
             CustomQueries customQueries = new CustomQueries();
             customQueries.SerializeMethod();
-
+            try
+            {
+                string json = JsonSerializer.Serialize(Queries, _options);
+                Trace.WriteLine(json);
+                File.WriteAllText("CustomQueries.dat", json);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
         /// <summary>
         /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
@@ -86,6 +103,9 @@ namespace FAFB_PowerShell_Tool.PowerShell
             {
                 string json = File.ReadAllText("CustomQueries.dat");
                 Queries = JsonSerializer.Deserialize<List<query>>(json, _options);
+
+                Trace.WriteLine(Queries[0].commandName);
+
             }
             catch (Exception ex)
             {

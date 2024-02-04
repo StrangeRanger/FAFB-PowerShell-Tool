@@ -18,6 +18,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
     private string _powerShellOutput;
+    CustomQueries cq = new CustomQueries();
 
     /// <summary>
     /// Collection of Active Directory commands available for execution.
@@ -111,35 +112,38 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SavedQueries = new RelayCommand(PerformSavedQueries);
         _AddButton = new RelayCommand(addButtonToStackPanel);
 
-        //calls method to deserialize and load buttons
-        //loadCommands();
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
         InitializeCommandsAsync();
+        //calls method to deserialize and load buttons
         LoadCustomQueries();
     }
-    private void loadCommands()
+    private void LoadCustomQueries()
     {
-        /*
+        
         try
         {
-            CustomQueries cq = new CustomQueries();
             cq.LoadData();
 
-            foreach (string cQuery in CQ.Queries)
+            //parameter counter
+            int i = 0;
+            foreach (CustomQueries.query cQuery in cq.Queries)
             {
-                Button newButton = new() { Content = "Special Command", Height = 48 };
-                
+                Command loadedCommand = new Command(cQuery.commandName);
+                //loadedCommand.Parameters.Add(cQuery.commandParams[i]);
 
-                ButtonStackPanel.Children.Add(newButton);
+                Button newButton = new() { Content = cQuery.commandName, Height = 48, Tag = "{Binding loadedCommand}" };
+
+
+                _ButtonStackPanel.Add(newButton);
             }
         }
         catch (Exception ex)
         {
             Trace.WriteLine(ex);
         }
-        */
+        
     }
 
     /// <summary>
@@ -249,16 +253,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
 
         }
-    }
-
-    public void SaveQueryCommand(string query)
-    {
-        // TODO: Write logic to save queries...
-    }
-
-    private void LoadCustomQueries()
-    {
-        // TODO: Write logic to load queries...
     }
 
     public ICommand SavedQueries { get; }
