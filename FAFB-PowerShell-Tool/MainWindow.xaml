@@ -194,7 +194,7 @@
                                               Command="{Binding AddNewParameterComboBox}"
                                               />
                                     <MenuItem Header="Remove Parameter Slot"
-                                              Command="{Binding RemoveParameterComboBox}"
+                                              Command="{Binding Remove_ParameterComboBox}"
                                               />
                                     <MenuItem Header="Save Query"
                                               Command="{Binding SavedQueries}"
