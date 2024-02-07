@@ -274,11 +274,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
             //Trace.WriteLine(commandString);
 
-            CustomQueries cq = new CustomQueries();
-
             cq.SerializeCommand(SelectedCommand);
 
-            Button newButton = new() { Content = "Special Command", Height = 48 };
+            Button newButton = new() { Content = SelectedCommand.CommandText, Height = 48 };
+            _ButtonStackPanel.Add(newButton);
 
         }
         catch (Exception ex)
