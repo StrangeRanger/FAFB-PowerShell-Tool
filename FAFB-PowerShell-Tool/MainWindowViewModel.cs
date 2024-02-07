@@ -18,7 +18,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
-    private String _selectedParam;
+    private string _selectedParam;
     private string _powerShellOutput;
     private ObservableCollection<Button> _buttons;
     private CustomQueries cq = new CustomQueries();
