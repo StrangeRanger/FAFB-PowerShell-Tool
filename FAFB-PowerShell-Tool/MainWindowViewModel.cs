@@ -128,8 +128,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Class constructor.
+    /// TODO: Fix warnings about possible null values.
     /// </summary>
-    /// <todo>Fix warnings about possible null values.</todo>
     public MainWindowViewModel()
     {
         _powerShellExecutor = new PowerShellExecutor();
@@ -142,8 +142,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
         InitializeCommandsAsync();
-        // calls method to deserialize and load buttons
-        LoadCustomQueries();
+        LoadCustomQueries(); // Calls method to deserialize and load buttons.
     }
 
     // ----------------- Methods ----------------- //
