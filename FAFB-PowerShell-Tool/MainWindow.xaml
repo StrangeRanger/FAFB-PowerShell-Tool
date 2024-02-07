@@ -111,7 +111,8 @@
                                               IsEditable="True"
                                               Grid.Column="0"/>
                                 <ComboBox x:Name="ComboBoxCommandParameterList" 
-                                              ItemsSource="{Binding PossibleParameterList}" 
+                                              ItemsSource="{Binding PossibleParameterList}"
+                                              SelectedItem="{Binding selectedParameter}"
                                               HorizontalAlignment="Center" 
                                               VerticalAlignment="Center" 
                                               Width="212" 

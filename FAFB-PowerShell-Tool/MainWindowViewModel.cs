@@ -17,6 +17,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
+    private String _selectedParam;
     private string _powerShellOutput;
     CustomQueries cq = new CustomQueries();
 
@@ -27,6 +28,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Collection of Buttons for the stack panel
     /// </summary>
+    public String selectedParameter { 
+        get => _selectedParam;
+        set
+        {
+            _selectedParam = value;
+            OnPropertyChanged(nameof(selectedParameter));
+        }
+    }
     public ObservableCollection<Button> _ButtonStackPanel
     {
         get
@@ -265,9 +274,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // Get the Command
             // GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
-            string commandString = SelectedCommand.CommandText + SelectedCommand.Parameters.ToString();
-            // query
-            Trace.WriteLine(SelectedCommand.Parameters.Count);
+            string commandString = SelectedCommand.CommandText + selectedParameter;
+
+            
+
+            // debug
+            Trace.WriteLine(selectedParameter);
+
+
+            SelectedCommand.Parameters.Add(selectedParameter);
+
+            //
             foreach (var p in SelectedCommand.Parameters) {
                 
                 Trace.WriteLine(p.ToString());
