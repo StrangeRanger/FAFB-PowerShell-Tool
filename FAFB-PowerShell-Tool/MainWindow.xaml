@@ -50,7 +50,7 @@
                 </Grid.Background>
 
                 <!-- Stacked Queries are placed here. -->
-                <ItemsControl ItemsSource="{Binding _ButtonStackPanel}">
+                <ItemsControl ItemsSource="{Binding ButtonStackPanel}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Content="{Binding Content}" Command="{Binding Command}" />
@@ -112,7 +112,7 @@
                                               Grid.Column="0"/>
                                 <ComboBox x:Name="ComboBoxCommandParameterList" 
                                               ItemsSource="{Binding PossibleParameterList}"
-                                              SelectedItem="{Binding selectedParameter}"
+                                              SelectedItem="{Binding SelectedParameter}"
                                               HorizontalAlignment="Center" 
                                               VerticalAlignment="Center" 
                                               Width="212" 
@@ -194,7 +194,7 @@
                                               Command="{Binding AddNewParameterComboBox}"
                                               />
                                     <MenuItem Header="Remove Parameter Slot"
-                                              Command="{Binding Remove_ParameterComboBox}"
+                                              Command="{Binding RemoveParameterComboBox}"
                                               />
                                     <MenuItem Header="Save Query"
                                               Command="{Binding SavedQueries}"
@@ -217,7 +217,7 @@
                                               Command="{Binding ClearConsoleOutput}"
                                               />
                                     <MenuItem Header="Add Button"
-                                              Command="{Binding _AddButton}"
+                                              Command="{Binding AddButton}"
                                               />
 
                                 </MenuItem>

@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,38 +13,51 @@ namespace FAFB_PowerShell_Tool;
 /// </summary>
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
+    // ------------------- Fields ------------------- //
+
     public event PropertyChangedEventHandler? PropertyChanged;
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
     private String _selectedParam;
     private string _powerShellOutput;
-    CustomQueries cq = new CustomQueries();
+    private ObservableCollection<Button> _buttons;
+    private CustomQueries cq = new CustomQueries();
+
+    // ----------------- Properties ----------------- //
 
     /// <summary>
     /// Collection of Active Directory commands available for execution.
     /// </summary>
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
+
     /// <summary>
     /// Collection of Buttons for the stack panel
     /// </summary>
-    public String selectedParameter { 
+    public String SelectedParameter
+    {
         get => _selectedParam;
-        set
-        {
+        set {
             _selectedParam = value;
-            OnPropertyChanged(nameof(selectedParameter));
+            OnPropertyChanged(nameof(SelectedParameter));
         }
     }
-    public ObservableCollection<Button> _ButtonStackPanel
+
+    /// <summary>
+    /// TODO: Add a description for this property.
+    /// </summary>
+    public ObservableCollection<Button> ButtonStackPanel
     {
-        get
-        {
+        get {
             if (_buttons == null)
                 _buttons = new ObservableCollection<Button>();
             return _buttons;
         }
     }
-    private ObservableCollection<Button> _buttons;
+
+    /// <summary>
+    /// TODO: Add a description for this property.
+    /// </summary>
+    public ICommand SavedQueries { get; }
 
     /// <summary>
     /// Collection of possible parameters for the currently selected command.
@@ -66,18 +78,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
     public ICommand AddNewParameterComboBox { get; }
+
     /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
     public ICommand Remove_ParameterComboBox { get; }
+
     /// <summary>
     /// Command to have the output send to a text file when executing
     /// </summary>
     public ICommand OutputToText { get; }
+
     /// <summary>
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsv { get; }
+
     /// <summary>
     /// Command to output to a csv when executing
     /// </summary>
@@ -108,6 +124,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // ----------------- Constructor ----------------- //
+
     /// <summary>
     /// Class constructor.
     /// </summary>
@@ -119,40 +137,42 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
-        _AddButton = new RelayCommand(addButtonToStackPanel);
-
+        _AddButton = new RelayCommand(AddButtonToStackPanel);
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
         InitializeCommandsAsync();
-        //calls method to deserialize and load buttons
+        // calls method to deserialize and load buttons
         LoadCustomQueries();
     }
+
+    // ----------------- Methods ----------------- //
+
+    /// <summary>
+    /// TODO: Add a description for this method.
+    /// </summary>
     private void LoadCustomQueries()
     {
-        
         try
         {
             cq.LoadData();
 
-            //parameter counter
+            // parameter counter
             int i = 0;
             foreach (CustomQueries.query cQuery in cq.Queries)
             {
                 Command loadedCommand = new Command(cQuery.commandName);
-                //loadedCommand.Parameters.Add(cQuery.commandParams[i]);
+                // loadedCommand.Parameters.Add(cQuery.commandParams[i]);
 
                 Button newButton = new() { Content = cQuery.commandName, Height = 48, Tag = "{Binding loadedCommand}" };
 
-
-                _ButtonStackPanel.Add(newButton);
+                ButtonStackPanel.Add(newButton);
             }
         }
         catch (Exception ex)
         {
             Trace.WriteLine(ex);
         }
-        
     }
 
     /// <summary>
@@ -163,15 +183,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         await ExecuteSelectedCommand();
     }
-    private void addButtonToStackPanel(object _)
-    {
 
-        Button newButton = new()
-        {
-            Content = "Special Command",
-            Height = 48
-        };
-        _ButtonStackPanel.Add(newButton);
+    /// <summary>
+    /// TODO: Add a description for this method.
+    /// </summary>
+    /// <param name="_"></param>
+    private void AddButtonToStackPanel(object _)
+    {
+        Button newButton = new() { Content = "Special Command", Height = 48 };
+        ButtonStackPanel.Add(newButton);
     }
 
     /// <summary>
@@ -201,7 +221,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             comboBoxParameterViewModel.PossibleParameterList = PossibleParameterList;
         }
     }
-    
 
     /// <summary>
     /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
@@ -234,39 +253,41 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
     }
+
     /// <summary>
-    /// This will be to Execute a query to a text file 
+    /// This will be to Execute a query to a text file
+    /// TODO: Add a description to the parameter of this method.
     /// </summary>
     /// <param name="_"></param>
-    private void _OutputToText(object _) { 
+    private void _OutputToText(object _)
+    { }
 
-    }
     /// <summary>
     /// This will be to Execute a query to csv
+    /// TODO: Add a description to the parameter of this method.
     /// </summary>
     /// <param name="_"></param>
-    private void _OutputToCsv(object _) { 
+    private void _OutputToCsv(object _)
+    { }
 
-    }
     /// <summary>
     /// Removes the parameter box after adding them
     /// </summary>
     /// <param name="_"></param>
     private void RemoveParameterComboBox(object _)
     {
-
-        if (DynamicParameterCollection.Count != 0) 
+        if (DynamicParameterCollection.Count != 0)
         {
             DynamicParameterCollection.RemoveAt(DynamicParameterCollection.Count - 1);
-        } else 
-        {
-
         }
+        else
+        { }
     }
 
-    public ICommand SavedQueries { get; }
-
-    //
+    /// <summary>
+    /// TODO: Add a description for this method and its parameters.
+    /// </summary>
+    /// <param name="commandParameter"></param>
     private void PerformSavedQueries(object commandParameter)
     {
         // Try to get the content within the drop downs
@@ -274,28 +295,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // Get the Command
             // GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
-            string commandString = SelectedCommand.CommandText + selectedParameter;
-
-            
+            string commandString = SelectedCommand.CommandText + SelectedParameter;
 
             // debug
-            Trace.WriteLine(selectedParameter);
+            Trace.WriteLine(SelectedParameter);
 
-
-            SelectedCommand.Parameters.Add(selectedParameter);
+            SelectedCommand.Parameters.Add(SelectedParameter);
 
             //
-            foreach (var p in SelectedCommand.Parameters) {
-                
+            foreach (var p in SelectedCommand.Parameters)
+            {
                 Trace.WriteLine(p.ToString());
             }
-            //Trace.WriteLine(commandString);
+            // Trace.WriteLine(commandString);
 
             cq.SerializeCommand(SelectedCommand);
 
             Button newButton = new() { Content = SelectedCommand.CommandText, Height = 48 };
-            _ButtonStackPanel.Add(newButton);
-
+            ButtonStackPanel.Add(newButton);
         }
         catch (Exception ex)
         {

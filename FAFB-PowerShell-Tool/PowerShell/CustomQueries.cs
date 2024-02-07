@@ -13,20 +13,23 @@ namespace FAFB_PowerShell_Tool.PowerShell
     /// <param name="Queries"></param>
     internal class CustomQueries
     {
-        public class query {
+        public class query
+        {
             public string commandName { get; set; }
             public string[] commandParams { get; set; }
 
-            public query(string cN, string[] commandParams) {
+            public query(string cN, string[] commandParams)
+            {
                 this.commandName = cN;
                 this.commandParams = commandParams;
             }
-            public query(string cN) {
+            public query(string cN)
+            {
                 this.commandName = cN;
             }
-            //Empty Constructor
-            public query() { 
-            }
+            // Empty Constructor
+            public query()
+            { }
         }
 
         public List<query> Queries = new List<query>();
@@ -105,7 +108,6 @@ namespace FAFB_PowerShell_Tool.PowerShell
                 Queries = JsonSerializer.Deserialize<List<query>>(json, _options);
 
                 Trace.WriteLine(Queries[0].commandName);
-
             }
             catch (Exception ex)
             {
