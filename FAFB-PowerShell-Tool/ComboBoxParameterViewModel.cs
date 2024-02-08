@@ -12,6 +12,20 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private ObservableCollection<string> _possibleParameterList = new();
+    private string _selectedParameter = string.Empty;
+
+    public string SelectedParameter
+    {
+        get => _selectedParameter;
+        set {
+            if (_selectedParameter != value)
+            {
+                _selectedParameter = value;
+                OnPropertyChanged(nameof(SelectedParameter));
+            }
+        }
+        
+    }
 
     /// <summary>
     /// Gets or sets the list of possible parameters that can be selected for a command.
