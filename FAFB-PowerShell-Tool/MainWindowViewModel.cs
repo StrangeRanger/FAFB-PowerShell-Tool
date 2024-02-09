@@ -19,7 +19,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
-    //private String _selectedParam;  // TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
     private string _powerShellOutput;
     private string _QueryDescription;
     private ObservableCollection<Button> _buttons;
@@ -41,21 +40,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Add a description for this property.
-    /// </summary>
-    /*
-    public String SelectedParameter
-    {
-        get => _selectedParam;
-        set {
-            _selectedParam = value;
-            OnPropertyChanged(nameof(SelectedParameter));
-        }
-    }
-    */
-
-    /// <summary>
-    /// TODO: Add a description for this property.
+    /// This property creates a collection of buttons to be added to the stack panel for custom queries
     /// </summary>
     public ObservableCollection<Button> ButtonStackPanel
     {
@@ -67,7 +52,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Add a description for this property.
+    /// This is a helper command for running PerformSavedQueries
     /// </summary>
     public ICommand SavedQueries { get; }
 
@@ -201,16 +186,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Add a description for this method.
-    /// </summary>
-    /// <param name="_"></param>
-    private void AddButtonToStackPanel(object _)
-    {
-        Button newButton = new() { Content = "Special Command", Height = 48 };
-        ButtonStackPanel.Add(newButton);
-    }
-
-    /// <summary>
     /// Initializes the list of Active Directory commands asynchronously.
     /// </summary>
     private async void InitializeCommandsAsync()
@@ -263,7 +238,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Adds a new parameter selection ComboBox to the DynamicParameterCollection.
+    /// Adds a new parameter and value selection ComboBox to the DynamicParameterCollection.
     /// </summary>
     private void AddParameterComboBox(object _)
     {
@@ -315,6 +290,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
+                //Need to look at this to see if it is working with the object type and then serialize it 
                 SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, comboBoxData.SelectedParameterValue));
             }
 
