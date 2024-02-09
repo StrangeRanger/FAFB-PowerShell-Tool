@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Management.Automation.Runspaces;
@@ -18,7 +19,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
-    private string _selectedParam;
+    private ObservableCollection<string> _selectedParam;  // TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
     private string _powerShellOutput;
     private string _QueryDescription;
     private ObservableCollection<Button> _buttons;
@@ -40,9 +41,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Collection of Buttons for the stack panel
+    /// TODO: Add a description for this property.
     /// </summary>
-    public String SelectedParameter
+    public ObservableCollection<string> SelectedParameter
     {
         get => _selectedParam;
         set {
@@ -149,6 +150,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _AddButton = new RelayCommand(AddButtonToStackPanel);
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
+        // TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
+        DynamicParameterCollection.CollectionChanged += DynamicParameterCollection_CollectionChanged;
 
         InitializeCommandsAsync();
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
@@ -309,7 +312,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // debug
             Trace.WriteLine(SelectedParameter);
 
-            SelectedCommand.Parameters.Add(SelectedParameter);
+            //SelectedCommand.Parameters.Add(SelectedParameter);
 
             //
             foreach (var p in SelectedCommand.Parameters)
@@ -326,6 +329,57 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         catch (Exception ex)
         {
             Console.Write(ex);
+        }
+    }
+    
+    /// <summary>
+    /// Handles the CollectionChanged event of the DynamicParameterCollection.
+    /// TODO: Add a description for the parameters of this method.
+    /// TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void DynamicParameterCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems is not null)
+        {
+            foreach (ComboBoxParameterViewModel newItem in e.NewItems)
+            {
+                newItem.PropertyChanged += ComboBoxParameterViewModel_PropertyChanged;
+            }
+        }
+
+        if (e.OldItems is not null)
+        {
+            foreach (ComboBoxParameterViewModel oldItem in e.OldItems)
+            {
+                oldItem.PropertyChanged -= ComboBoxParameterViewModel_PropertyChanged;
+            }
+        }
+        
+        
+    }
+    
+    /// <summary>
+    /// Handles the PropertyChanged event of the ComboBoxParameterViewModel.
+    /// TODO: Add a description for the parameters of this method.
+    /// TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ComboBoxParameterViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ComboBoxParameterViewModel.SelectedParameter))
+        {
+            var viewModel = (ComboBoxParameterViewModel)sender;
+            if (viewModel.SelectedParameter is not null)
+            {
+                _selectedParam.Add(viewModel.SelectedParameter);
+            }
+            else
+            {
+                _selectedParam.Remove(viewModel.SelectedParameter);
+            }
         }
     }
 
