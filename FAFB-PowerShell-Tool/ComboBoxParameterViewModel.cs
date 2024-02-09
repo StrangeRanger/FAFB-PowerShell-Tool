@@ -57,6 +57,11 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Empty constructor Intializes a new ComboxParameterViewModel 
+    /// </summary>
+    public ComboBoxParameterViewModel() { }
+
+    /// <summary>
     /// Invokes the PropertyChanged event for the specified property name.
     /// </summary>
     /// <param name="propertyName">Name of the property that has changed.</param>

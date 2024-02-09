@@ -94,8 +94,8 @@
                                 <RowDefinition Height="5"/>
                                 <RowDefinition Height="3*" MinHeight="100"/>
                             </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,100" Grid.RowSpan="2">
+                            <!-- TODO: Fix the margin so that the combo boxes are not so spaced-->
+                            <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,100" Grid.RowSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
@@ -111,19 +111,11 @@
                                               Width="212"  
                                               IsEditable="True"
                                               Grid.Column="0"/>
-                                <ComboBox x:Name="ComboBoxCommandParameterList" 
-                                              ItemsSource="{Binding PossibleParameterList}"
-                                              SelectedItem="{Binding SelectedParameter}"
-                                              HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center" 
-                                              Width="212" 
-                                              IsEditable="True" 
-                                              Grid.Column="1"/>
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
                                 <ItemsControl x:Name="DynamicComboBoxes" 
                                               ItemsSource="{Binding DynamicParameterCollection}"
-                                              Grid.Column="2">
+                                              Grid.Column="1">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <ComboBox Width="212"
@@ -132,6 +124,22 @@
                                                       VerticalAlignment="Center"
                                                       Margin="5"
                                                       ItemsSource="{Binding PossibleParameterList}"
+                                                      SelectedItem="{Binding SelectedParameter}"
+                                                      />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <!-- TODO: Fill these-->
+                                <ItemsControl x:Name="DynamicComboBoxesValues" 
+                                              ItemsSource="{Binding DynamicParameterValuesCollection}"
+                                              Grid.Column="2">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <ComboBox Width="212"
+                                                      IsEditable="True"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      Margin="5"
                                                       SelectedItem="{Binding SelectedParameter}"
                                                       />
                                         </DataTemplate>

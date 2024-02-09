@@ -19,7 +19,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private readonly PowerShellExecutor _powerShellExecutor;
     private Command _selectedCommand;
-    private ObservableCollection<string> _selectedParam;  // TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
+    //private String _selectedParam;  // TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
     private string _powerShellOutput;
     private string _QueryDescription;
     private ObservableCollection<Button> _buttons;
@@ -43,7 +43,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// TODO: Add a description for this property.
     /// </summary>
-    public ObservableCollection<string> SelectedParameter
+    /*
+    public String SelectedParameter
     {
         get => _selectedParam;
         set {
@@ -51,6 +52,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(SelectedParameter));
         }
     }
+    */
 
     /// <summary>
     /// TODO: Add a description for this property.
@@ -77,7 +79,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter selections.
     /// </summary>
-    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; }
+    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterCollection { get; set; }
+
+    /// <summary>
+    /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter value selections.
+    /// </summary>
+    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterValuesCollection { get; set; }
 
     /// <summary>
     /// Command to execute the selected PowerShell command.
@@ -150,8 +157,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _AddButton = new RelayCommand(AddButtonToStackPanel);
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
-        // TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
-        DynamicParameterCollection.CollectionChanged += DynamicParameterCollection_CollectionChanged;
+        DynamicParameterValuesCollection = new ObservableCollection<ComboBoxParameterViewModel>();
 
         InitializeCommandsAsync();
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
@@ -264,6 +270,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void AddParameterComboBox(object _)
     {
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
+        DynamicParameterValuesCollection.Add(new ComboBoxParameterViewModel());
     }
 
     /// <summary>
@@ -292,8 +299,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             DynamicParameterCollection.RemoveAt(DynamicParameterCollection.Count - 1);
         }
-        else
-        { }
     }
 
     /// <summary>
@@ -306,20 +311,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         try
         {
             // Get the Command
-            // GuiCommand? command = ComboBoxCommandList.SelectedValue as GuiCommand;
-            string commandString = SelectedCommand.CommandText + SelectedParameter;
+            string commandString = SelectedCommand.CommandText;
 
             // debug
-            Trace.WriteLine(SelectedParameter);
+            foreach (var comboBoxData in DynamicParameterCollection)
+            {
+                string selectedItem = comboBoxData.SelectedParameter;
+                // Do something with selectedItem...
+                Trace.WriteLine(selectedItem);
+            }
+            
+            // Debug end
 
-            //SelectedCommand.Parameters.Add(SelectedParameter);
-
-            //
             foreach (var p in SelectedCommand.Parameters)
             {
                 Trace.WriteLine(p.ToString());
             }
-            // Trace.WriteLine(commandString);
 
             cq.SerializeCommand(SelectedCommand);
 
@@ -329,57 +336,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         catch (Exception ex)
         {
             Console.Write(ex);
-        }
-    }
-    
-    /// <summary>
-    /// Handles the CollectionChanged event of the DynamicParameterCollection.
-    /// TODO: Add a description for the parameters of this method.
-    /// TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void DynamicParameterCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.NewItems is not null)
-        {
-            foreach (ComboBoxParameterViewModel newItem in e.NewItems)
-            {
-                newItem.PropertyChanged += ComboBoxParameterViewModel_PropertyChanged;
-            }
-        }
-
-        if (e.OldItems is not null)
-        {
-            foreach (ComboBoxParameterViewModel oldItem in e.OldItems)
-            {
-                oldItem.PropertyChanged -= ComboBoxParameterViewModel_PropertyChanged;
-            }
-        }
-        
-        
-    }
-    
-    /// <summary>
-    /// Handles the PropertyChanged event of the ComboBoxParameterViewModel.
-    /// TODO: Add a description for the parameters of this method.
-    /// TODO: TWO NEW METHODS TO POSSIBLY SOLVE THE ISSUE
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void ComboBoxParameterViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(ComboBoxParameterViewModel.SelectedParameter))
-        {
-            var viewModel = (ComboBoxParameterViewModel)sender;
-            if (viewModel.SelectedParameter is not null)
-            {
-                _selectedParam.Add(viewModel.SelectedParameter);
-            }
-            else
-            {
-                _selectedParam.Remove(viewModel.SelectedParameter);
-            }
         }
     }
 
