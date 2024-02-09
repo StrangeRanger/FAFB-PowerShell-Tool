@@ -166,7 +166,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // ----------------- Methods ----------------- //
 
     /// <summary>
-    /// TODO: Add a description for this method.
+    /// This method will load the custom queries from the file.
     /// </summary>
     private void LoadCustomQueries()
     {
@@ -179,8 +179,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             foreach (CustomQueries.query cQuery in cq.Queries)
             {
                 Command loadedCommand = new Command(cQuery.commandName);
-                // loadedCommand.Parameters.Add(cQuery.commandParams[i]);
-
 
                 Button newButton = new() { Content = cQuery.commandName, Height = 48, Tag = "{Binding loadedCommand}" };
 
@@ -302,7 +300,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Add a description for this method and its parameters.
+    /// This method will serialize the command and add it to the list of buttons.
     /// </summary>
     /// <param name="commandParameter"></param>
     private void PerformSavedQueries(object commandParameter)
@@ -317,15 +315,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
-                // Do something with selectedItem...
-                Trace.WriteLine(selectedItem);
-            }
-            
-            // Debug end
-
-            foreach (var p in SelectedCommand.Parameters)
-            {
-                Trace.WriteLine(p.ToString());
+                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, comboBoxData.SelectedParameterValue));
             }
 
             cq.SerializeCommand(SelectedCommand);

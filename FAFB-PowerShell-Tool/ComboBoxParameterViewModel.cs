@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -13,7 +14,11 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 
     private ObservableCollection<string> _possibleParameterList = new();
     private string _selectedParameter = string.Empty;
+    private string _selectedParameterValue = string.Empty;
 
+    /// <summary>
+    /// Sets a unique selected value for each combo box
+    /// </summary>
     public string SelectedParameter
     {
         get => _selectedParameter;
@@ -25,6 +30,21 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
             }
         }
         
+    }
+
+    /// <summary>
+    /// Gets or sets the selected parameter value for the unique ComboBox.
+    /// </summary>
+    public string SelectedParameterValue 
+    { 
+        get => _selectedParameterValue;
+        set {
+            if (_selectedParameterValue != value) 
+            {
+                _selectedParameterValue = value;
+                OnPropertyChanged(nameof(SelectedParameterValue));
+            }
+        }
     }
 
     /// <summary>
