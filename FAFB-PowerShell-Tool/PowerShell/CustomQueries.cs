@@ -15,8 +15,22 @@ namespace FAFB_PowerShell_Tool.PowerShell
     {
         public class query
         {
+            /// <summary>
+            /// Used for serializing the Command Name
+            /// </summary>
             public string commandName { get; set; }
+            /// <summary>
+            /// Used for Serializing the Commands parameters
+            /// </summary>
             public string[] commandParams { get; set; }
+            /// <summary>
+            /// Used for the name of the custom Query
+            /// </summary>
+            public string queryName { get; set; }
+            /// <summary>
+            /// Used for the Custom Queries Description
+            /// </summary>
+            public string queryDescription { get; set; }
 
             public query(string cN, string[] commandParams)
             {
@@ -33,6 +47,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
         }
 
         public List<query> Queries = new List<query>();
+
         /// <summary>
         /// This a variable for feeding options to the Json serializer
         /// </summary>

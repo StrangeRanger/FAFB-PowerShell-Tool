@@ -20,6 +20,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private Command _selectedCommand;
     private string _selectedParam;
     private string _powerShellOutput;
+    private string _QueryDescription;
     private ObservableCollection<Button> _buttons;
     private CustomQueries cq = new CustomQueries();
 
@@ -29,6 +30,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Collection of Active Directory commands available for execution.
     /// </summary>
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
+
+    public string QueryDescription {
+        get => _QueryDescription;
+        set
+        {
+            _QueryDescription = value;
+        }
+    }
 
     /// <summary>
     /// Collection of Buttons for the stack panel
@@ -162,6 +171,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 Command loadedCommand = new Command(cQuery.commandName);
                 // loadedCommand.Parameters.Add(cQuery.commandParams[i]);
+
 
                 Button newButton = new() { Content = cQuery.commandName, Height = 48, Tag = "{Binding loadedCommand}" };
 

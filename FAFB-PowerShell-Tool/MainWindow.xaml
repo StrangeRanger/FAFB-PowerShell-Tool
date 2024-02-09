@@ -76,7 +76,8 @@
                             <RichTextBox Margin="10,108,10,200" Grid.ColumnSpan="2">
                                 <FlowDocument>
                                     <Paragraph>
-                                        <Run Text="Query Descriptions"/>
+                                        <Run Text="Query Description"/>
+                                        <Run Text="{Binding QueryDescription}"/>
                                     </Paragraph>
                                 </FlowDocument>
                             </RichTextBox>
