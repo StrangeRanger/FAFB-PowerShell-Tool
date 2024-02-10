@@ -19,14 +19,22 @@ namespace FAFB_PowerShell_Tool.PowerShell
             /// Used for serializing the Command Name
             /// </summary>
             public string commandName { get; set; }
+
             /// <summary>
             /// Used for Serializing the Commands parameters
             /// </summary>
-            public string[] commandParams { get; set; }
+            public string[] commandParameters { get; set; }
+            
+            /// <summary>
+            /// Used for Serializing the Commands parameters
+            /// </summary>
+            public string[] commandParametersValues { get; set; }
+
             /// <summary>
             /// Used for the name of the custom Query
             /// </summary>
             public string queryName { get; set; }
+
             /// <summary>
             /// Used for the Custom Queries Description
             /// </summary>
@@ -35,7 +43,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
             public query(string cN, string[] commandParams)
             {
                 this.commandName = cN;
-                this.commandParams = commandParams;
+                this.commandParameters = commandParams;
             }
             public query(string cN)
             {
@@ -81,21 +89,27 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// </summary>
         public void SerializeCommand(Command cmnd)
         {
-            string[] cparams = new string[cmnd.Parameters.Count];
+            Trace.WriteLine(cmnd.Parameters.Count);
+
+
+            string[] commandParameters = new string[cmnd.Parameters.Count];
+            string[] commandParameterValues = new string[cmnd.Parameters.Count];
             query newQuery = new query(cmnd.CommandText);
 
+
             // Iterate over the parameters and add them to the string
-            int i = 0;
-            foreach (var param in cmnd.Parameters)
+            
+            for (int i = 0; i < cmnd.Parameters.Count; i++ )
             {
-                // need to adjust this filling out
-                // cparams[i] = param.Name;
-                // i++;
-                Trace.WriteLine(param.ToString);
-                cparams[i] = param.Name;
-                i++;
+                CommandParameter param = cmnd.Parameters[i];
+
+                Trace.WriteLine(param.Name + " Value: " );
+
+                commandParameters[i] = param.Name;
+
             }
-            newQuery.commandParams = cparams;
+            newQuery.commandParameters = commandParameters;
+            
 
             Queries.Add(newQuery);
 

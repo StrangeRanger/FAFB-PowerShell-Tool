@@ -139,7 +139,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
-        _AddButton = new RelayCommand(AddButtonToStackPanel);
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicParameterValuesCollection = new ObservableCollection<ComboBoxParameterViewModel>();
@@ -285,13 +284,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // Get the Command
             string commandString = SelectedCommand.CommandText;
+            Trace.WriteLine("Selected command " + SelectedCommand.CommandText);
 
             // debug
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
                 //Need to look at this to see if it is working with the object type and then serialize it 
-                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, comboBoxData.SelectedParameterValue));
+                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
             }
 
             cq.SerializeCommand(SelectedCommand);
