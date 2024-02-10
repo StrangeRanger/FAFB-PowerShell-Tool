@@ -21,6 +21,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private Command _selectedCommand;
     private string _powerShellOutput;
     private string _QueryDescription;
+    private string _QueryName;
     private ObservableCollection<Button> _buttons;
     private CustomQueries cq = new CustomQueries();
 
@@ -31,11 +32,25 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public ObservableCollection<Command> ActiveDirectoryCommandList { get; private set; }
 
+    /// <summary>
+    /// todo
+    /// </summary>
     public string QueryDescription {
         get => _QueryDescription;
         set
         {
             _QueryDescription = value;
+        }
+    }
+
+    /// <summary>
+    /// todo
+    /// </summary>
+    public string QueryName {
+        get => _QueryName;
+        set
+        {
+            _QueryName = value;
         }
     }
 
@@ -294,7 +309,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
             }
 
-            cq.SerializeCommand(SelectedCommand);
+            cq.SerializeCommand(SelectedCommand, QueryName, QueryDescription);
 
             Button newButton = new() { Content = SelectedCommand.CommandText, Height = 48 };
             ButtonStackPanel.Add(newButton);

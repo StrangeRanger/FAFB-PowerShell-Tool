@@ -72,7 +72,7 @@
                                 <ColumnDefinition Width="163*"/>
                                 <ColumnDefinition Width="856*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox Text="Query Title" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50" Grid.ColumnSpan="2"/>
+                            <TextBox Text="{Binding QueryName}" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50" Grid.ColumnSpan="2"/>
                             <RichTextBox Margin="10,108,10,200" Grid.ColumnSpan="2">
                                 <FlowDocument>
                                     <Paragraph>

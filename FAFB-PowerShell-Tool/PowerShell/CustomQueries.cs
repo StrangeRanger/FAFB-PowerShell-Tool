@@ -87,7 +87,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
         /// <summary>
         /// This method is for serializing a command type, so it converts the type to a query and then serializes it
         /// </summary>
-        public void SerializeCommand(Command cmnd)
+        public void SerializeCommand(Command cmnd, string queryName, string queryDescription)
         {
             Trace.WriteLine(cmnd.Parameters.Count);
 
@@ -95,6 +95,10 @@ namespace FAFB_PowerShell_Tool.PowerShell
             string[] commandParameters = new string[cmnd.Parameters.Count];
             string[] commandParameterValues = new string[cmnd.Parameters.Count];
             query newQuery = new query(cmnd.CommandText);
+
+            //Set name and description
+            newQuery.queryName = queryName;
+            newQuery.queryDescription = queryDescription;
 
 
             // Iterate over the parameters and add them to the string
