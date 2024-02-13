@@ -146,7 +146,7 @@ public class PowerShellExecutor
     /// </summary>
     /// <param name="command">The PowerShell Command object to convert.</param>
     /// <returns>A string representation of the PowerShell Command.</returns>
-    private string CommandToString(Command command)
+    public string CommandToString(Command command)
     {
         StringBuilder commandString = new StringBuilder();
 

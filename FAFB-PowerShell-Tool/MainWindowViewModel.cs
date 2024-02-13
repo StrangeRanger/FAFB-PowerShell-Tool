@@ -22,6 +22,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _powerShellOutput;
     private string _QueryDescription;
     private string _QueryName;
+    private CustomQueries.query CurrentQuery;
     private ObservableCollection<Button> _buttons;
     private CustomQueries cq = new CustomQueries();
 
@@ -151,9 +152,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _powerShellExecutor = new PowerShellExecutor();
         ExecuteCommand = new RelayCommand(Execute);
+        OutputToCsv = new RelayCommand(_OutputToCsv);
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
+
+        CurrentQuery = new CustomQueries.query();
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicParameterValuesCollection = new ObservableCollection<ComboBoxParameterViewModel>();
@@ -271,10 +275,84 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// This will be to Execute a query to csv
     /// TODO: Add a description to the parameter of this method.
+    /// This method is in the working
     /// </summary>
     /// <param name="_"></param>
     private void _OutputToCsv(object _)
-    { }
+    {
+        //First make sure that the SelectedCommand parameter is up to date
+        UpdateSelectedCommand();
+
+        //Next attach the parameter to output to a csv
+        Command exportcsv = new Command("Export-CSV");
+
+        CommandParameter CSVOutputPath = new CommandParameter("-Path", "..\'..\'" );
+
+        //look into this PSCommand
+        System.Management.Automation.PSCommand psCommand = new System.Management.Automation.PSCommand().AddCommand("Export-CSV").AddParameter("-Path", ".\'");
+
+        exportcsv.Parameters.Add(CSVOutputPath);
+
+        //Debug
+        _powerShellExecutor.CommandToString(exportcsv);
+        Trace.WriteLine("-------------Debug---------------");
+        Trace.WriteLine(DynamicParameterValuesCollection.Count);
+        Trace.WriteLine(exportcsv.CommandText);
+        Trace.WriteLine("SelectedCommand: " + SelectedCommand.ToString);
+
+
+    }
+
+    /// <summary>
+    /// This method is for getting the currently selected command at anytime !Still in the works!
+    /// </summary>
+    public void UpdateSelectedCommand()
+    {
+        // Try to get the content within the drop downs
+        try
+        {
+            foreach (var comboBoxData in DynamicParameterCollection)
+            {
+                string selectedItem = comboBoxData.SelectedParameter;
+                //Need to look at this to see if it is working with the object type and then serialize it 
+                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Write(ex);
+        }
+    }
+
+    /// <summary>
+    /// Gets the CustomQuery.query object for the current query when called TODO: It needs to be tested !Still in the works !
+    /// </summary>
+    public void GetCurrentQuery()
+    {
+        // Update the selected command
+        UpdateSelectedCommand();
+
+        try
+        {
+            CurrentQuery.queryDescription = QueryDescription;
+            CurrentQuery.queryName = QueryName;
+
+            CurrentQuery.commandName = SelectedCommand.CommandText;
+
+            int i = 0;
+            foreach (CommandParameter CP in SelectedCommand.Parameters) 
+            { 
+                CurrentQuery.commandParameters[i] = (CP.Name);
+                //CurrentQuery.commandParametersValues[i] = ((string) CP.Value);   The values are not quite working yet
+                i++;
+            }
+            
+
+        }
+        catch (Exception ex) {
+            Trace.WriteLine(ex);
+        }
+    }
 
     /// <summary>
     /// Removes the parameter box after adding them
@@ -297,11 +375,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Try to get the content within the drop downs
         try
         {
-            // Get the Command
-            string commandString = SelectedCommand.CommandText;
-            Trace.WriteLine("Selected command " + SelectedCommand.CommandText);
-
-            // debug
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
