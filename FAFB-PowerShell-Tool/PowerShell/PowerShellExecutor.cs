@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
@@ -42,6 +44,18 @@ public class PowerShellExecutor
     public ReturnValues Execute(string commandString)
     {
         return ExecuteInternal(commandString);
+    }
+
+    public ReturnValues ExecutePSCommand(PSCommand executeCommand) 
+    {
+        _powerShell.Commands = executeCommand;
+        try
+        {
+            Collection<PSObject> results = _powerShell.Invoke();
+        }
+        catch (Exception ex) { Trace.WriteLine(ex); }
+
+        return null;
     }
 
     /// <summary>

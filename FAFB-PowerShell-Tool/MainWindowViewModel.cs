@@ -6,6 +6,9 @@ using System.Management.Automation.Runspaces;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FAFB_PowerShell_Tool.PowerShell;
+using System.Management.Automation;
+using System.DirectoryServices.Protocols;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -288,13 +291,38 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         CommandParameter CSVOutputPath = new CommandParameter("-Path", "..\'..\'" );
 
-        //look into this PSCommand
-        System.Management.Automation.PSCommand psCommand = new System.Management.Automation.PSCommand().AddCommand("Export-CSV").AddParameter("-Path", ".\'");
+        
+        PSCommand selectedPSCommand = new PSCommand();
+
+        /*
+        for (int i = 0; i < DynamicParameterCollection.Count; i++)
+        {
+            selectedPSCommand.AddParameter(DynamicParameterCollection[i].SelectedParameter);
+        }
+        */
+
+
+        PSCommand testCommand = new PSCommand().AddCommand("Get-Process").AddCommand("Export-CSV").AddParameter("-Path", "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
+
+
+
+        selectedPSCommand.Commands.Add(SelectedCommand);
+        selectedPSCommand.AddCommand("Export-CSV").AddParameter("-Path", "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
+        
+        for(int i = 0; i < selectedPSCommand.Commands.Count; i++)
+        {
+            Trace.WriteLine(selectedPSCommand.Commands[i].CommandText);
+            for(int j = 0; j < selectedPSCommand.Commands[i].Parameters.Count; j++)
+            {
+                Trace.WriteLine(selectedPSCommand.Commands[i].Parameters[j].Name + (string)selectedPSCommand.Commands[i].Parameters[j].Value);
+            }
+        }
+
 
         exportcsv.Parameters.Add(CSVOutputPath);
 
         //Debug
-        _powerShellExecutor.CommandToString(exportcsv);
+        //_powerShellExecutor.CommandToString(exportcsv);
         Trace.WriteLine("-------------Debug---------------");
         Trace.WriteLine(DynamicParameterValuesCollection.Count);
         Trace.WriteLine(exportcsv.CommandText);
