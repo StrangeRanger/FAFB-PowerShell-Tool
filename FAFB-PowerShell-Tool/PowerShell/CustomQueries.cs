@@ -16,6 +16,12 @@ namespace FAFB_PowerShell_Tool.PowerShell
         public class query
         {
             /// <summary>
+            /// Command that should help with Binding the command to the query for the buttons sake
+            /// </summary>
+            [JsonIgnore]
+            public Command command { get; set;}
+
+            /// <summary>
             /// Used for serializing the Command Name
             /// </summary>
             public string commandName { get; set; }
@@ -40,16 +46,29 @@ namespace FAFB_PowerShell_Tool.PowerShell
             /// </summary>
             public string queryDescription { get; set; }
 
+            /// <summary>
+            /// Contructor for the query class
+            /// </summary>
+            /// <param name="cN"></param>
+            /// <param name="commandParams"></param>
             public query(string cN, string[] commandParams)
             {
                 this.commandName = cN;
                 this.commandParameters = commandParams;
             }
+
+            /// <summary>
+            /// Contructor for the query class
+            /// </summary>
+            /// <param name="cN"></param>
             public query(string cN)
             {
                 this.commandName = cN;
             }
-            // Empty Constructor
+            
+            /// <summary>
+            /// Empty Contructor for the query class
+            /// </summary>
             public query()
             { }
         }
@@ -137,10 +156,29 @@ namespace FAFB_PowerShell_Tool.PowerShell
         {
             try
             {
+                //Opens file and reads it then adds the json to the Queries List
                 string json = File.ReadAllText("CustomQueries.dat");
                 Queries = JsonSerializer.Deserialize<List<query>>(json, _options);
 
-                Trace.WriteLine(Queries[0].commandName);
+                // Now we want to fill the command variable for each query
+                foreach (query q in Queries)
+                {
+                    Command command = new Command(q.commandName);
+
+                    //Check if there are parameters, and if there are add them to the list 
+                    if (q.commandParameters != null)
+                    {
+                        for (int i = 0; i < q.commandParameters.Length; i++)
+                        {
+                            //command.Parameters.Add(q.commandParameters[i], q.commandParametersValues[i]);  -- Once the values are working then we will use this
+                            command.Parameters.Add(q.commandParameters[i]);
+                        }
+                    }
+
+                    //set the query command to the command
+                    q.command = command;
+                }   
+
             }
             catch (Exception ex)
             {

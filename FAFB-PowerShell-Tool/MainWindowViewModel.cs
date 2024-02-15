@@ -76,6 +76,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand SavedQueries { get; }
 
     /// <summary>
+    /// This is the command for the edit option on custom queries
+    /// </summary>
+    public ICommand _EditCustomQuery { get; }
+
+    /// <summary>
     /// Collection of possible parameters for the currently selected command.
     /// </summary>
     public ObservableCollection<string> PossibleParameterList { get; private set; }
@@ -159,6 +164,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
+        _EditCustomQuery = new RelayCommand(EditCustomQuery);
 
         CurrentQuery = new CustomQueries.query();
 
@@ -167,9 +173,37 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         InitializeCommandsAsync();
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
+
+        // Debug
+        for(int i = 0; i < ButtonStackPanel.Count; i++)
+        {
+            CustomQueries.query test = (CustomQueries.query)ButtonStackPanel[i].Tag;    
+            Trace.WriteLine(test.commandName);
+        }
+
     }
 
     // ----------------- Methods ----------------- //
+
+    /// <summary>
+    /// This method will edit the Query and fill out the field with the desired query and you can edit the query
+    /// </summary>
+    /// <param name="_"></param>
+    private void EditCustomQuery(Object sender) 
+    {
+        //Get the button that we are editing
+        Button currButton = (Button)sender; 
+        CustomQueries.query currQuery = (CustomQueries.query)currButton.Tag;
+
+        Trace.WriteLine(currQuery.queryName);
+
+
+        //Need to fill in the queryName
+        QueryName = currQuery.queryName;
+        //Fill in the queryDescription
+        //Fill in the commandName
+        //Fill in the commandParameters
+    }
 
     /// <summary>
     /// This method will load the custom queries from the file.
@@ -184,10 +218,44 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             int i = 0;
             foreach (CustomQueries.query cQuery in cq.Queries)
             {
-                Command loadedCommand = new Command(cQuery.commandName);
+                //Creates a new button for each query
+                Button newButton = new() {Height = 48 };
 
-                Button newButton = new() { Content = cQuery.commandName, Height = 48, Tag = "{Binding loadedCommand}" };
+                //Names the query the command if null otherwise names it correctly
+                if (cQuery.queryName != null)
+                {
+                    newButton.Content = cQuery.queryName;
+                }
+                else
+                {
+                    newButton.Content = cQuery.commandName;
+                }
 
+                //Binds the query to the button
+                newButton.Tag = cQuery;
+
+                // Want to add right click context menu to each button
+                ContextMenu contextMenu = new ContextMenu();
+
+                MenuItem menuItem1 = new MenuItem { Header = "Execute" };
+                menuItem1.Command = ExecuteCommand;
+
+                MenuItem menuItem2 = new MenuItem { Header = "Edit" };
+                menuItem2.Command = _EditCustomQuery;
+
+                MenuItem menuItem3 = new MenuItem { Header = "Delete" };
+                menuItem3.Command = Remove_ParameterComboBox;
+
+                //Add menu item to the context menu
+                contextMenu.Items.Add(menuItem1);
+                contextMenu.Items.Add(menuItem2);
+                contextMenu.Items.Add(menuItem3);
+
+                // Add the context menu to the button
+                newButton.ContextMenu = contextMenu;
+
+
+                //Lastly add the button to the stack panel
                 ButtonStackPanel.Add(newButton);
             }
         }
@@ -327,6 +395,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Trace.WriteLine(DynamicParameterValuesCollection.Count);
         Trace.WriteLine(exportcsv.CommandText);
         Trace.WriteLine("SelectedCommand: " + SelectedCommand.ToString);
+
+
+    }
+
+    /// <summary>
+    /// Writing to a csv file without powershell
+    /// </summary>
+    private void csvTemp() 
+    { 
+        //Need to execute the command per normal but get the return values
 
 
     }
