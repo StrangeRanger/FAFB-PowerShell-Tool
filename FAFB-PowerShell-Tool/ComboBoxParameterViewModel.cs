@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Controls;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -29,17 +28,16 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
                 OnPropertyChanged(nameof(SelectedParameter));
             }
         }
-        
     }
 
     /// <summary>
     /// Gets or sets the selected parameter value for the unique ComboBox.
     /// </summary>
-    public string SelectedParameterValue 
-    { 
+    public string SelectedParameterValue
+    {
         get => _selectedParameterValue;
         set {
-            if (_selectedParameterValue != value) 
+            if (_selectedParameterValue != value)
             {
                 _selectedParameterValue = value;
                 OnPropertyChanged(nameof(SelectedParameterValue));
@@ -77,9 +75,10 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Empty constructor Intializes a new ComboxParameterViewModel 
+    /// Empty constructor Intializes a new ComboxParameterViewModel
     /// </summary>
-    public ComboBoxParameterViewModel() { }
+    public ComboBoxParameterViewModel()
+    { }
 
     /// <summary>
     /// Invokes the PropertyChanged event for the specified property name.

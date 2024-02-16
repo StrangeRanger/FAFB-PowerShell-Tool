@@ -19,7 +19,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
             /// Command that should help with Binding the command to the query for the buttons sake
             /// </summary>
             [JsonIgnore]
-            public Command command { get; set;}
+            public Command command { get; set; }
 
             /// <summary>
             /// Used for serializing the Command Name
@@ -30,7 +30,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
             /// Used for Serializing the Commands parameters
             /// </summary>
             public string[] commandParameters { get; set; }
-            
+
             /// <summary>
             /// Used for Serializing the Commands parameters
             /// </summary>
@@ -65,7 +65,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
             {
                 this.commandName = cN;
             }
-            
+
             /// <summary>
             /// Empty Contructor for the query class
             /// </summary>
@@ -110,29 +110,25 @@ namespace FAFB_PowerShell_Tool.PowerShell
         {
             Trace.WriteLine(cmnd.Parameters.Count);
 
-
             string[] commandParameters = new string[cmnd.Parameters.Count];
             string[] commandParameterValues = new string[cmnd.Parameters.Count];
             query newQuery = new query(cmnd.CommandText);
 
-            //Set name and description
+            // Set name and description
             newQuery.queryName = queryName;
             newQuery.queryDescription = queryDescription;
 
-
             // Iterate over the parameters and add them to the string
-            
-            for (int i = 0; i < cmnd.Parameters.Count; i++ )
+
+            for (int i = 0; i < cmnd.Parameters.Count; i++)
             {
                 CommandParameter param = cmnd.Parameters[i];
 
-                Trace.WriteLine(param.Name + " Value: " );
+                Trace.WriteLine(param.Name + " Value: ");
 
                 commandParameters[i] = param.Name;
-
             }
             newQuery.commandParameters = commandParameters;
-            
 
             Queries.Add(newQuery);
 
@@ -156,7 +152,7 @@ namespace FAFB_PowerShell_Tool.PowerShell
         {
             try
             {
-                //Opens file and reads it then adds the json to the Queries List
+                // Opens file and reads it then adds the json to the Queries List
                 string json = File.ReadAllText("CustomQueries.dat");
                 Queries = JsonSerializer.Deserialize<List<query>>(json, _options);
 
@@ -165,20 +161,20 @@ namespace FAFB_PowerShell_Tool.PowerShell
                 {
                     Command command = new Command(q.commandName);
 
-                    //Check if there are parameters, and if there are add them to the list 
+                    // Check if there are parameters, and if there are add them to the list
                     if (q.commandParameters != null)
                     {
                         for (int i = 0; i < q.commandParameters.Length; i++)
                         {
-                            //command.Parameters.Add(q.commandParameters[i], q.commandParametersValues[i]);  -- Once the values are working then we will use this
+                            // command.Parameters.Add(q.commandParameters[i], q.commandParametersValues[i]);  -- Once
+                            // the values are working then we will use this
                             command.Parameters.Add(q.commandParameters[i]);
                         }
                     }
 
-                    //set the query command to the command
+                    // set the query command to the command
                     q.command = command;
-                }   
-
+                }
             }
             catch (Exception ex)
             {

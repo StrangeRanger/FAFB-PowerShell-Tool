@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -46,14 +45,17 @@ public class PowerShellExecutor
         return ExecuteInternal(commandString);
     }
 
-    public ReturnValues ExecutePSCommand(PSCommand executeCommand) 
+    public ReturnValues ExecutePSCommand(PSCommand executeCommand)
     {
         _powerShell.Commands = executeCommand;
         try
         {
             Collection<PSObject> results = _powerShell.Invoke();
         }
-        catch (Exception ex) { Trace.WriteLine(ex); }
+        catch (Exception ex)
+        {
+            Trace.WriteLine(ex);
+        }
 
         return null;
     }

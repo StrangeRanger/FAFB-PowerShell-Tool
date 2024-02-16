@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Management.Automation.Runspaces;
@@ -7,8 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using FAFB_PowerShell_Tool.PowerShell;
 using System.Management.Automation;
-using System.DirectoryServices.Protocols;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -39,10 +36,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// todo
     /// </summary>
-    public string QueryDescription {
+    public string QueryDescription
+    {
         get => _QueryDescription;
-        set
-        {
+        set {
             _QueryDescription = value;
         }
     }
@@ -50,10 +47,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// todo
     /// </summary>
-    public string QueryName {
+    public string QueryName
+    {
         get => _QueryName;
-        set
-        {
+        set {
             _QueryName = value;
         }
     }
@@ -175,12 +172,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
 
         // Debug
-        for(int i = 0; i < ButtonStackPanel.Count; i++)
+        for (int i = 0; i < ButtonStackPanel.Count; i++)
         {
-            CustomQueries.query test = (CustomQueries.query)ButtonStackPanel[i].Tag;    
+            CustomQueries.query test = (CustomQueries.query)ButtonStackPanel[i].Tag;
             Trace.WriteLine(test.commandName);
         }
-
     }
 
     // ----------------- Methods ----------------- //
@@ -189,20 +185,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method will edit the Query and fill out the field with the desired query and you can edit the query
     /// </summary>
     /// <param name="_"></param>
-    private void EditCustomQuery(Object sender) 
+    private void EditCustomQuery(Object sender)
     {
-        //Get the button that we are editing
-        Button currButton = (Button)sender; 
+        // Get the button that we are editing
+        Button currButton = (Button)sender;
         CustomQueries.query currQuery = (CustomQueries.query)currButton.Tag;
 
         Trace.WriteLine(currQuery.queryName);
 
-
-        //Need to fill in the queryName
+        // Need to fill in the queryName
         QueryName = currQuery.queryName;
-        //Fill in the queryDescription
-        //Fill in the commandName
-        //Fill in the commandParameters
+        // Fill in the queryDescription
+        // Fill in the commandName
+        // Fill in the commandParameters
     }
 
     /// <summary>
@@ -218,10 +213,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             int i = 0;
             foreach (CustomQueries.query cQuery in cq.Queries)
             {
-                //Creates a new button for each query
-                Button newButton = new() {Height = 48 };
+                // Creates a new button for each query
+                Button newButton = new() { Height = 48 };
 
-                //Names the query the command if null otherwise names it correctly
+                // Names the query the command if null otherwise names it correctly
                 if (cQuery.queryName != null)
                 {
                     newButton.Content = cQuery.queryName;
@@ -231,7 +226,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                     newButton.Content = cQuery.commandName;
                 }
 
-                //Binds the query to the button
+                // Binds the query to the button
                 newButton.Tag = cQuery;
 
                 // Want to add right click context menu to each button
@@ -246,7 +241,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 MenuItem menuItem3 = new MenuItem { Header = "Delete" };
                 menuItem3.Command = Remove_ParameterComboBox;
 
-                //Add menu item to the context menu
+                // Add menu item to the context menu
                 contextMenu.Items.Add(menuItem1);
                 contextMenu.Items.Add(menuItem2);
                 contextMenu.Items.Add(menuItem3);
@@ -254,8 +249,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 // Add the context menu to the button
                 newButton.ContextMenu = contextMenu;
 
-
-                //Lastly add the button to the stack panel
+                // Lastly add the button to the stack panel
                 ButtonStackPanel.Add(newButton);
             }
         }
@@ -351,15 +345,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_"></param>
     private void _OutputToCsv(object _)
     {
-        //First make sure that the SelectedCommand parameter is up to date
+        // First make sure that the SelectedCommand parameter is up to date
         UpdateSelectedCommand();
 
-        //Next attach the parameter to output to a csv
+        // Next attach the parameter to output to a csv
         Command exportcsv = new Command("Export-CSV");
 
-        CommandParameter CSVOutputPath = new CommandParameter("-Path", "..\'..\'" );
+        CommandParameter CSVOutputPath = new CommandParameter("-Path", "..\'..\'");
 
-        
         PSCommand selectedPSCommand = new PSCommand();
 
         /*
@@ -369,44 +362,46 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
         */
 
-
-        PSCommand testCommand = new PSCommand().AddCommand("Get-Process").AddCommand("Export-CSV").AddParameter("-Path", "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
-
-
+        PSCommand testCommand =
+            new PSCommand()
+                .AddCommand("Get-Process")
+                .AddCommand("Export-CSV")
+                .AddParameter(
+                    "-Path",
+                    "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
 
         selectedPSCommand.Commands.Add(SelectedCommand);
-        selectedPSCommand.AddCommand("Export-CSV").AddParameter("-Path", "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
-        
-        for(int i = 0; i < selectedPSCommand.Commands.Count; i++)
+        selectedPSCommand.AddCommand("Export-CSV")
+            .AddParameter(
+                "-Path",
+                "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
+
+        for (int i = 0; i < selectedPSCommand.Commands.Count; i++)
         {
             Trace.WriteLine(selectedPSCommand.Commands[i].CommandText);
-            for(int j = 0; j < selectedPSCommand.Commands[i].Parameters.Count; j++)
+            for (int j = 0; j < selectedPSCommand.Commands[i].Parameters.Count; j++)
             {
-                Trace.WriteLine(selectedPSCommand.Commands[i].Parameters[j].Name + (string)selectedPSCommand.Commands[i].Parameters[j].Value);
+                Trace.WriteLine(selectedPSCommand.Commands[i].Parameters[j].Name +
+                                (string)selectedPSCommand.Commands[i].Parameters[j].Value);
             }
         }
 
-
         exportcsv.Parameters.Add(CSVOutputPath);
 
-        //Debug
+        // Debug
         //_powerShellExecutor.CommandToString(exportcsv);
         Trace.WriteLine("-------------Debug---------------");
         Trace.WriteLine(DynamicParameterValuesCollection.Count);
         Trace.WriteLine(exportcsv.CommandText);
         Trace.WriteLine("SelectedCommand: " + SelectedCommand.ToString);
-
-
     }
 
     /// <summary>
     /// Writing to a csv file without powershell
     /// </summary>
-    private void csvTemp() 
-    { 
-        //Need to execute the command per normal but get the return values
-
-
+    private void csvTemp()
+    {
+        // Need to execute the command per normal but get the return values
     }
 
     /// <summary>
@@ -420,7 +415,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
-                //Need to look at this to see if it is working with the object type and then serialize it 
+                // Need to look at this to see if it is working with the object type and then serialize it
                 SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
             }
         }
@@ -431,7 +426,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Gets the CustomQuery.query object for the current query when called TODO: It needs to be tested !Still in the works !
+    /// Gets the CustomQuery.query object for the current query when called TODO: It needs to be tested !Still in the
+    /// works !
     /// </summary>
     public void GetCurrentQuery()
     {
@@ -446,16 +442,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             CurrentQuery.commandName = SelectedCommand.CommandText;
 
             int i = 0;
-            foreach (CommandParameter CP in SelectedCommand.Parameters) 
-            { 
+            foreach (CommandParameter CP in SelectedCommand.Parameters)
+            {
                 CurrentQuery.commandParameters[i] = (CP.Name);
-                //CurrentQuery.commandParametersValues[i] = ((string) CP.Value);   The values are not quite working yet
+                // CurrentQuery.commandParametersValues[i] = ((string) CP.Value);   The values are not quite working yet
                 i++;
             }
-            
-
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Trace.WriteLine(ex);
         }
     }
@@ -484,7 +479,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
-                //Need to look at this to see if it is working with the object type and then serialize it 
+                // Need to look at this to see if it is working with the object type and then serialize it
                 SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
             }
 
