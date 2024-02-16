@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
 namespace FAFB_PowerShell_Tool.PowerShell;
@@ -38,17 +39,20 @@ public class CommandParameters
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task LoadCommandParametersAsync(Command commandObject)
     {
-        string commandString =
-            $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
 
         if (_possibleParameters.Count == 0)
         {
-            PowerShellExecutor powerShellExecutor = new();
-            ReturnValues tmpList = await powerShellExecutor.ExecuteAsync(commandString);
-
-            foreach (string command in tmpList.StdOut)
+            using (var ps = System.Management.Automation.PowerShell.Create())
             {
-                _possibleParameters.Add($"-{command}");
+                string commandString = $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+            
+                ps.AddScript(commandString);
+                PSDataCollection<PSObject> result = await ps.InvokeAsync();
+                
+                foreach (PSObject cmd in result)
+                {
+                    _possibleParameters.Add($"-{cmd}");
+                }
             }
         }
     }
