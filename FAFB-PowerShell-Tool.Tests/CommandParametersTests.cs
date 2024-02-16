@@ -10,7 +10,7 @@ public class CommandParametersTests
     {
         // Arrange
         CommandParameters commandParameters = new();
-        
+
         // Assert
         Assert.Throws<InvalidOperationException>(() => commandParameters.PossibleParameters);
     }
@@ -21,10 +21,10 @@ public class CommandParametersTests
         // Arrange
         CommandParameters commandParameters = new();
         Command command = new("Get-Process");
-        
+
         // Act
         await commandParameters.LoadCommandParametersAsync(command);
-        
+
         // Assert
         Assert.NotEmpty(commandParameters.PossibleParameters);
     }

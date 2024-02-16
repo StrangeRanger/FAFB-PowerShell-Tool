@@ -10,10 +10,24 @@ namespace FAFB_PowerShell_Tool;
 public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-
     private ObservableCollection<string> _possibleParameterList = new();
     private string _selectedParameter = string.Empty;
     private string _selectedParameterValue = string.Empty;
+    
+    /// <summary>
+    /// Empty constructor to initialize a new ComboBoxParameterViewModel.
+    /// </summary>
+    public ComboBoxParameterViewModel()
+    { }
+    
+    /// <summary>
+    /// Initializes a new instance of the ComboBoxParameterViewModel class.
+    /// </summary>
+    /// <param name="possibleParameterList">Initial list of possible parameters for the ComboBox.</param>
+    public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameterList)
+    {
+        PossibleParameterList = possibleParameterList ?? throw new ArgumentNullException(nameof(possibleParameterList));
+    }
 
     /// <summary>
     /// Sets a unique selected value for each combo box
@@ -64,21 +78,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
             }
         }
     }
-
-    /// <summary>
-    /// Initializes a new instance of the ComboBoxParameterViewModel class.
-    /// </summary>
-    /// <param name="possibleParameterList">Initial list of possible parameters for the ComboBox.</param>
-    public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameterList)
-    {
-        PossibleParameterList = possibleParameterList ?? throw new ArgumentNullException(nameof(possibleParameterList));
-    }
-
-    /// <summary>
-    /// Empty constructor Intializes a new ComboxParameterViewModel
-    /// </summary>
-    public ComboBoxParameterViewModel()
-    { }
 
     /// <summary>
     /// Invokes the PropertyChanged event for the specified property name.
