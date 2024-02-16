@@ -23,6 +23,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private ObservableCollection<Button> _buttons;
     private CustomQueries.query _currentQuery;
     private CustomQueries _customQuery = new();
+    private string _queryName;
+    private string _queryDescription;
 
     // ----------------- Properties ----------------- //
 
@@ -34,12 +36,34 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// The name of the query.
     /// </summary>
-    public string QueryName { get; set; }
+    public string QueryName
+    {
+        get { return _queryName; }
+        set
+        {
+            if (_queryName != value)
+            {
+                _queryName = value;
+                OnPropertyChanged(nameof(QueryName));
+            }
+        }
+    }
 
     /// <summary>
     /// The description of the query.
     /// </summary>
-    public string QueryDescription { get; set; }
+    public string QueryDescription
+    {
+        get { return _queryDescription; }
+        set
+        {
+            if (_queryDescription != value)
+            {
+                _queryDescription = value;
+                OnPropertyChanged(nameof(QueryDescription));
+            }
+        }
+    }
 
     /// <summary>
     /// This property creates a collection of buttons to be added to the stack panel for custom queries
@@ -63,9 +87,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This is the command for the edit option on custom queries
-    /// TODO: Rename this property to match Property naming conventions!!!
     /// </summary>
-    public ICommand _EditCustomQuery { get; }
+    public ICommand EditCustomQuery { get; }
 
     /// <summary>
     /// Collection of possible parameters for the currently selected command.
@@ -102,18 +125,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to have the output send to a text file when executing
     /// TODO: Get-only auto-property 'OutputToText' is never assigned!!!
     /// </summary>
-    public ICommand OutputToText { get; }
+    public ICommand _OutputToText { get; }
 
     /// <summary>
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsv { get; }
-
-    /// <summary>
-    /// Command to output to a csv when executing
-    /// TODO: Get-only auto-property 'AddButton' is never assigned!!!
-    /// </summary>
-    public ICommand AddButton { get; }
 
     /// <summary>
     /// Gets or sets the currently selected PowerShell command.
@@ -154,7 +171,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
-        _EditCustomQuery = new RelayCommand(EditCustomQuery);
+        EditCustomQuery = new RelayCommand(PerformEditCustomQuery);
 
         _currentQuery = new CustomQueries.query();
 
@@ -179,18 +196,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Add a description to the parameter of this method.
     /// </summary>
     /// <param name="sender"></param>
-    private void EditCustomQuery(Object sender)
+    private void PerformEditCustomQuery(object sender)
     {
         // Get the button that we are editing
         Button currButton = (Button)sender;
         CustomQueries.query currQuery = (CustomQueries.query)currButton.Tag;
 
-        Trace.WriteLine(currQuery.queryName);
-
         // Need to fill in the queryName
         QueryName = currQuery.queryName;
         // Fill in the queryDescription
-        // Fill in the commandName
+        QueryDescription = currQuery.queryDescription;
+        // Fill in the commandName TODO: Debug this to see why it isn't setting the command
+        Trace.WriteLine(currQuery.command.CommandText);
+
+        SelectedCommand = currQuery.command;
+
+        Trace.WriteLine("This is after the setting of the command");
+        Trace.WriteLine(SelectedCommand.CommandText);
         // Fill in the commandParameters
     }
 
@@ -230,7 +252,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 menuItem1.Command = ExecuteCommand;
 
                 MenuItem menuItem2 = new MenuItem { Header = "Edit" };
-                menuItem2.Command = _EditCustomQuery;
+                menuItem2.Command = EditCustomQuery;
+                menuItem2.CommandParameter = newButton; // This set the parent of the menuitem to the button so it is accessible
 
                 MenuItem menuItem3 = new MenuItem { Header = "Delete" };
                 menuItem3.Command = Remove_ParameterComboBox;
@@ -326,9 +349,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Adds a new parameter and value selection ComboBox to the DynamicParameterCollection.
-    /// TODO: Add a description to the parameter of this method.
     /// </summary>
-    /// <param name="_"></param>
+    /// <param name="_">Neccisary Parameter that passes the object that is clicked</param>
     private void AddParameterComboBox(object _)
     {
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
@@ -341,7 +363,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Rename this method to match method naming conventions!!!
     /// </summary>
     /// <param name="_"></param>
-    private void _OutputToText(object _)
+    private void OutputToText(object _)
     {
         throw new NotImplementedException();
     }
@@ -480,9 +502,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method will serialize the command and add it to the list of buttons.
-    /// TODO: Add a description to the parameter of this method.
     /// </summary>
-    /// <param name="commandParameter"></param>
+    /// <param name="commandParameter">This is not used but neccisary for the relaycommand</param>
     private void PerformSavedQueries(object commandParameter)
     {
         // Try to get the content within the drop downs
