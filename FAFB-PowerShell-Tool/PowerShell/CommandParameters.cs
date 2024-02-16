@@ -13,6 +13,9 @@ public class CommandParameters
     /// <summary>
     /// Gets the collection of possible parameters for a command.
     /// </summary>
+    /// <note>
+    /// I realize that this isn't a very clean way of doing things, but it's the best I could come up with at the time.
+    /// </note>
     /// <exception cref="InvalidOperationException">Thrown when the collection has not been populated yet.</exception>
     public ObservableCollection<string> PossibleParameters
     {
@@ -43,7 +46,7 @@ public class CommandParameters
             PowerShellExecutor powerShellExecutor = new();
             ReturnValues tmpList = await powerShellExecutor.ExecuteAsync(commandString);
 
-            foreach (var command in tmpList.StdOut)
+            foreach (string command in tmpList.StdOut)
             {
                 _possibleParameters.Add($"-{command}");
             }
