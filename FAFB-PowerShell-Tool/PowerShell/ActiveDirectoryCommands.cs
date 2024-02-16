@@ -20,21 +20,24 @@ public static class ActiveDirectoryCommands
     /// </exception>
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {
-        string commandString = "Get-Command -Module ActiveDirectory";
+        Command command = new("Get-Command");
+        command.Parameters.Add("Module", "ActiveDirectory");
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<Command> commandList = new();
-        ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(commandString);
-
-        // TODO: Enhance exception handling with more detailed information.
+        ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(command);
+        
+        // NOTE: This is more of an internal error...
+        // TODO: Provide a more detailed error message??? Maybe log the error to a file???
         if (commandListTemp.HadErrors)
         {
             MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdErr), MessageBoxOutput.OutputType.Error);
-            throw new InvalidPowerShellStateException();
+            throw new InvalidPowerShellStateException(
+                "An error occurred while retrieving the ActiveDirectory commands.");
         }
 
-        foreach (var command in commandListTemp.StdOut)
+        foreach (var cmd in commandListTemp.StdOut)
         {
-            commandList.Add(new Command(command));
+            commandList.Add(new Command(cmd));
         }
 
         return commandList;

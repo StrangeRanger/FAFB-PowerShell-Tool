@@ -13,13 +13,13 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     private ObservableCollection<string> _possibleParameterList = new();
     private string _selectedParameter = string.Empty;
     private string _selectedParameterValue = string.Empty;
-    
+
     /// <summary>
     /// Empty constructor to initialize a new ComboBoxParameterViewModel.
     /// </summary>
     public ComboBoxParameterViewModel()
     { }
-    
+
     /// <summary>
     /// Initializes a new instance of the ComboBoxParameterViewModel class.
     /// </summary>

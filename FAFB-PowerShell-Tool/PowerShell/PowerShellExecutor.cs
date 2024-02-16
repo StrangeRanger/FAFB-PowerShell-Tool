@@ -26,98 +26,65 @@ public class PowerShellExecutor
     }
 
     /// <summary>
-    /// Executes a PowerShell command synchronously and returns the results.
+    /// Prepares a PowerShell command for execution.
     /// </summary>
-    /// <param name="commandString">The PowerShell command to be executed, encapsulated in a Command object.</param>
-    /// <returns>A ReturnValues object containing the execution results.</returns>
-    public ReturnValues Execute(Command commandString)
+    /// <param name="command">The command to be prepared for execution.</param>
+    private void PrepareCommand(Command command)
     {
-        return ExecuteInternal(CommandToString(commandString));
+        _powerShell.Commands.AddCommand(command.CommandText);
+        foreach (var parameter in command.Parameters)
+        {
+            _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
+        }
     }
 
     /// <summary>
     /// Executes a PowerShell command synchronously and returns the results.
     /// </summary>
-    /// <param name="commandString">The PowerShell command string to be executed.</param>
-    /// <returns>A ReturnValues object containing the execution results.</returns>
-    public ReturnValues Execute(string commandString)
+    /// <param name="command">The command to be executed.</param>
+    /// <returns>A ReturnValues object containing the results of the command execution.</returns>
+    public ReturnValues Execute(Command command)
     {
-        return ExecuteInternal(commandString);
-    }
-
-    // TODO: Do something with this method...
-    public ReturnValues ExecutePSCommand(PSCommand executeCommand)
-    {
-        _powerShell.Commands = executeCommand;
         try
         {
+            PrepareCommand(command);
+
             Collection<PSObject> results = _powerShell.Invoke();
+            return ProcessPowerShellResults(results);
         }
         catch (Exception ex)
         {
-            Trace.WriteLine(ex);
+            StringBuilder sb = new();
+            sb.AppendLine("An error occurred while executing the PowerShell command:");
+            sb.AppendLine(ex.Message);
+            sb.AppendLine(ex.StackTrace);
+            Debug.WriteLine(sb.ToString());
+            return new ReturnValues { StdErr = { sb.ToString() } };
         }
-
-        return null;
     }
 
     /// <summary>
     /// Executes a PowerShell command asynchronously and returns the results.
     /// </summary>
-    /// <param name="commandString">The PowerShell command to be executed, encapsulated in a Command object.</param>
-    /// <returns>A Task representing the asynchronous operation, containing the execution results.</returns>
-    public async Task<ReturnValues> ExecuteAsync(Command commandString)
+    /// <param name="command">The command to be executed.</param>
+    /// <returns>A task containing a ReturnValues object with the results of the command execution.</returns>
+    public async Task<ReturnValues> ExecuteAsync(Command command)
     {
-        return await ExecuteInternalAsync(CommandToString(commandString));
-    }
-
-    /// <summary>
-    /// Executes a PowerShell command asynchronously and returns the results.
-    /// </summary>
-    /// <param name="commandString">The PowerShell command string to be executed.</param>
-    /// <returns>A Task representing the asynchronous operation, containing the execution results.</returns>
-    public async Task<ReturnValues> ExecuteAsync(string commandString)
-    {
-        return await ExecuteInternalAsync(commandString);
-    }
-
-    /// <summary>
-    /// Executes the provided PowerShell command string synchronously.
-    /// </summary>
-    /// <param name="command">The PowerShell command in string format.</param>
-    /// <returns>The execution results encapsulated in a ReturnValues object.</returns>
-    private ReturnValues ExecuteInternal(string command)
-    {
-        ValidateCommandString(command);
-        _powerShell.AddScript(command);
-        Collection<PSObject> results = _powerShell.Invoke();
-        return ProcessPowerShellResults(results);
-    }
-
-    /// <summary>
-    /// Executes the provided PowerShell command string asynchronously.
-    /// </summary>
-    /// <param name="command">The PowerShell command in string format.</param>
-    /// <returns>A task representing the asynchronous operation, containing the execution results.</returns>
-    private async Task<ReturnValues> ExecuteInternalAsync(string command)
-    {
-        ValidateCommandString(command);
-        _powerShell.AddScript(command);
-        PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
-        return await ProcessPowerShellResultsAsync(results);
-    }
-
-    /// <summary>
-    /// Validates the provided command string.
-    /// </summary>
-    /// <param name="commandString">The command string to validate.</param>
-    /// <exception cref="ArgumentException">Thrown when the command string is null, empty, or consists only of
-    /// white-space.</exception>
-    private void ValidateCommandString(string commandString)
-    {
-        if (string.IsNullOrWhiteSpace(commandString))
+        try
         {
-            throw new ArgumentException("Command string cannot be null, contain whitespace, or be blank.");
+            PrepareCommand(command);
+
+            PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
+            return await ProcessPowerShellResultsAsync(results);
+        }
+        catch (Exception ex)
+        {
+            StringBuilder sb = new();
+            sb.AppendLine("An error occurred while executing the PowerShell command:");
+            sb.AppendLine(ex.Message);
+            sb.AppendLine(ex.StackTrace);
+            Debug.WriteLine(sb.ToString());
+            return new ReturnValues { StdErr = { sb.ToString() } };
         }
     }
 
@@ -156,24 +123,5 @@ public class PowerShellExecutor
     private Task<ReturnValues> ProcessPowerShellResultsAsync(IEnumerable<PSObject> results)
     {
         return Task.FromResult(ProcessPowerShellResults(results));
-    }
-
-    /// <summary>
-    /// Converts a PowerShell Command object to its string representation.
-    /// </summary>
-    /// <param name="command">The PowerShell Command object to convert.</param>
-    /// <returns>A string representation of the PowerShell Command.</returns>
-    public string CommandToString(Command command)
-    {
-        StringBuilder commandString = new StringBuilder();
-
-        commandString.Append(command.CommandText);
-
-        foreach (var param in command.Parameters)
-        {
-            commandString.Append($" -{param.Name} {param.Value}");
-        }
-
-        return commandString.ToString();
     }
 }

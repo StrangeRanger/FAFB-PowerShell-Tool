@@ -38,9 +38,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public string QueryName
     {
-        get { return _queryName; }
-        set
-        {
+        get {
+            return _queryName;
+        }
+        set {
             if (_queryName != value)
             {
                 _queryName = value;
@@ -54,9 +55,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public string QueryDescription
     {
-        get { return _queryDescription; }
-        set
-        {
+        get {
+            return _queryDescription;
+        }
+        set {
             if (_queryDescription != value)
             {
                 _queryDescription = value;
@@ -253,7 +255,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                 MenuItem menuItem2 = new MenuItem { Header = "Edit" };
                 menuItem2.Command = EditCustomQuery;
-                menuItem2.CommandParameter = newButton; // This set the parent of the menuitem to the button so it is accessible
+                menuItem2.CommandParameter =
+                    newButton; // This set the parent of the menuitem to the button so it is accessible
 
                 MenuItem menuItem3 = new MenuItem { Header = "Delete" };
                 menuItem3.Command = Remove_ParameterComboBox;
