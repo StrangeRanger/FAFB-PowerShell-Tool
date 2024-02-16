@@ -218,7 +218,7 @@
                                         <MenuItem Header="Output to Csv"
                                                   Command="{Binding OutputToCsv}"/>
                                         <MenuItem Header="Output to Text"
-                                                  Command="{Binding OutputToText}"/>
+                                                  Command="{Binding _OutputToText}"/>
                                     </MenuItem>
                                     <MenuItem Header="Export Console Output"
                                               Command="{Binding ExportConsoleOutput}"
