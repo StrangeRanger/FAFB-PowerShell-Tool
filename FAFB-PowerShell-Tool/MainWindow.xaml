@@ -135,6 +135,7 @@
                                               Grid.Column="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
+                                            <!--
                                             <ComboBox Width="212"
                                                       IsEditable="True"
                                                       HorizontalAlignment="Left"
@@ -142,6 +143,13 @@
                                                       Margin="5"
                                                       SelectedItem="{Binding SelectedParameter}"
                                                       />
+                                            -->
+                                            <TextBox Width="212"
+                                                     HorizontalAlignment="Left"
+                                                     VerticalAlignment="Center"
+                                                     Margin="5"
+                                                     Text="{Binding SelectedParameterValue}"
+                                                     />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

@@ -25,6 +25,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private CustomQueries _customQuery = new();
     private string _queryName;
     private string _queryDescription;
+    private string _parameterValue;
 
     // ----------------- Properties ----------------- //
 
@@ -46,6 +47,25 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 _queryName = value;
                 OnPropertyChanged(nameof(QueryName));
+            }
+        }
+    }
+
+    /// <summary>
+    /// This is the Parameter Value for the param
+    /// </summary>
+    public string ParameterValue
+    {
+        get
+        {
+            return _parameterValue;
+        }
+        set
+        {
+            if (_parameterValue != value)
+            {
+                _parameterValue = value;
+                OnPropertyChanged(nameof(ParameterValue));
             }
         }
     }
@@ -105,7 +125,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter value selections.
     /// </summary>
-    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterValuesCollection { get; }
+    public ObservableCollection<TextBoxViewModel> DynamicParameterValuesCollection { get; }
 
     /// <summary>
     /// Command to execute the selected PowerShell command.
@@ -178,7 +198,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _currentQuery = new CustomQueries.query();
 
         DynamicParameterCollection = new ObservableCollection<ComboBoxParameterViewModel>();
-        DynamicParameterValuesCollection = new ObservableCollection<ComboBoxParameterViewModel>();
+        DynamicParameterValuesCollection = new ObservableCollection<TextBoxViewModel>();
 
         InitializeCommandsAsync();
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
@@ -357,7 +377,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void AddParameterComboBox(object _)
     {
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
-        DynamicParameterValuesCollection.Add(new ComboBoxParameterViewModel());
+        DynamicParameterValuesCollection.Add(new TextBoxViewModel());
     }
 
     /// <summary>
@@ -512,11 +532,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Try to get the content within the drop downs
         try
         {
+            int i = 0;
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
                 // Need to look at this to see if it is working with the object type and then serialize it
-                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
+                //Trace.WriteLine(DynamicParameterValuesCollection[i].SelectedParameterValue);
+
+                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
+                i++;
             }
 
             _customQuery.SerializeCommand(SelectedCommand, QueryName, QueryDescription);

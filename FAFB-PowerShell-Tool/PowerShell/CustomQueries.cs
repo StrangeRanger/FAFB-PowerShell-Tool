@@ -127,8 +127,10 @@ namespace FAFB_PowerShell_Tool.PowerShell
                 Trace.WriteLine(param.Name + " Value: ");
 
                 commandParameters[i] = param.Name;
+                commandParameterValues[i] = param.Value.ToString(); 
             }
             newQuery.commandParameters = commandParameters;
+            newQuery.commandParametersValues = commandParameterValues;
 
             Queries.Add(newQuery);
 
