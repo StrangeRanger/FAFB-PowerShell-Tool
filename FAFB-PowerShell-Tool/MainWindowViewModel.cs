@@ -6,6 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using FAFB_PowerShell_Tool.PowerShell;
 using System.Management.Automation;
+using System.IO;
+using CsvHelper;
+using System.Globalization;
+using System.Text;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -189,7 +193,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _powerShellExecutor = new PowerShellExecutor();
         ExecuteCommand = new RelayCommand(Execute);
-        OutputToCsv = new RelayCommand(_OutputToCsv);
+        OutputToCsv = new RelayCommand(_OutputToCsvAsync);
+        _OutputToText = new RelayCommand(OutputPowershellOutputToText);
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
@@ -386,77 +391,49 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Rename this method to match method naming conventions!!!
     /// </summary>
     /// <param name="_"></param>
-    private void OutputToText(object _)
+    private async void OutputPowershellOutputToText(object _)
     {
-        throw new NotImplementedException();
+        await ExecuteSelectedCommand();
+
+        //Filepath
+        string filePath = "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\psoutput.txt";
+
+        // Write the text to a file 
+        File.WriteAllText(filePath, PowerShellOutput);
     }
 
     /// <summary>
     /// This will be to Execute a query to csv
-    /// TODO: Add a description to the parameter of this method.
+    /// Currently has a local file path needs to be changed to a user defined file path
     /// TODO: Rename this method to match method naming conventions!!!
     /// This method is in the working
     /// </summary>
-    /// <param name="_"></param>
-    private void _OutputToCsv(object _)
-    {
-        // First make sure that the SelectedCommand parameter is up to date
-        UpdateSelectedCommand();
+    /// <param name="_">Represents the object that the command is bound to</param>
+    private async void _OutputToCsvAsync(object _)
+    { 
+        await ExecuteSelectedCommand();
 
-        // Next attach the parameter to output to a csv
-        Command exportcsv = new Command("Export-CSV");
+        
+        var csv = new StringBuilder();
+        string[] output = PowerShellOutput.Split(' ', '\n');
+        //Filepath
+        string filePath = "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv";
 
-        CommandParameter CSVOutputPath = new CommandParameter("-Path", "..\'..\'");
-
-        PSCommand selectedPSCommand = new PSCommand();
-
-        /*
-        for (int i = 0; i < DynamicParameterCollection.Count; i++)
+        for (int i = 0; i < output.Length - 2; i++)
         {
-            selectedPSCommand.AddParameter(DynamicParameterCollection[i].SelectedParameter);
-        }
-        */
-
-        PSCommand testCommand =
-            new PSCommand()
-                .AddCommand("Get-Process")
-                .AddCommand("Export-CSV")
-                .AddParameter(
-                    "-Path",
-                    "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
-
-        selectedPSCommand.Commands.Add(SelectedCommand);
-        selectedPSCommand.AddCommand("Export-CSV")
-            .AddParameter(
-                "-Path",
-                "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv");
-
-        for (int i = 0; i < selectedPSCommand.Commands.Count; i++)
-        {
-            Trace.WriteLine(selectedPSCommand.Commands[i].CommandText);
-            for (int j = 0; j < selectedPSCommand.Commands[i].Parameters.Count; j++)
-            {
-                Trace.WriteLine(selectedPSCommand.Commands[i].Parameters[j].Name +
-                                (string)selectedPSCommand.Commands[i].Parameters[j].Value);
-            }
+            
+            var first = output[i];
+            var second = output[i + 1];
+            //format the strings and add them to a string
+            var newLine = string.Format("{0},{1}", first, second);
+            csv.AppendLine(newLine);
         }
 
-        exportcsv.Parameters.Add(CSVOutputPath);
+        // Write the text to a file 
+        File.WriteAllText(filePath, csv.ToString());
 
-        // Debug
-        //_powerShellExecutor.CommandToString(exportcsv);
-        Trace.WriteLine("-------------Debug---------------");
-        Trace.WriteLine(DynamicParameterValuesCollection.Count);
-        Trace.WriteLine(exportcsv.CommandText);
-        Trace.WriteLine("SelectedCommand: " + SelectedCommand.ToString);
-    }
-
-    /// <summary>
-    /// Writing to a csv file without powershell
-    /// </summary>
-    private void CsvTemp()
-    {
-        throw new NotImplementedException();
+        //debug
+        //Trace.WriteLine(PowerShellOutput);
     }
 
     /// <summary>
@@ -467,11 +444,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Try to get the content within the drop downs
         try
         {
+            int i = 0;
             foreach (var comboBoxData in DynamicParameterCollection)
             {
                 string selectedItem = comboBoxData.SelectedParameter;
                 // Need to look at this to see if it is working with the object type and then serialize it
-                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter));
+                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
             }
         }
         catch (Exception ex)

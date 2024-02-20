@@ -203,7 +203,7 @@
                                 <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
                             <!-- Menu options  -->
-                                <Menu x:Name="OptionsMenu" Width="Auto" Height="Auto" Margin="10,15,934,64">
+                                <Menu x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
                                 <MenuItem Header="Options">
                                     <MenuItem Header="Add New Command Slot"
                                               Command="{Binding AddCommandComboBox}"
