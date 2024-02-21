@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
@@ -37,15 +38,24 @@ public class CommandParameters
     /// </summary>
     /// <param name="commandObject">The PowerShell command object whose parameters are to be loaded.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task LoadCommandParametersAsync(Command commandObject)
+    public async Task LoadCommandParametersAsync(Command? commandObject)
     {
+        // Check if commandObject is null
+        if (commandObject is null)
+        {
+            Trace.WriteLine("Error: commandObject is null");
+            _possibleParameters.Add("No valid command provided");
+            return;
+        }
 
         if (_possibleParameters.Count == 0)
         {
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
+                // The command exists, get its parameters
                 string commandString = $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
-            
+
+                ps.Commands.Clear();
                 ps.AddScript(commandString);
                 PSDataCollection<PSObject> result = await ps.InvokeAsync();
                 

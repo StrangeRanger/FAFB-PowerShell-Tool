@@ -121,7 +121,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Collection of possible parameters for the currently selected command.
     /// </summary>
-    public ObservableCollection<string> PossibleParameterList { get; private set; }
+    public ObservableCollection<string>? PossibleParameterList { get; private set; }
 
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter selections.
@@ -443,6 +443,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Neccisary Parameter that passes the object that is clicked</param>
     private void AddParameterComboBox(object _)
     {
+        // Check if some variable is null and throw an exception if it is
+        if (PossibleParameterList is null)
+        {
+            Trace.WriteLine("PossibleParameterList has not been populated yet.");
+            return;
+        }
+        
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
         DynamicParameterValuesCollection.Add(new TextBoxViewModel());
     }
