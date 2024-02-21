@@ -136,6 +136,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ExecuteCommand { get; }
 
     /// <summary>
+    /// Command to execute the buttons inside Custom Command buttons
+    /// </summary>
+    public ICommand ExecuteCommandButton { get;  }
+
+    /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
     public ICommand AddNewParameterComboBox { get; }
@@ -198,6 +203,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
         EditCustomQuery = new RelayCommand(PerformEditCustomQuery);
+        // Change the naming I know 
+        ExecuteCommandButton = new RelayCommand(ExecuteButtonCommand);
 
         _currentQuery = new CustomQueries.query();
 
@@ -243,6 +250,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
+    ///  TODO: Change the naming
+    /// </summary>
+    /// <param name="_"></param>
+    public void ExecuteButtonCommand(object _)
+    {
+        var currButton = _ as Button;
+
+        CustomQueries.query ButtonQuery = (CustomQueries.query)currButton.Tag;
+
+        ExecuteGenericCommand(ButtonQuery.command);
+    }
+
+    /// <summary>
     /// This method will load the custom queries from the file.
     /// </summary>
     private void LoadCustomQueries()
@@ -275,12 +295,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 ContextMenu contextMenu = new ContextMenu();
 
                 MenuItem menuItem1 = new MenuItem { Header = "Execute" };
-                menuItem1.Command = ExecuteCommand;
+                menuItem1.Command = ExecuteCommandButton;
+                menuItem1.CommandParameter = newButton;
 
                 MenuItem menuItem2 = new MenuItem { Header = "Edit" };
                 menuItem2.Command = EditCustomQuery;
-                menuItem2.CommandParameter =
-                    newButton; // This set the parent of the menuitem to the button so it is accessible
+                menuItem2.CommandParameter = newButton; // This set the parent of the menuitem to the button so it is accessible
 
                 MenuItem menuItem3 = new MenuItem { Header = "Delete" };
                 menuItem3.Command = Remove_ParameterComboBox;
@@ -360,6 +380,31 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             ReturnValues result = await _powerShellExecutor.ExecuteAsync(SelectedCommand);
 
+            if (result.HadErrors)
+            {
+                PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
+                return;
+            }
+
+            PowerShellOutput = string.Join(Environment.NewLine, result.StdOut);
+        }
+        catch (Exception ex)
+        {
+            PowerShellOutput = $"Error executing command: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
+    private async Task ExecuteGenericCommand(Command toBeExecuted)
+    {
+        try
+        {
+            //Execute the command
+            ReturnValues result = await _powerShellExecutor.ExecuteAsync(toBeExecuted);
+            //Error handling
             if (result.HadErrors)
             {
                 PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
