@@ -9,6 +9,7 @@ using System.Management.Automation;
 using System.IO;
 using System.Globalization;
 using System.Text;
+using Microsoft.Win32;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -440,17 +441,30 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ExecuteSelectedCommand();
 
         //Filepath
-        string filePath = "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\psoutput.txt";
+        // Write the text to a file & prompt user for the location
 
-        // Write the text to a file 
-        File.WriteAllText(filePath, PowerShellOutput);
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+        // Set properties of the OpenFileDialog
+        saveFileDialog.FileName = "Document"; // Default file name
+        saveFileDialog.Filter = "All files(*.*) | *.*";
+
+        // Display
+        Nullable<bool> result = saveFileDialog.ShowDialog();
+
+        // Get file and write text
+        if (result == true)
+        {
+            // Open document
+            string filePath = saveFileDialog.FileName;
+            File.WriteAllText(filePath, PowerShellOutput);
+        }
     }
 
     /// <summary>
-    /// This will be to Execute a query to csv
-    /// Currently has a local file path needs to be changed to a user defined file path
     /// TODO: Rename this method to match method naming conventions!!!
     /// This method is in the working
+    /// Status: prompts user for file path and saves correctly though the string could be edited to be better
     /// </summary>
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void _OutputToCsvAsync(object _)
@@ -460,8 +474,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         
         var csv = new StringBuilder();
         string[] output = PowerShellOutput.Split(' ', '\n');
-        //Filepath
-        string filePath = "C:\\Users\\pickl\\Source\\Repos\\FAFB-PowerShell-Tool\\FAFB-PowerShell-Tool\\PowerShell\\test.csv";
 
         for (int i = 0; i < output.Length - 2; i++)
         {
@@ -473,8 +485,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             csv.AppendLine(newLine);
         }
 
-        // Write the text to a file 
-        File.WriteAllText(filePath, csv.ToString());
+        // Write the text to a file & prompt user for the location
+
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+        // Set properties of the OpenFileDialog
+        saveFileDialog.FileName = "Document"; // Default file name
+        saveFileDialog.Filter = "All files(*.*) | *.*";
+
+        // Display
+        Nullable<bool> result = saveFileDialog.ShowDialog();
+
+        // Get file and write text
+        if (result == true)
+        {
+            // Open document
+            string filePath = saveFileDialog.FileName;
+            File.WriteAllText(filePath, csv.ToString());
+        }
 
         //debug
         //Trace.WriteLine(PowerShellOutput);
