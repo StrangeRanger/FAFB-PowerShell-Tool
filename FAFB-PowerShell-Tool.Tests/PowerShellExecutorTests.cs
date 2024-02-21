@@ -7,7 +7,7 @@ public class PowerShellExecutorTests
 {
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
-    [InlineData("Get-Process", "Name", "powershell")]
+    [InlineData("Get-Process", "Name", "explorer")]
     public void Execute_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd, string paramName, string paramValue)
     {
         // Arrange
@@ -26,7 +26,8 @@ public class PowerShellExecutorTests
 
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
-    [InlineData("Get-Process", "Name", "powershell")]
+    [InlineData("Get-Process", "Name", "explorer")]
+    
     public async void ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
                                                                                string paramName,
                                                                                string paramValue)
