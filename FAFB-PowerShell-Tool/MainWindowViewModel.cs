@@ -10,6 +10,8 @@ using System.IO;
 using System.Globalization;
 using System.Text;
 using Microsoft.Win32;
+using Microsoft.WSMan.Management;
+using Newtonsoft.Json.Linq;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -240,11 +242,26 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         QueryName = currQuery.queryName;
         // Fill in the queryDescription
         QueryDescription = currQuery.queryDescription;
-        // Fill in the commandName TODO: Debug this to see why it isn't setting the command
-        Trace.WriteLine(currQuery.command.CommandText);
+        // Fill in the commandName
+        SelectedCommand = ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
+        OnPropertyChanged(nameof(SelectedCommand));
 
-        SelectedCommand = currQuery.command;
+        LoadParametersAsync(SelectedCommand);
 
+        Trace.WriteLine(PossibleParameterList.Count());
+
+        // Fill in Parameters and values
+
+        for (int i = 0; i < currQuery.commandParameters.Count(); i++)
+        {
+            DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
+            DynamicParameterValuesCollection.Add(new TextBoxViewModel());
+
+            //DynamicParameterCollection[i].SelectedParameter = PossibleParameterList.FirstOrDefault(item => item == currQuery.commandParameters[i]);
+            //DynamicParameterValuesCollection[i].SelectedParameterValue = PossibleParameterList.FirstOrDefault(item => item == currQuery.commandParametersValues[i]);
+
+        }
+        
         Trace.WriteLine("This is after the setting of the command");
         Trace.WriteLine(SelectedCommand.CommandText);
         // Fill in the commandParameters
