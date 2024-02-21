@@ -7,7 +7,6 @@ using System.Windows.Input;
 using FAFB_PowerShell_Tool.PowerShell;
 using System.Management.Automation;
 using System.IO;
-using CsvHelper;
 using System.Globalization;
 using System.Text;
 
