@@ -23,11 +23,28 @@ public class PowerShellExecutorTests
         Assert.Empty(result.StdErr);
         Assert.NotEmpty(result.StdOut);
     }
+    
+    [Fact]
+    public void Execute_CheckIfOutputChanged_ReturnsDifferentOutput()
+    {
+        // Arrange
+        Command command = new("Get-Command");
+        command.Parameters.Add("Module", "ActiveDirectory");
+        Command command2 = new("Get-Process");
+        command.Parameters.Add("Name", "explorer");
+        PowerShellExecutor powerShellExecutor = new();
+
+        // Act
+        ReturnValues result = powerShellExecutor.Execute(command);
+        ReturnValues result2 = powerShellExecutor.Execute(command2);
+
+        // Assert
+        Assert.NotEqual(result, result2);
+    }
 
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    
     public async void ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
                                                                                string paramName,
                                                                                string paramValue)
