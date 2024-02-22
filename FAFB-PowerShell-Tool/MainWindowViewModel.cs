@@ -246,7 +246,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SelectedCommand = ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
         OnPropertyChanged(nameof(SelectedCommand));
 
-        LoadParametersAsync(SelectedCommand);
+        //LoadParametersAsync(SelectedCommand);
 
         Trace.WriteLine(PossibleParameterList.Count());
 
