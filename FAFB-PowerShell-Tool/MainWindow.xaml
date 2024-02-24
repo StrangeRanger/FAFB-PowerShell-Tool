@@ -36,28 +36,30 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left Side Query Bar (Content in first column) -->
-            <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
-                <Grid.BindingGroup>
-                    <BindingGroup/>
-                </Grid.BindingGroup>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
+                    <Grid.BindingGroup>
+                        <BindingGroup/>
+                    </Grid.BindingGroup>
 
-                <Grid.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FF616161" Offset="0"/>
-                        <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
-                        <GradientStop Color="#FF898989" Offset="0.737"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
+                    <Grid.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FF616161" Offset="0"/>
+                            <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
+                            <GradientStop Color="#FF898989" Offset="0.737"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
 
-                <!-- Stacked Queries are placed here. -->
-                <ItemsControl ItemsSource="{Binding ButtonStackPanel}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding Content}" Command="{Binding Command}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
+                    <!-- Stacked Queries are placed here. -->
+                    <ItemsControl ItemsSource="{Binding ButtonStackPanel}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Content}" Command="{Binding Command}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
 
             <!-- Grid Splitter for resizing. -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" Background="Gray" />

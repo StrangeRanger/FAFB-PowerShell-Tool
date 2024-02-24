@@ -160,6 +160,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public ICommand _OutputToText { get; }
 
+    public ICommand DeleteCustomQuery{ get; }
+
     /// <summary>
     /// Command to output to a csv when executing
     /// </summary>
@@ -206,6 +208,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
         EditCustomQuery = new RelayCommand(PerformEditCustomQuery);
+        DeleteCustomQuery = new RelayCommand(PerformDeleteCustomQuery);
         // Change the naming I know 
         ExecuteCommandButton = new RelayCommand(ExecuteButtonCommand);
 
@@ -232,7 +235,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Add a description to the parameter of this method.
     /// </summary>
     /// <param name="sender"></param>
-    private void PerformEditCustomQuery(object sender)
+    private async void PerformEditCustomQuery(object sender)
     {
         // Get the button that we are editing
         Button currButton = (Button)sender;
@@ -245,13 +248,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Fill in the commandName
         Command chosenCommand = ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
         SelectedCommand = chosenCommand;
-        OnPropertyChanged(nameof(SelectedCommand));
+        //OnPropertyChanged(nameof(SelectedCommand));
+        //testmethod();
+        //Trace.WriteLine(SelectedCommand.CommandText);
 
-        Trace.WriteLine(SelectedCommand.CommandText);
+        //await LoadParametersAsync(SelectedCommand);
 
-        LoadParametersAsync(SelectedCommand);
-
-        Trace.WriteLine(PossibleParameterList.Count());
+        //Trace.WriteLine(PossibleParameterList.Count());
 
         // Fill in Parameters and values
 
@@ -270,6 +273,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Fill in the commandParameters
     }
 
+    public void testmethod()
+    {
+        Trace.WriteLine("This is a test method");
+    }
+
     /// <summary>
     ///  TODO: Change the naming
     /// </summary>
@@ -281,6 +289,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         CustomQueries.query ButtonQuery = (CustomQueries.query)currButton.Tag;
 
         ExecuteGenericCommand(ButtonQuery.command);
+    }
+
+    public void PerformDeleteCustomQuery(object _)
+    {
+        //Delete a button from the custom queries list and from the file
+        var currButton = _ as Button;
+
+        ButtonStackPanel.Remove(currButton);
+        _customQuery.Queries.Remove((CustomQueries.query)currButton.Tag);
+        _customQuery.SerializeMethod();
+
+
     }
 
     /// <summary>
@@ -324,7 +344,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 menuItem2.CommandParameter = newButton; // This set the parent of the menuitem to the button so it is accessible
 
                 MenuItem menuItem3 = new MenuItem { Header = "Delete" };
-                menuItem3.Command = Remove_ParameterComboBox;
+                menuItem3.Command = DeleteCustomQuery;
+                menuItem3.CommandParameter = newButton;
 
                 // Add menu item to the context menu
                 contextMenu.Items.Add(menuItem1);
@@ -622,13 +643,51 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             _customQuery.SerializeCommand(SelectedCommand, QueryName, QueryDescription);
 
-            Button newButton = new() { Content = SelectedCommand.CommandText, Height = 48 };
+            Button newButton = createCustomButton();
+
             ButtonStackPanel.Add(newButton);
         }
         catch (Exception ex)
         {
             Console.Write(ex);
         }
+    }
+
+    public Button createCustomButton()
+    {
+        Button newButton = new() { Height = 48 };
+
+        if (QueryName.Length != 0)
+        {
+            newButton.Content = QueryName;
+        }
+        else
+        {
+            newButton.Content = SelectedCommand.CommandText;
+        }
+        // Want to add right click context menu to each button
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem menuItem1 = new MenuItem { Header = "Execute" };
+        menuItem1.Command = ExecuteCommandButton;
+        menuItem1.CommandParameter = newButton;
+
+        MenuItem menuItem2 = new MenuItem { Header = "Edit" };
+        menuItem2.Command = EditCustomQuery;
+        menuItem2.CommandParameter = newButton; // This set the parent of the menuitem to the button so it is accessible
+
+        MenuItem menuItem3 = new MenuItem { Header = "Delete" };
+        menuItem3.Command = DeleteCustomQuery;
+        menuItem3.CommandParameter = newButton;
+
+        // Add menu item to the context menu
+        contextMenu.Items.Add(menuItem1);
+        contextMenu.Items.Add(menuItem2);
+        contextMenu.Items.Add(menuItem3);
+
+        // Add the context menu to the button
+        newButton.ContextMenu = contextMenu;
+        return newButton;
     }
 
     /// <summary>
