@@ -1,7 +1,0 @@
-An error occurred while executing the PowerShell command:
-Unable to find a default server with Active Directory Web Services running.
-   at System.Management.Automation.Runspaces.AsyncResult.EndInvoke()
-   at System.Management.Automation.PowerShell.EndInvoke(IAsyncResult asyncResult)
-   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
---- End of stack trace from previous location ---
-   at FAFB_PowerShell_Tool.PowerShell.PowerShellExecutor.ExecuteAsync(Command command) in C:\Users\pickl\Source\Repos\FAFB-PowerShell-Tool\FAFB-PowerShell-Tool\PowerShell\PowerShellExecutor.cs:line 77

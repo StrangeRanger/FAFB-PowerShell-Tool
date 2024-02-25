@@ -76,6 +76,7 @@ public class RelayCommandTests
         RelayCommand command = new(
             _ =>
             {});
+        // ReSharper disable once EventUnsubscriptionViaAnonymousDelegate
         command.CanExecuteChanged -= (_, _) =>
         {};
     }

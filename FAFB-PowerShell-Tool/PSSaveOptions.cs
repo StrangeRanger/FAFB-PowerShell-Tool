@@ -5,6 +5,7 @@ namespace FAFB_PowerShell_Tool;
 
 /// <summary>
 /// This class *might* be used for housing the save options
+/// TODO: Delete this class if it is not used...
 /// </summary>
 public class PSSaveOptions
 {

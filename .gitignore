@@ -476,14 +476,14 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-.vscode/launch.json
+# Rider files
+.idea
 
+
+# VSCode files
+.vscode/launch.json
 .vscode/tasks.json
 
-.idea/.idea.FAFB-PowerShell-Tool/.idea/indexLayout.xml
-
-.idea/.idea.FAFB-PowerShell-Tool/.idea/workspace.xml
-
-FAFB-PowerShell-Tool/FAFB-PowerShell-Tool-Output.txt
-
-.idea/.idea.FAFB-PowerShell-Tool/.idea/
+# Text and CSV files
+*.txt
+*.csv

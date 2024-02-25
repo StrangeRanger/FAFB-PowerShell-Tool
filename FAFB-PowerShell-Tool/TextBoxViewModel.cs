@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -11,12 +10,6 @@ public sealed class TextBoxViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     private string _selectedParameterValue = string.Empty;
-
-    /// <summary>
-    /// Empty constructor to initialize a new ComboBoxParameterViewModel.
-    /// </summary>
-    public TextBoxViewModel()
-    { }
 
     /// <summary>
     /// Gets or sets the selected parameter value for the unique ComboBox.

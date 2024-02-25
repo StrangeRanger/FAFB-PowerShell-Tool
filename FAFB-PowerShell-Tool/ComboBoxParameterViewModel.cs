@@ -15,12 +15,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     private string _selectedParameterValue = string.Empty;
 
     /// <summary>
-    /// Empty constructor to initialize a new ComboBoxParameterViewModel.
-    /// </summary>
-    public ComboBoxParameterViewModel()
-    { }
-
-    /// <summary>
     /// Initializes a new instance of the ComboBoxParameterViewModel class.
     /// </summary>
     /// <param name="possibleParameterList">Initial list of possible parameters for the ComboBox.</param>
@@ -30,7 +24,7 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Sets a unique selected value for each combo box
+    /// Sets a unique selected value for each combo box.
     /// </summary>
     public string SelectedParameter
     {
@@ -46,6 +40,7 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Gets or sets the selected parameter value for the unique ComboBox.
+    /// TODO: Remove this property if it is not used.
     /// </summary>
     public string SelectedParameterValue
     {

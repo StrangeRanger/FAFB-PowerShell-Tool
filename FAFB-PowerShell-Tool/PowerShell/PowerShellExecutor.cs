@@ -29,7 +29,7 @@ public class PowerShellExecutor
     /// Prepares a PowerShell command for execution.
     /// </summary>
     /// <param name="command">The command to be prepared for execution.</param>
-    private void PrepareCommand(Command command)
+    private void PrepareCommand(Command? command)
     {
         _powerShell.Commands.AddCommand(command.CommandText);
         foreach (var parameter in command.Parameters)
@@ -43,23 +43,19 @@ public class PowerShellExecutor
     /// </summary>
     /// <param name="command">The command to be executed.</param>
     /// <returns>A ReturnValues object containing the results of the command execution.</returns>
-    public ReturnValues Execute(Command command)
+    public ReturnValues Execute(Command? command)
     {
         try
         {
             PrepareCommand(command);
 
             Collection<PSObject> results = _powerShell.Invoke();
+
             return ProcessPowerShellResults(results);
         }
         catch (Exception ex)
         {
-            StringBuilder sb = new();
-            sb.AppendLine("An error occurred while executing the PowerShell command:");
-            sb.AppendLine(ex.Message);
-            sb.AppendLine(ex.StackTrace);
-            Debug.WriteLine(sb.ToString());
-            return new ReturnValues { StdErr = { sb.ToString() } };
+            return ExecutionExceptionHandler(ex);
         }
     }
 
@@ -68,24 +64,37 @@ public class PowerShellExecutor
     /// </summary>
     /// <param name="command">The command to be executed.</param>
     /// <returns>A task containing a ReturnValues object with the results of the command execution.</returns>
-    public async Task<ReturnValues> ExecuteAsync(Command command)
+    public async Task<ReturnValues> ExecuteAsync(Command? command)
     {
         try
         {
             PrepareCommand(command);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
+
             return await ProcessPowerShellResultsAsync(results);
         }
         catch (Exception ex)
         {
-            StringBuilder sb = new();
-            sb.AppendLine("An error occurred while executing the PowerShell command:");
-            sb.AppendLine(ex.Message);
-            sb.AppendLine(ex.StackTrace);
-            Debug.WriteLine(sb.ToString());
-            return new ReturnValues { StdErr = { sb.ToString() } };
+            return ExecutionExceptionHandler(ex);
         }
+    }
+
+    /// <summary>
+    /// Handles exceptions that occur during the execution of a PowerShell command.
+    /// </summary>
+    /// <param name="ex">The exception that occurred during the execution of the PowerShell command.</param>
+    /// <returns>A ReturnValues object containing the exception details.</returns>
+    private ReturnValues ExecutionExceptionHandler(Exception ex)
+    {
+        StringBuilder sb = new();
+
+        sb.AppendLine("An error occurred while executing the PowerShell command:");
+        sb.AppendLine(ex.Message);
+        sb.AppendLine(ex.StackTrace);
+        Debug.WriteLine(sb.ToString());
+
+        return new ReturnValues { StdErr = { sb.ToString() } };
     }
 
     /// <summary>

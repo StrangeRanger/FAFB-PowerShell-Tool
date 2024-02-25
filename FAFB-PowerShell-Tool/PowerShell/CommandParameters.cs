@@ -26,7 +26,7 @@ public class CommandParameters : ICommandParameters
             if (_possibleParameters.Count == 0)
             {
                 throw new InvalidOperationException(
-                    "PossibleParameters has not been populated via 'LoadCommandParametersAsync'.");
+                    "'PossibleParameters' has not been populated via 'LoadCommandParametersAsync'.");
             }
 
             return _possibleParameters;
