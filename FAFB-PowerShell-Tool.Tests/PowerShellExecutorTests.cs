@@ -23,7 +23,7 @@ public class PowerShellExecutorTests
         Assert.Empty(result.StdErr);
         Assert.NotEmpty(result.StdOut);
     }
-    
+
     [Fact]
     public void Execute_CheckIfOutputChanged_ReturnsDifferentOutput()
     {

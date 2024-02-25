@@ -32,7 +32,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _queryName;
     private string _queryDescription;
     private string _parameterValue;
-    // probably want to add the ability to toggle editing vs not editing but filled in 
+    // probably want to add the ability to toggle editing vs not editing but filled in
     private CustomQueries.query isEditing = null;
 
     // ----------------- Properties ----------------- //
@@ -64,12 +64,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public string ParameterValue
     {
-        get
-        {
+        get {
             return _parameterValue;
         }
-        set
-        {
+        set {
             if (_parameterValue != value)
             {
                 _parameterValue = value;
@@ -143,7 +141,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Command to execute the buttons inside Custom Command buttons
     /// </summary>
-    public ICommand ExecuteCommandButton { get;  }
+    public ICommand ExecuteCommandButton { get; }
 
     /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
@@ -162,7 +160,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public ICommand _OutputToText { get; }
 
-    public ICommand DeleteCustomQuery{ get; }
+    public ICommand DeleteCustomQuery { get; }
 
     /// <summary>
     /// Command to output to a csv when executing
@@ -211,7 +209,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SavedQueries = new RelayCommand(PerformSavedQueries);
         EditCustomQuery = new RelayCommand(PerformEditCustomQuery);
         DeleteCustomQuery = new RelayCommand(PerformDeleteCustomQuery);
-        // Change the naming I know 
+        // Change the naming I know
         ExecuteCommandButton = new RelayCommand(ExecuteButtonCommand);
 
         _currentQuery = new CustomQueries.query();
@@ -250,9 +248,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Fill in the queryDescription
         QueryDescription = currQuery.queryDescription;
         // Fill in the commandName
-        Command chosenCommand = ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
+        Command chosenCommand =
+            ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
         SelectedCommand = chosenCommand;
-        // Load the Possible Parameters Syncronously 
+        // Load the Possible Parameters Syncronously
         CommandParameters commandParameters = new CommandParameters();
         commandParameters.LoadCommandParameters(SelectedCommand);
         PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
@@ -261,11 +260,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         for (int i = 0; i < currQuery.commandParameters.Count(); i++)
         {
-            //Adds the Parameters boxes
+            // Adds the Parameters boxes
             object temp = new object();
             AddParameterComboBox(temp);
-            //Fill in the parameter boxes
-            DynamicParameterCollection[i].SelectedParameter = PossibleParameterList.FirstOrDefault(currQuery.commandParameters[i]);
+            // Fill in the parameter boxes
+            DynamicParameterCollection[i].SelectedParameter =
+                PossibleParameterList.FirstOrDefault(currQuery.commandParameters[i]);
             DynamicParameterValuesCollection[i].SelectedParameterValue = currQuery.commandParametersValues[i];
         }
     }
@@ -288,7 +288,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
     public void PerformDeleteCustomQuery(object _)
     {
-        //Delete a button from the custom queries list and from the file
+        // Delete a button from the custom queries list and from the file
         var currButton = _ as Button;
 
         ButtonStackPanel.Remove(currButton);
@@ -334,7 +334,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                 MenuItem menuItem2 = new MenuItem { Header = "Edit" };
                 menuItem2.Command = EditCustomQuery;
-                menuItem2.CommandParameter = newButton; // This set the parent of the menuitem to the button so it is accessible
+                menuItem2.CommandParameter =
+                    newButton; // This set the parent of the menuitem to the button so it is accessible
 
                 MenuItem menuItem3 = new MenuItem { Header = "Delete" };
                 menuItem3.Command = DeleteCustomQuery;
@@ -437,9 +438,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         try
         {
-            //Execute the command
+            // Execute the command
             ReturnValues result = await _powerShellExecutor.ExecuteAsync(toBeExecuted);
-            //Error handling
+            // Error handling
             if (result.HadErrors)
             {
                 PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
@@ -466,7 +467,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             Trace.WriteLine("PossibleParameterList has not been populated yet.");
             return;
         }
-        
+
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
         DynamicParameterValuesCollection.Add(new TextBoxViewModel());
     }
@@ -481,8 +482,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         await ExecuteSelectedCommand();
 
-        //Filepath
-        // Write the text to a file & prompt user for the location
+        // Filepath
+        //  Write the text to a file & prompt user for the location
 
         SaveFileDialog saveFileDialog = new SaveFileDialog();
 
@@ -509,19 +510,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void _OutputToCsvAsync(object _)
-    { 
+    {
         await ExecuteSelectedCommand();
 
-        
         var csv = new StringBuilder();
         string[] output = PowerShellOutput.Split(' ', '\n');
 
         for (int i = 0; i < output.Length - 2; i++)
         {
-            
             var first = output[i];
             var second = output[i + 1];
-            //format the strings and add them to a string
+            // format the strings and add them to a string
             var newLine = string.Format("{0},{1}", first, second);
             csv.AppendLine(newLine);
         }
@@ -545,8 +544,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             File.WriteAllText(filePath, csv.ToString());
         }
 
-        //debug
-        //Trace.WriteLine(PowerShellOutput);
+        // debug
+        // Trace.WriteLine(PowerShellOutput);
     }
 
     /// <summary>
@@ -562,7 +561,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 string selectedItem = comboBoxData.SelectedParameter;
                 // Need to look at this to see if it is working with the object type and then serialize it
-                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
+                SelectedCommand.Parameters.Add(
+                    new CommandParameter(comboBoxData.SelectedParameter,
+                                         DynamicParameterValuesCollection[i].SelectedParameterValue));
             }
         }
         catch (Exception ex)
@@ -594,7 +595,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             foreach (CommandParameter CP in SelectedCommand.Parameters)
             {
                 commandParameters[i] = CP.Name;
-                commandParameterValues[i] = CP.Value.ToString(); 
+                commandParameterValues[i] = CP.Value.ToString();
                 i++;
             }
             _currentQuery.commandParameters = commandParameters;
@@ -627,16 +628,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (isEditing != null)
         {
-            //CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
+            // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
             _customQuery.Queries[_customQuery.Queries.IndexOf(isEditing)] = _currentQuery;
             _customQuery.SerializeMethod();
             isEditing = null;
-
         }
         else
         {
-
             // Try to get the content within the drop downs
             try
             {
@@ -645,9 +644,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 {
                     string selectedItem = comboBoxData.SelectedParameter;
                     // Need to look at this to see if it is working with the object type and then serialize it
-                    //Trace.WriteLine(DynamicParameterValuesCollection[i].SelectedParameterValue);
+                    // Trace.WriteLine(DynamicParameterValuesCollection[i].SelectedParameterValue);
 
-                    SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
+                    SelectedCommand.Parameters.Add(
+                        new CommandParameter(comboBoxData.SelectedParameter,
+                                             DynamicParameterValuesCollection[i].SelectedParameterValue));
                     i++;
                 }
 

@@ -25,7 +25,7 @@ public static class ActiveDirectoryCommands
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<Command> commandList = new();
         ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(command);
-        
+
         // NOTE: This is more of an internal error...
         // TODO: Provide a more detailed error message??? Maybe log the error to a file???
         if (commandListTemp.HadErrors)

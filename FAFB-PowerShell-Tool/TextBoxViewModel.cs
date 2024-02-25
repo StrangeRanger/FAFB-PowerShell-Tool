@@ -24,8 +24,7 @@ public sealed class TextBoxViewModel : INotifyPropertyChanged
     public string SelectedParameterValue
     {
         get => _selectedParameterValue;
-        set
-        {
+        set {
             if (_selectedParameterValue != value)
             {
                 _selectedParameterValue = value;

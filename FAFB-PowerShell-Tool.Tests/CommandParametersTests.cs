@@ -28,7 +28,7 @@ public class CommandParametersTests
         // Assert
         Assert.NotEmpty(commandParameters.PossibleParameters);
     }
-    
+
     [Fact]
     public async Task LoadCommandParametersAsync_CheckPossibleParameter_ContentIsCorrect()
     {

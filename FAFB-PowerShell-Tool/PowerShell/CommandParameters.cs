@@ -53,12 +53,13 @@ public class CommandParameters
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
                 // The command exists, get its parameters
-                string commandString = $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+                string commandString =
+                    $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
 
                 ps.Commands.Clear();
                 ps.AddScript(commandString);
                 PSDataCollection<PSObject> result = await ps.InvokeAsync();
-                
+
                 foreach (PSObject cmd in result)
                 {
                     _possibleParameters.Add($"-{cmd}");
@@ -66,7 +67,7 @@ public class CommandParameters
             }
         }
     }
-    
+
     public void LoadCommandParameters(Command? commandObject)
     {
         // Check if commandObject is null
@@ -82,12 +83,13 @@ public class CommandParameters
             using (var ps = System.Management.Automation.PowerShell.Create())
             {
                 // The command exists, get its parameters
-                string commandString = $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+                string commandString =
+                    $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
 
                 ps.Commands.Clear();
                 ps.AddScript(commandString);
                 Collection<PSObject> result = ps.Invoke();
-                
+
                 foreach (PSObject cmd in result)
                 {
                     _possibleParameters.Add($"-{cmd}");
