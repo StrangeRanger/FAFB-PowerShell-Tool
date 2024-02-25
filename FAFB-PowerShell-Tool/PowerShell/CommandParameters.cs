@@ -7,8 +7,9 @@ namespace FAFB_PowerShell_Tool.PowerShell;
 
 /// <summary>
 /// Manages and provides the parameters available for a given PowerShell command.
+/// TODO: Figure out what to do with the Async and non-Async methods! Too much duplicate code..
 /// </summary>
-public class CommandParameters
+public class CommandParameters : ICommandParameters
 {
     private readonly ObservableCollection<string> _possibleParameters = new();
 
@@ -40,7 +41,9 @@ public class CommandParameters
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task LoadCommandParametersAsync(Command? commandObject)
     {
-        // Check if commandObject is null
+        // commandObject can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
+        // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandList in
+        // MainWindowViewModel.cs, commandObject will be null, causing an exception to be thrown, crashing the program.
         if (commandObject is null)
         {
             Trace.WriteLine("Error: commandObject is null");
@@ -50,27 +53,30 @@ public class CommandParameters
 
         if (_possibleParameters.Count == 0)
         {
-            using (var ps = System.Management.Automation.PowerShell.Create())
+            using var powerShell = System.Management.Automation.PowerShell.Create();
+            string commandString =
+                $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+
+            powerShell.Commands.Clear();
+            powerShell.AddScript(commandString);
+            PSDataCollection<PSObject> result = await powerShell.InvokeAsync();
+
+            foreach (PSObject cmd in result)
             {
-                // The command exists, get its parameters
-                string commandString =
-                    $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
-
-                ps.Commands.Clear();
-                ps.AddScript(commandString);
-                PSDataCollection<PSObject> result = await ps.InvokeAsync();
-
-                foreach (PSObject cmd in result)
-                {
-                    _possibleParameters.Add($"-{cmd}");
-                }
+                _possibleParameters.Add($"-{cmd}");
             }
         }
     }
 
-    public void LoadCommandParameters(Command? commandObject)
+    /// <summary>
+    /// Loads the possible parameters for the specified command into the '_possibleParameters' collection.
+    /// </summary>
+    /// <param name="commandObject">The PowerShell command object whose parameters are to be loaded.</param>
+    void ICommandParameters.LoadCommandParameters(Command? commandObject)
     {
-        // Check if commandObject is null
+        // commandObject can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
+        // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandList in
+        // MainWindowViewModel.cs, commandObject will be null, causing an exception to be thrown, crashing the program.
         if (commandObject is null)
         {
             Trace.WriteLine("Error: commandObject is null");
@@ -80,20 +86,17 @@ public class CommandParameters
 
         if (_possibleParameters.Count == 0)
         {
-            using (var ps = System.Management.Automation.PowerShell.Create())
+            using var powerShell = System.Management.Automation.PowerShell.Create();
+            string commandString =
+                $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{$_.Keys }}";
+
+            powerShell.Commands.Clear();
+            powerShell.AddScript(commandString);
+            Collection<PSObject> result = powerShell.Invoke();
+
+            foreach (PSObject cmd in result)
             {
-                // The command exists, get its parameters
-                string commandString =
-                    $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
-
-                ps.Commands.Clear();
-                ps.AddScript(commandString);
-                Collection<PSObject> result = ps.Invoke();
-
-                foreach (PSObject cmd in result)
-                {
-                    _possibleParameters.Add($"-{cmd}");
-                }
+                _possibleParameters.Add($"-{cmd}");
             }
         }
     }
