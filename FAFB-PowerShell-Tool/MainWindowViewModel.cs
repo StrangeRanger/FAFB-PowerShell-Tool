@@ -5,13 +5,9 @@ using System.Management.Automation.Runspaces;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FAFB_PowerShell_Tool.PowerShell;
-using System.Management.Automation;
 using System.IO;
-using System.Globalization;
 using System.Text;
 using Microsoft.Win32;
-using Microsoft.WSMan.Management;
-using Newtonsoft.Json.Linq;
 
 namespace FAFB_PowerShell_Tool;
 
@@ -234,6 +230,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method will edit the Query and fill out the field with the desired query and you can edit the query
     /// TODO: Add a description to the parameter of this method.
     /// </summary>
+    /// <note>
+    /// This method is of scope internal because it is tested in the test project, but should remain private.
+    /// </note>
     /// <param name="sender"></param>
     private void PerformEditCustomQuery(object sender)
     {
@@ -251,9 +250,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Command chosenCommand =
             ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
         SelectedCommand = chosenCommand;
-        // Load the Possible Parameters Syncronously
+        // Load the Possible Parameters Synchronously
         CommandParameters commandParameters = new CommandParameters();
-        commandParameters.LoadCommandParameters(SelectedCommand);
+        ((ICommandParameters)commandParameters).LoadCommandParameters(SelectedCommand);
         PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleParameterList));
         // Fill in Parameters and values
