@@ -32,6 +32,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _queryName;
     private string _queryDescription;
     private string _parameterValue;
+    // probably want to add the ability to toggle editing vs not editing but filled in 
+    private CustomQueries.query isEditing = null;
 
     // ----------------- Properties ----------------- //
 
@@ -235,11 +237,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Add a description to the parameter of this method.
     /// </summary>
     /// <param name="sender"></param>
-    private async void PerformEditCustomQuery(object sender)
+    private void PerformEditCustomQuery(object sender)
     {
         // Get the button that we are editing
         Button currButton = (Button)sender;
         CustomQueries.query currQuery = (CustomQueries.query)currButton.Tag;
+
+        isEditing = currQuery;
 
         // Need to fill in the queryName
         QueryName = currQuery.queryName;
@@ -248,49 +252,40 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Fill in the commandName
         Command chosenCommand = ActiveDirectoryCommandList.FirstOrDefault(item => item.CommandText == currQuery.commandName);
         SelectedCommand = chosenCommand;
-        //OnPropertyChanged(nameof(SelectedCommand));
-        //testmethod();
-        //Trace.WriteLine(SelectedCommand.CommandText);
-
-        //await LoadParametersAsync(SelectedCommand);
-
-        //Trace.WriteLine(PossibleParameterList.Count());
-
+        // Load the Possible Parameters Syncronously 
+        CommandParameters commandParameters = new CommandParameters();
+        commandParameters.LoadCommandParameters(SelectedCommand);
+        PossibleParameterList = new ObservableCollection<string>(commandParameters.PossibleParameters);
+        OnPropertyChanged(nameof(PossibleParameterList));
         // Fill in Parameters and values
 
         for (int i = 0; i < currQuery.commandParameters.Count(); i++)
         {
-            //DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
-            //DynamicParameterValuesCollection.Add(new TextBoxViewModel());
-
-            //DynamicParameterCollection[i].SelectedParameter = PossibleParameterList.FirstOrDefault(item => item == currQuery.commandParameters[i]);
-            //DynamicParameterValuesCollection[i].SelectedParameterValue = PossibleParameterList.FirstOrDefault(item => item == currQuery.commandParametersValues[i]);
-
+            //Adds the Parameters boxes
+            object temp = new object();
+            AddParameterComboBox(temp);
+            //Fill in the parameter boxes
+            DynamicParameterCollection[i].SelectedParameter = PossibleParameterList.FirstOrDefault(currQuery.commandParameters[i]);
+            DynamicParameterValuesCollection[i].SelectedParameterValue = currQuery.commandParametersValues[i];
         }
-        
-        Trace.WriteLine("This is after the setting of the command");
-        Trace.WriteLine(SelectedCommand.CommandText);
-        // Fill in the commandParameters
-    }
-
-    public void testmethod()
-    {
-        Trace.WriteLine("This is a test method");
     }
 
     /// <summary>
     ///  TODO: Change the naming
+    ///  This method executes the CustomQuery.query.command that is tied to the custom query buttons
     /// </summary>
-    /// <param name="_"></param>
+    /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
     public void ExecuteButtonCommand(object _)
     {
         var currButton = _ as Button;
-
         CustomQueries.query ButtonQuery = (CustomQueries.query)currButton.Tag;
-
         ExecuteGenericCommand(ButtonQuery.command);
     }
 
+    /// <summary>
+    /// This method deletes the button from the list and saves the changes to the file
+    /// </summary>
+    /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
     public void PerformDeleteCustomQuery(object _)
     {
         //Delete a button from the custom queries list and from the file
@@ -299,8 +294,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ButtonStackPanel.Remove(currButton);
         _customQuery.Queries.Remove((CustomQueries.query)currButton.Tag);
         _customQuery.SerializeMethod();
-
-
     }
 
     /// <summary>
@@ -589,6 +582,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         try
         {
+            string[] commandParameters = new string[SelectedCommand.Parameters.Count];
+            string[] commandParameterValues = new string[SelectedCommand.Parameters.Count];
+
             _currentQuery.queryDescription = QueryDescription;
             _currentQuery.queryName = QueryName;
 
@@ -597,10 +593,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             int i = 0;
             foreach (CommandParameter CP in SelectedCommand.Parameters)
             {
-                _currentQuery.commandParameters[i] = (CP.Name);
-                // CurrentQuery.commandParametersValues[i] = ((string) CP.Value);   The values are not quite working yet
+                commandParameters[i] = CP.Name;
+                commandParameterValues[i] = CP.Value.ToString(); 
                 i++;
             }
+            _currentQuery.commandParameters = commandParameters;
+            _currentQuery.commandParametersValues = commandParameterValues;
         }
         catch (Exception ex)
         {
@@ -610,14 +608,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Removes the parameter box after adding them
-    /// TODO: Add a description to the parameter of this method.
     /// </summary>
-    /// <param name="_"></param>
+    /// <param name="_">This is the CommandParameter object that this command is tied to</param>
     private void RemoveParameterComboBox(object _)
     {
         if (DynamicParameterCollection.Count != 0)
         {
             DynamicParameterCollection.RemoveAt(DynamicParameterCollection.Count - 1);
+            DynamicParameterValuesCollection.RemoveAt(DynamicParameterValuesCollection.Count - 1);
         }
     }
 
@@ -627,29 +625,42 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="commandParameter">This is not used but neccisary for the relaycommand</param>
     private void PerformSavedQueries(object commandParameter)
     {
-        // Try to get the content within the drop downs
-        try
+        if (isEditing != null)
         {
-            int i = 0;
-            foreach (var comboBoxData in DynamicParameterCollection)
-            {
-                string selectedItem = comboBoxData.SelectedParameter;
-                // Need to look at this to see if it is working with the object type and then serialize it
-                //Trace.WriteLine(DynamicParameterValuesCollection[i].SelectedParameterValue);
+            //CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
+            GetCurrentQuery();
+            _customQuery.Queries[_customQuery.Queries.IndexOf(isEditing)] = _currentQuery;
+            _customQuery.SerializeMethod();
+            isEditing = null;
 
-                SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
-                i++;
-            }
-
-            _customQuery.SerializeCommand(SelectedCommand, QueryName, QueryDescription);
-
-            Button newButton = createCustomButton();
-
-            ButtonStackPanel.Add(newButton);
         }
-        catch (Exception ex)
+        else
         {
-            Console.Write(ex);
+
+            // Try to get the content within the drop downs
+            try
+            {
+                int i = 0;
+                foreach (var comboBoxData in DynamicParameterCollection)
+                {
+                    string selectedItem = comboBoxData.SelectedParameter;
+                    // Need to look at this to see if it is working with the object type and then serialize it
+                    //Trace.WriteLine(DynamicParameterValuesCollection[i].SelectedParameterValue);
+
+                    SelectedCommand.Parameters.Add(new CommandParameter(comboBoxData.SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
+                    i++;
+                }
+
+                _customQuery.SerializeCommand(SelectedCommand, QueryName, QueryDescription);
+
+                Button newButton = createCustomButton();
+
+                ButtonStackPanel.Add(newButton);
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+            }
         }
     }
 
