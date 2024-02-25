@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// Manages and provides the parameters available for a given PowerShell command.

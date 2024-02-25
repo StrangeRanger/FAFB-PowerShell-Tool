@@ -4,11 +4,11 @@ using System.Management.Automation.Runspaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// This class is used to save a json file named "CustomQueries.dat" inside of
-/// \FAFB-PowerShell-Tool\FAFB-PowerShell-Tool\bin\Debug\net6.0-windows This
+/// \ActiveDirectoryQuerier\ActiveDirectoryQuerier\bin\Debug\net6.0-windows This
 /// </summary>
 internal class CustomQueries
 {

@@ -2,12 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0-windows</TargetFramework>
-        <RootNamespace>FAFB_PowerShell_Tool.Tests</RootNamespace>
+        <RootNamespace>ActiveDirectoryQuerier.Tests</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
 
         <IsPackable>false</IsPackable>
+
+        <AssemblyName>ActiveDirectoryQuerier.Tests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,6 +26,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FAFB-PowerShell-Tool\FAFB-PowerShell-Tool.csproj" />
+      <ProjectReference Include="..\ActiveDirectoryQuerier\ActiveDirectoryQuerier.csproj" />
     </ItemGroup>
 </Project>

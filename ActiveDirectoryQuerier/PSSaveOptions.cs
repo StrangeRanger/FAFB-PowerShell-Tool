@@ -1,7 +1,7 @@
-﻿using FAFB_PowerShell_Tool.PowerShell;
-using System.Management.Automation.Internal;
+﻿using System.Management.Automation.Internal;
+using ActiveDirectoryQuerier.PowerShell;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// This class *might* be used for housing the save options

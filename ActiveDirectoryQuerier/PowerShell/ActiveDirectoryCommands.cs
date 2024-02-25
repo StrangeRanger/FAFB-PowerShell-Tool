@@ -3,7 +3,7 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Windows;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// Provides functionalities related to the ActiveDirectory PowerShell module.

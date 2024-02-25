@@ -1,4 +1,4 @@
-﻿namespace FAFB_PowerShell_Tool.Tests;
+﻿namespace ActiveDirectoryQuerier.Tests;
 
 public class RelayCommandTests
 {

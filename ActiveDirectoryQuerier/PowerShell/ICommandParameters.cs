@@ -1,6 +1,6 @@
 using System.Management.Automation.Runspaces;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 public interface ICommandParameters
 {

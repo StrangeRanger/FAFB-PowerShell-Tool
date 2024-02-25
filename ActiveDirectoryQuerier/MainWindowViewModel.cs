@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Management.Automation.Runspaces;
-using System.Windows.Controls;
-using System.Windows.Input;
-using FAFB_PowerShell_Tool.PowerShell;
 using System.IO;
+using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using ActiveDirectoryQuerier.PowerShell;
 using Microsoft.Win32;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// Primary view model for the MainWindow.

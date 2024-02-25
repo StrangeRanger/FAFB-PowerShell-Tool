@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// ViewModel for a ComboBox that displays possible parameters for a PowerShell command.

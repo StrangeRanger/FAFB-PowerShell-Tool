@@ -4,7 +4,7 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// Manages execution of PowerShell commands, providing both synchronous and asynchronous execution methods.

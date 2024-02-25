@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.

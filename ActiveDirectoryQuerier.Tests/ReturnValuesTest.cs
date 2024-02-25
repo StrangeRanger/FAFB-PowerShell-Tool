@@ -1,6 +1,6 @@
-﻿using FAFB_PowerShell_Tool.PowerShell;
+﻿using ActiveDirectoryQuerier.PowerShell;
 
-namespace FAFB_PowerShell_Tool.Tests;
+namespace ActiveDirectoryQuerier.Tests;
 
 public class ReturnValuesTest
 {
