@@ -11,7 +11,7 @@ public class PowerShellExecutorTests
     public void Execute_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd, string paramName, string paramValue)
     {
         // Arrange
-        Command? command = new(cmd);
+        Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
         PowerShellExecutor powerShellExecutor = new();
 
@@ -28,9 +28,9 @@ public class PowerShellExecutorTests
     public void Execute_CheckIfOutputChanged_ReturnsDifferentOutput()
     {
         // Arrange
-        Command? command = new("Get-Command");
+        Command command = new("Get-Command");
         command.Parameters.Add("Module", "ActiveDirectory");
-        Command? command2 = new("Get-Process");
+        Command command2 = new("Get-Process");
         command.Parameters.Add("Name", "explorer");
         PowerShellExecutor powerShellExecutor = new();
 
@@ -50,7 +50,7 @@ public class PowerShellExecutorTests
                                                                                string paramValue)
     {
         // Arrange
-        Command? command = new(cmd);
+        Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
         PowerShellExecutor powerShellExecutor = new();
 
@@ -69,7 +69,7 @@ public class PowerShellExecutorTests
     public void Execute_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd, string paramName, string paramValue)
     {
         // Arrange
-        Command? command = new(cmd);
+        Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
         PowerShellExecutor powerShellExecutor = new();
 
@@ -90,7 +90,7 @@ public class PowerShellExecutorTests
                                                                                  string paramValue)
     {
         // Arrange
-        Command? command = new(cmd);
+        Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
         PowerShellExecutor powerShellExecutor = new();
 

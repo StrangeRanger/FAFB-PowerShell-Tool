@@ -31,6 +31,12 @@ public class PowerShellExecutor
     /// <param name="command">The command to be prepared for execution.</param>
     private void PrepareCommand(Command? command)
     {
+        // TODO: Might change to just return if command is null...
+        if (command is null)
+        {
+            throw new ArgumentNullException(nameof(command));
+        }
+
         _powerShell.Commands.AddCommand(command.CommandText);
         foreach (var parameter in command.Parameters)
         {

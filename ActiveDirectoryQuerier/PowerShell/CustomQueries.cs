@@ -45,34 +45,32 @@ internal class CustomQueries
         /// </summary>
         public string QueryDescription { get; set; }
 
-        /// <summary>
-        /// Constructor for the query class
-        /// </summary>
-        /// <param name="cN"></param>
-        /// <param name="commandParams"></param>
-        public Query(string cN, string[] commandParams)
+        // Constructor for the query class
+        /*public Query(string cN, string[] commandParams)
         {
             this.CommandName = cN;
             this.CommandParameters = commandParams;
-        }
+        }*/
 
         /// <summary>
-        /// Contructor for the query class
+        /// Constructor for the query class
+        /// TODO: Fix any and all warnings about possible null values.
         /// </summary>
         /// <param name="cN"></param>
         public Query(string cN)
         {
-            this.CommandName = cN;
+            CommandName = cN;
         }
 
         /// <summary>
-        /// Empty Contructor for the query class
+        /// Empty constructor for the query class
+        /// TODO: Fix any and all warnings about possible null values.
         /// </summary>
         public Query()
         { }
     }
 
-    public List<Query> Queries = new List<Query>();
+    public List<Query> Queries = new();
 
     /// <summary>
     /// This a variable for feeding options to the Json serializer
@@ -82,11 +80,13 @@ internal class CustomQueries
         WriteIndented = true,
         ReferenceHandler = ReferenceHandler.Preserve,
     };
+
     /// <summary>
-    /// Emtpy Contructor
+    /// Empty constructor
     /// </summary>
     public CustomQueries()
     { }
+
     /// <summary>
     /// This takes the Queries List and serializes it to a file
     /// </summary>
@@ -102,8 +102,10 @@ internal class CustomQueries
             Trace.WriteLine(ex);
         }
     }
+
     /// <summary>
     /// This method is for serializing a command type, so it converts the type to a query and then serializes it
+    /// TODO: Fix any and all warnings about possible null values.
     /// </summary>
     public void SerializeCommand(Command? cmnd, string queryName, string queryDescription)
     {
@@ -148,6 +150,7 @@ internal class CustomQueries
     }
     /// <summary>
     /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
+    /// TODO: Fix any and all warnings about possible null values.
     /// </summary>
     public void LoadData()
     {
