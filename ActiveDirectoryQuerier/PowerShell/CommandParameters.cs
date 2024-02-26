@@ -42,7 +42,7 @@ public class CommandParameters : ICommandParameters
     public async Task LoadCommandParametersAsync(Command? commandObject)
     {
         // commandObject can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
-        // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandList in
+        // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandsList in
         // MainWindowViewModel.cs, commandObject will be null, causing an exception to be thrown, crashing the program.
         if (commandObject is null)
         {
@@ -75,7 +75,7 @@ public class CommandParameters : ICommandParameters
     void ICommandParameters.LoadCommandParameters(Command? commandObject)
     {
         // commandObject can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
-        // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandList in
+        // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandsList in
         // MainWindowViewModel.cs, commandObject will be null, causing an exception to be thrown, crashing the program.
         if (commandObject is null)
         {
