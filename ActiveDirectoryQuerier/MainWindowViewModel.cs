@@ -659,7 +659,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (SelectedCommand is null)
         {
-            throw new ArgumentNullException(nameof(SelectedCommand));
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("To save a query, you must first select a command.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
         }
 
         if (_isEditing is not null)
