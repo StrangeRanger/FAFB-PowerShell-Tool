@@ -18,11 +18,12 @@
 		<SelfContained>true</SelfContained>
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<TargetFramework>net6.0-windows</TargetFramework>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.11" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.18" />
 	</ItemGroup>
 
 </Project>
