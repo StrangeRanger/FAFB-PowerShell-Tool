@@ -12,7 +12,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private ObservableCollection<string> _possibleParameterList = new();
     private string _selectedParameter = string.Empty;
-    private string _selectedParameterValue = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the ComboBoxParameterViewModel class.
@@ -34,22 +33,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
             {
                 _selectedParameter = value;
                 OnPropertyChanged(nameof(SelectedParameter));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the selected parameter value for the unique ComboBox.
-    /// TODO: Remove this property if it is not used.
-    /// </summary>
-    public string SelectedParameterValue
-    {
-        get => _selectedParameterValue;
-        set {
-            if (_selectedParameterValue != value)
-            {
-                _selectedParameterValue = value;
-                OnPropertyChanged(nameof(SelectedParameterValue));
             }
         }
     }

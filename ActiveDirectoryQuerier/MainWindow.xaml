@@ -104,8 +104,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <ComboBox x:Name="ComboBoxCommandList" 
-                                              ItemsSource="{Binding ActiveDirectoryCommandList}" 
+                                <ComboBox ItemsSource="{Binding ActiveDirectoryCommandList}" 
                                               SelectedItem="{Binding SelectedCommand}"
                                               DisplayMemberPath="CommandText" 
                                               HorizontalAlignment="Center" 
@@ -115,8 +114,7 @@
                                               Grid.Column="0"/>
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
-                                <ItemsControl x:Name="DynamicComboBoxes" 
-                                              ItemsSource="{Binding DynamicParameterCollection}"
+                                <ItemsControl ItemsSource="{Binding DynamicParameterCollection}"
                                               Grid.Column="1">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -132,20 +130,10 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 <!-- TODO: Fill these-->
-                                <ItemsControl x:Name="DynamicComboBoxesValues" 
-                                              ItemsSource="{Binding DynamicParameterValuesCollection}"
+                                <ItemsControl ItemsSource="{Binding DynamicParameterValuesCollection}"
                                               Grid.Column="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <!--
-                                            <ComboBox Width="212"
-                                                      IsEditable="True"
-                                                      HorizontalAlignment="Left"
-                                                      VerticalAlignment="Center"
-                                                      Margin="5"
-                                                      SelectedItem="{Binding SelectedParameter}"
-                                                      />
-                                            -->
                                             <TextBox Width="212"
                                                      HorizontalAlignment="Left"
                                                      VerticalAlignment="Center"
@@ -156,7 +144,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Grid>
-                            <!--
+                   
                             <Grid Grid.Row="1" Margin="12,16,12,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -170,7 +158,7 @@
                                 
                                 
                                 <Button Content="Add New Command Slot"
-                                        Command="{Binding AddCommandComboBox}"
+                                        Command="{Binding AddNewCommandComboBox}"
                                         Grid.Column="0"/>
                                 <Button Content="Add New Parameter Slot"
                                         Command="{Binding AddNewParameterComboBox}"
@@ -195,7 +183,7 @@
                                         Command="{Binding ClearConsoleOutput}"
                                         Grid.Column="6" />
                             </Grid>
-                             -->
+                             
                             <!-- GridSplitter for resizing console area in the second row -->
                             <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White" Grid.Row="2" Grid.ColumnSpan="2"/>
 
@@ -208,7 +196,7 @@
                                 <Menu x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
                                 <MenuItem Header="Options">
                                     <MenuItem Header="Add New Command Slot"
-                                              Command="{Binding AddCommandComboBox}"
+                                              Command="{Binding AddNewCommandComboBox}"
                                               />
                                     <MenuItem Header="Add New Parameter Slot"
                                               Command="{Binding AddNewParameterComboBox}"

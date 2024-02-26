@@ -131,6 +131,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand AddNewParameterComboBox { get; }
 
     /// <summary>
+    /// Command to add a new command ComboBox to the UI.
+    /// </summary>
+    public ICommand AddNewCommandComboBox { get; }
+
+    /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
     /// TODO: Rename this property to match Property naming conventions!!!
     /// </summary>
@@ -202,6 +207,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OutputToCsv = new RelayCommand(_OutputToCsvAsync);
         _OutputToText = new RelayCommand(OutputPowershellOutputToText);
         AddNewParameterComboBox = new RelayCommand(AddParameterComboBox);
+        AddNewCommandComboBox = new RelayCommand(AddCommandComboBox);
         Remove_ParameterComboBox = new RelayCommand(RemoveParameterComboBox);
         SavedQueries = new RelayCommand(PerformSavedQueries);
         EditCustomQuery = new RelayCommand(PerformEditCustomQuery);
@@ -404,7 +410,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (SelectedCommand is null)
         {
-            throw new ArgumentNullException(nameof(SelectedCommand));
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("To execute a command, you must first select a command.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
         }
 
         try
@@ -473,6 +484,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         DynamicParameterCollection.Add(new ComboBoxParameterViewModel(PossibleParameterList));
         DynamicParameterValuesCollection.Add(new TextBoxViewModel());
+    }
+
+    /// <summary>
+    /// TODO: Add a summary.
+    /// </summary>
+    /// <param name="_">This is the object that the command is bound to.</param>
+    /// <exception cref="NotImplementedException"></exception>
+    private void AddCommandComboBox(object _)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -566,13 +587,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Try to get the content within the drop downs
         try
         {
-            int i = 0;
-            foreach (var comboBoxData in DynamicParameterCollection)
+            for (int i = 0; i < DynamicParameterCollection.Count; i++)
             {
-                // string selectedItem = comboBoxData.SelectedParameter;
-                // Need to look at this to see if it is working with the object type and then serialize it
                 SelectedCommand.Parameters.Add(
-                    new CommandParameter(comboBoxData.SelectedParameter,
+                    new CommandParameter(DynamicParameterCollection[i].SelectedParameter,
                                          DynamicParameterValuesCollection[i].SelectedParameterValue));
             }
         }
