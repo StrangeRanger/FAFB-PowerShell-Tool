@@ -19,19 +19,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
     // [ Fields ]-------------------------------------------------------------------- //
     // [[ Event handler property ]] ------------------------------------------------- //
-    
+
     public event PropertyChangedEventHandler? PropertyChanged;
-    
+
     // [[ Backing fields for properties ]] ------------------------------------------ //
-    
+
     private string _powerShellOutput;
     private string _queryName;
     private string _queryDescription;
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
-    
+
     // [[ Other fields ]] ----------------------------------------------------------- //
-    
+
     private CustomQueries _customQuery;
     private CustomQueries.Query _currentQuery;
     // Probably want to add the ability to toggle editing vs not editing but filled in.
@@ -40,7 +40,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
-    
+
     /// <summary>
     /// Gets or sets the output of the executed PowerShell command.
     /// </summary>
@@ -52,7 +52,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(PowerShellOutput));
         }
     }
-    
+
     /// <summary>
     /// The name of the query.
     /// </summary>
@@ -67,7 +67,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     /// <summary>
     /// The description of the query.
     /// </summary>
@@ -82,7 +82,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     /// <summary>
     /// Gets or sets the currently selected PowerShell command.
     /// </summary>
@@ -95,29 +95,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             LoadCommandParametersAsync(value);
         }
     }
-    
+
     /// <summary>
     /// This property creates a collection of buttons to be added to the stack panel for custom queries
     /// </summary>
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
-    
+
     // [[ Other properties ]] ------------------------------------------------------- //
 
     /// <summary>
     /// Collection of Active Directory commands available for execution.
     /// </summary>
     public ObservableCollection<Command> ActiveDirectoryCommandsList { get; private set; }
-    
+
     /// <summary>
     /// Collection of possible parameters for the currently selected command.
     /// </summary>
     public ObservableCollection<string>? PossibleCommandParametersList { get; private set; }
-    
+
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter selections.
     /// </summary>
     public ObservableCollection<ComboBoxParameterViewModel> DynamicParametersCollection { get; }
-    
+
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter value selections.
     /// </summary>
@@ -133,7 +133,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Change property name to be a non-verb.
     /// </summary>
     public ICommand EditCustomQueryRelay { get; }
-    
+
     /// <summary>
     /// TODO: Add a summary.
     /// </summary>
@@ -199,7 +199,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ActiveDirectoryCommandsList = new ObservableCollection<Command>();
         DynamicParametersCollection = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicParameterValuesCollection = new ObservableCollection<TextBoxViewModel>();
-        
+
         ExecuteCommandRelay = new RelayCommand(ExecuteCommandAsync);
         OutputToCsvFileRelay = new RelayCommand(OutputToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputToTextFileAsync);
@@ -490,10 +490,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Add a summary.
     /// </summary>
     /// <param name="_">This is the object that the command is bound to.</param>
-    /// <exception cref="NotImplementedException"></exception>
     private void AddCommandComboBox(object _)
     {
-        throw new NotImplementedException();
+        // throw new NotImplementedException();
+        Trace.WriteLine("Not implemented yet.");
+        MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     /// <summary>
@@ -731,7 +732,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Want to add right click context menu to each button
         ContextMenu contextMenu = new();
 
-        MenuItem menuItem1 = new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
+        MenuItem menuItem1 =
+            new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
 
         MenuItem menuItem2 = new() {
             Header = "Edit",
@@ -739,7 +741,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             CommandParameter = newButton // This set the parent of the menuitem to the button so it is accessible
         };
 
-        MenuItem menuItem3 = new() { Header = "Delete", Command = DeleteCustomQueryRelay, CommandParameter = newButton };
+        MenuItem menuItem3 =
+            new() { Header = "Delete", Command = DeleteCustomQueryRelay, CommandParameter = newButton };
 
         // Add menu item to the context menu
         contextMenu.Items.Add(menuItem1);
@@ -750,7 +753,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         newButton.ContextMenu = contextMenu;
         return newButton;
     }
-    
+
     // [[ Event Handlers ]] --------------------------------------------------------- //
 
     /// <summary>
