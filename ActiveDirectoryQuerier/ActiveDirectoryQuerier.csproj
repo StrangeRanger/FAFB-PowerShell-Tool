@@ -1,38 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <PlatformTarget>x64</PlatformTarget>
-    <RootNamespace>ActiveDirectoryQuerier</RootNamespace>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <UseWPF>true</UseWPF>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<PlatformTarget>x64</PlatformTarget>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>ActiveDirectoryQuerier</AssemblyName>
+		<RootNamespace>ActiveDirectoryQuerier</RootNamespace>
 
-	<!-- Project Info. -->
-    <Title>Active Directory Querier</Title>
-    <Version>0.4.1</Version>
-	<Authors>Hunter T., Pieter Landry Sobtafo, Joseph</Authors>
-    <RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
+		<!-- Project Info. -->
+		<Title>Active Directory Querier</Title>
+		<Version>0.4.1</Version>
+		<Authors>Hunter T., Pieter Landry Sobtafo, Joseph</Authors>
+		<RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
 
-	<!-- Project Compile Time Settings. -->
-    <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <DebugType>embedded</DebugType>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <AssemblyName>ActiveDirectoryQuerier</AssemblyName>
-  </PropertyGroup>
+		<!-- Project Compile Time Settings. -->
+		<PublishSingleFile>false</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+		<DebugType>embedded</DebugType>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>full</DebugType>
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.18" />
-    <PackageReference Include="System.Management.Automation" Version="7.2.18" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.1" />
+		<PackageReference Include="System.Management.Automation" Version="7.4.1" />
+	</ItemGroup>
 
 </Project>

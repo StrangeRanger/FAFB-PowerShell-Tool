@@ -1,15 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0-windows</TargetFramework>
-        <RootNamespace>ActiveDirectoryQuerier.Tests</RootNamespace>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-
         <IsPackable>false</IsPackable>
-
-        <AssemblyName>ActiveDirectoryQuerier.Tests</AssemblyName>
+		<AssemblyName>ActiveDirectoryQuerier.Tests</AssemblyName>
+        <RootNamespace>ActiveDirectoryQuerier.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
