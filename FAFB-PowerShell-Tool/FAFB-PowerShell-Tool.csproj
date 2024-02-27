@@ -18,7 +18,7 @@
 
 	<!-- Project Compile Time Settings. -->
     <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>true</SelfContained>
+    <SelfContained>false</SelfContained> <!-- changed from true to false-->
     <DebugType>embedded</DebugType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>

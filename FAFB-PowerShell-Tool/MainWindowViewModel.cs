@@ -43,6 +43,82 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// The name of the query.
     /// </summary>
+    /// New code begins here
+   
+    private void LoadCustomQueries()
+    {
+        try
+        {
+            // Assuming Get-Users returns a list of users
+            List<User> users = GetUsersCommand(); // Replace this with your actual PowerShell command
+
+            foreach (User user in users)
+            {
+                // Create a new button for each user
+                Button newUserButton = new() { Height = 48 };
+
+                // Set button content (text) to user's name or any relevant information
+                newUserButton.Content = user.UserName;
+
+                // Bind the user object to the button
+                newUserButton.Tag = user;
+
+                // Create a context menu for the button
+                ContextMenu contextMenu = new ContextMenu();
+
+                // Add menu items to the context menu
+                MenuItem menuItem1 = new MenuItem { Header = "Execute" };
+                menuItem1.Command = ExecuteCommandButton;
+                menuItem1.CommandParameter = newUserButton;
+
+                MenuItem menuItem2 = new MenuItem { Header = "Edit" };
+                menuItem2.Command = EditCustomQuery;
+                menuItem2.CommandParameter = newUserButton;
+
+                MenuItem menuItem3 = new MenuItem { Header = "Delete" };
+                menuItem3.Command = Remove_ParameterComboBox;
+
+                // Add menu items to the context menu
+                contextMenu.Items.Add(menuItem1);
+                contextMenu.Items.Add(menuItem2);
+                contextMenu.Items.Add(menuItem3);
+
+                // Set the context menu for the button
+                newUserButton.ContextMenu = contextMenu;
+
+                // Add the button to the stack panel
+                ButtonStackPanel.Add(newUserButton);
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine(ex);
+        }
+    }
+
+    // Replace User with your actual user class
+    public class User
+    {
+        public string UserName { get; set; }
+        // Add other properties as needed
+    }
+
+    // Replace this with your actual PowerShell command to get users
+    private List<User> GetUsersCommand()
+    {
+        // Your PowerShell command logic to get users
+        return new List<User>
+    {
+        new User { UserName = "User1" },
+        new User { UserName = "User2" },
+        
+    };
+    }
+
+    /// New code ends here
+    
+
+
     public string QueryName
     {
         get {
