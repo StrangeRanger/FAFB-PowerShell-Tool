@@ -45,7 +45,7 @@ public class PowerShellExecutorTests
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    public async void ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
+    public async Task ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
                                                                                string paramName,
                                                                                string paramValue)
     {
@@ -85,7 +85,7 @@ public class PowerShellExecutorTests
     [Theory]
     [InlineData("Get-ADUser", "InvalidParameter", "*")]
     [InlineData("InvalidCommand", "Filter", "*")]
-    public async void ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd,
+    public async Task ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd,
                                                                                  string paramName,
                                                                                  string paramValue)
     {

@@ -371,7 +371,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Initializes the list of Active Directory commands asynchronously.
     /// </summary>
-    private async void InitializeActiveDirectoryCommandsAsync()
+    private async Task InitializeActiveDirectoryCommandsAsync()
     {
         ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
         ActiveDirectoryCommandsList = new(list);
@@ -382,7 +382,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Loads the parameters for the selected PowerShell command asynchronously.
     /// </summary>
     /// <param name="selectedCommand">The PowerShell command whose parameters are to be loaded.</param>
-    private async void LoadCommandParametersAsync(Command? selectedCommand)
+    private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
         CommandParameters commandParameters = new();
         await commandParameters.LoadCommandParametersAsync(selectedCommand);
