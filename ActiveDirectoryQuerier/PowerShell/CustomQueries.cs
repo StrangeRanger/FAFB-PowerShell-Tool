@@ -82,12 +82,6 @@ internal class CustomQueries
     };
 
     /// <summary>
-    /// Empty constructor
-    /// </summary>
-    public CustomQueries()
-    { }
-
-    /// <summary>
     /// This takes the Queries List and serializes it to a file
     /// </summary>
     public void SerializeMethod()
