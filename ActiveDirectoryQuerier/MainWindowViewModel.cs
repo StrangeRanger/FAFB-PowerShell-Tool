@@ -32,8 +32,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
-    private CustomQueries _customQuery;
-    private CustomQueries.Query _currentQuery;
+    private readonly CustomQueries _customQuery;
+    private readonly CustomQueries.Query _currentQuery;
     // Probably want to add the ability to toggle editing vs not editing but filled in.
     private CustomQueries.Query? _isEditing;
     private readonly PowerShellExecutor _powerShellExecutor;
@@ -132,12 +132,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This is the command for the edit option on custom queries
     /// TODO: Change property name to be a non-verb.
     /// </summary>
-    public ICommand EditCustomQueryRelay { get; }
+    private ICommand EditCustomQueryRelay { get; }
 
     /// <summary>
     /// TODO: Add a summary.
     /// </summary>
-    public ICommand DeleteCustomQueryRelay { get; }
+    private ICommand DeleteCustomQueryRelay { get; }
 
     /// <summary>
     /// Command to execute the selected PowerShell command.
@@ -149,7 +149,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to execute the buttons inside Custom Command buttons
     /// TODO: Change property name???
     /// </summary>
-    public ICommand ExecuteCommandButtonRelay { get; }
+    private ICommand ExecuteCommandButtonRelay { get; }
 
     /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
