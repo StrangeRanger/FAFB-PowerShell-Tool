@@ -210,7 +210,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SaveCustomQueriesRelay = new RelayCommand(SaveCustomQueries);
         EditCustomQueryRelay = new RelayCommand(EditCustomQuery);
         DeleteCustomQueryRelay = new RelayCommand(DeleteCustomQuery);
-        // TODO: Rename below property and method!!!
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
 
         InitializeActiveDirectoryCommandsAsync();
