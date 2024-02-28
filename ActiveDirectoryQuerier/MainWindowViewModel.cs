@@ -257,9 +257,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ((ICommandParameters)commandParameters).LoadCommandParameters(SelectedComboBoxCommand);
         PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
-        
-        //Check to see if the DynamicParametersCollection is empty and clear it if it is
-        if(DynamicParametersCollection.Count != 0)
+
+        // Check to see if the DynamicParametersCollection is empty and clear it if it is
+        if (DynamicParametersCollection.Count != 0)
         {
             DynamicParametersCollection.Clear();
             DynamicParameterValuesCollection.Clear();
@@ -532,8 +532,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = 
-            new() { FileName = "Document", Filter = "All files(*.*) | *.*" };
+        SaveFileDialog saveFileDialog = new() { FileName = "Document", Filter = "All files(*.*) | *.*" };
 
         // Display
         bool? result = saveFileDialog.ShowDialog();
@@ -688,7 +687,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but could be changed to also do it from the query list.
+    /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but
+    /// could be changed to also do it from the query list.
     /// TODO: Change method name???
     /// </summary>
     /// <returns>This method returns a button that has been customized for the custom query list</returns>
@@ -714,15 +714,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             newButton.Content = query.QueryName ?? query.CommandName;
             newButton.Tag = query;
         }
-        else 
+        else
         {
             newButton.Height = 48;
             newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText;
             newButton.Tag = _currentQuery;
         }
 
-        //Button newButton =
-            //new() { Height = 48, Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText, Tag = _currentQuery };
+        // Button newButton =
+        // new() { Height = 48, Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText, Tag =
+        // _currentQuery };
 
         // Want to add right click context menu to each button
         ContextMenu contextMenu = new();
@@ -730,8 +731,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
 
-        MenuItem menuItem2 = 
-            new() { Header = "Edit", Command = EditCustomQueryRelay, CommandParameter = newButton };
+        MenuItem menuItem2 = new() { Header = "Edit", Command = EditCustomQueryRelay, CommandParameter = newButton };
 
         MenuItem menuItem3 =
             new() { Header = "Delete", Command = DeleteCustomQueryRelay, CommandParameter = newButton };
