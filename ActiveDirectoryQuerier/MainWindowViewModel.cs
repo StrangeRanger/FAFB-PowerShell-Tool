@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ActiveDirectoryQuerier.PowerShell;
 using Microsoft.Win32;
+using static ActiveDirectoryQuerier.PowerShell.CustomQueries;
 
 namespace ActiveDirectoryQuerier;
 
@@ -227,7 +228,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method will edit the Query and fill out the field with the desired query and you can edit the query
-    /// TODO: Fix any and all warnings about possible null values.
     /// </summary>
     /// <note>
     /// This method is of scope internal because it is tested in the test project, but should remain private.
@@ -249,7 +249,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Fill in the commandName
         Command chosenCommand =
-            ActiveDirectoryCommandsList.FirstOrDefault(item => item.CommandText == currQuery.CommandName);
+            ActiveDirectoryCommandsList.FirstOrDefault(item => item.CommandText == currQuery.CommandName)!;
         SelectedComboBoxCommand = chosenCommand;
 
         // Load the Possible Parameters Synchronously
@@ -258,14 +258,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
         
-        // Fill in Parameters and values
-
+        //Check to see if the DynamicParametersCollection is empty and clear it if it is
         if(DynamicParametersCollection.Count != 0)
         {
             DynamicParametersCollection.Clear();
             DynamicParameterValuesCollection.Clear();
         }
 
+        // Fill in Parameters and values
         for (int i = 0; i < currQuery.CommandParameters.Length; i++)
         {
             Trace.WriteLine(currQuery.CommandParameters[i]);
@@ -282,7 +282,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method executes the CustomQuery.query.command that is tied to the custom query buttons
-    /// TODO: Fix any and all warnings about possible null values.
     /// </summary>
     /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
     private async void ExecuteCustomQueryCommandButton(object _)
@@ -319,47 +318,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method will load the custom queries from the file.
-    /// TODO: Fix any and all warnings about possible null values.
     /// TODO: Remove any unused variables.
     /// </summary>
     private void LoadCustomQueries()
     {
         try
         {
+            // Load the custom queries from the file (Deserialize)
             _customQuery.LoadData();
 
-            // parameter counter
-            // int i = 0;
+            // Loop through the queries and create a button for each one
             foreach (CustomQueries.Query cQuery in _customQuery.Queries)
             {
                 // Creates a new button for each query
-                Button newButton = new() { Height = 48,
-                                           // Names the query the command if null otherwise names it correctly
-                                           Content = cQuery.QueryName ?? cQuery.CommandName,
-                                           // Binds the query to the button
-                                           Tag = cQuery };
-
-                // Want to add right click context menu to each button
-                ContextMenu contextMenu = new();
-
-                MenuItem menuItem1 =
-                    new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
-
-                MenuItem menuItem2 = new() { Header = "Edit",
-                                             Command = EditCustomQueryRelay,
-                                             // This set the parent of the menuitem to the button so it is accessible
-                                             CommandParameter = newButton };
-
-                MenuItem menuItem3 =
-                    new() { Header = "Delete", Command = DeleteCustomQueryRelay, CommandParameter = newButton };
-
-                // Add menu item to the context menu
-                contextMenu.Items.Add(menuItem1);
-                contextMenu.Items.Add(menuItem2);
-                contextMenu.Items.Add(menuItem3);
-
-                // Add the context menu to the button
-                newButton.ContextMenu = contextMenu;
+                Button newButton = CreateCustomButton(cQuery);
 
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
@@ -451,10 +423,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
+    /// Executes the inputted Command PowerShell command and updates the PowerShellOutput property with the result.
     /// TODO: Rename this method...
     /// TODO: Does this method do the same thing an another method???
     /// </summary>
+    /// <param name="toBeExecuted">This is the command to be executed</param>
     /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
     private async Task ExecuteGenericCommand(Command? toBeExecuted)
     {
@@ -510,7 +483,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// This will be to Execute a query to a text file
+    /// This method executes the currently selected command and saves the output to a text file.
     /// </summary>
     /// <param name="_">Represents the object that the command is bound to.</param>
     private async void OutputToTextFileAsync(object _)
@@ -559,11 +532,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         // Write the text to a file & prompt user for the location
-
-        SaveFileDialog saveFileDialog = new() {                       // Set properties of the OpenFileDialog
-                                               FileName = "Document", // Default file name
-                                               Filter = "All files(*.*) | *.*"
-        };
+        SaveFileDialog saveFileDialog = 
+            new() { FileName = "Document", Filter = "All files(*.*) | *.*" };
 
         // Display
         bool? result = saveFileDialog.ShowDialog();
@@ -575,9 +545,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             string filePath = saveFileDialog.FileName;
             await File.WriteAllTextAsync(filePath, csv.ToString());
         }
-
-        // debug
-        // Trace.WriteLine(PowerShellOutput);
     }
 
     /// <summary>
@@ -615,7 +582,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Gets the CustomQuery.query object for the current query when called
+    /// Updates the _currentQuery object with the current query information.
     /// TODO: It needs to be tested! Still in the works!
     /// TODO: Fix any and all warnings about possible null values.
     /// </summary>
@@ -721,13 +688,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Add a summary.
-    /// TODO: Add a description of the return value.
+    /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but could be changed to also do it from the query list.
     /// TODO: Change method name???
     /// </summary>
-    /// <returns></returns>
-    private Button CreateCustomButton()
+    /// <returns>This method returns a button that has been customized for the custom query list</returns>
+    private Button CreateCustomButton(CustomQueries.Query query = null)
     {
+        GetCurrentQuery();
+
         if (SelectedComboBoxCommand is null)
         {
             Trace.WriteLine("No command selected.");
@@ -738,8 +706,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return null; // TODO: Figure out what to return here!!!
         }
 
-        Button newButton =
-            new() { Height = 48, Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText };
+        Button newButton = new Button();
+
+        if (query != null)
+        {
+            newButton.Height = 48;
+            newButton.Content = query.QueryName ?? query.CommandName;
+            newButton.Tag = query;
+        }
+        else 
+        {
+            newButton.Height = 48;
+            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText;
+            newButton.Tag = _currentQuery;
+        }
+
+        //Button newButton =
+            //new() { Height = 48, Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText, Tag = _currentQuery };
 
         // Want to add right click context menu to each button
         ContextMenu contextMenu = new();
@@ -747,11 +730,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
 
-        MenuItem menuItem2 = new() {
-            Header = "Edit",
-            Command = EditCustomQueryRelay,
-            CommandParameter = newButton // This set the parent of the menuitem to the button so it is accessible
-        };
+        MenuItem menuItem2 = 
+            new() { Header = "Edit", Command = EditCustomQueryRelay, CommandParameter = newButton };
 
         MenuItem menuItem3 =
             new() { Header = "Delete", Command = DeleteCustomQueryRelay, CommandParameter = newButton };
