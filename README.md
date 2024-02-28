@@ -1,5 +1,6 @@
 # Active Directory Querier
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a25604237be641959068a04b86066f00)](https://app.codacy.com/gh/StrangeRanger/FAFB-PowerShell-Tool?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/FAFB-PowerShell-Tool&utm_campaign=Badge_Grade)
 [![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://wiki.hthompson.dev/en/project-tracker)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://gist.github.com/StrangeRanger/f7f87dd884760f3127adda98d3d4ab14)
