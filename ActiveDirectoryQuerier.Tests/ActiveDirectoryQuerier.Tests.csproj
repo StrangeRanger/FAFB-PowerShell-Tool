@@ -4,7 +4,6 @@
         <IsPackable>false</IsPackable>
 		<AssemblyName>ActiveDirectoryQuerier.Tests</AssemblyName>
         <RootNamespace>ActiveDirectoryQuerier.Tests</RootNamespace>
-        <TargetFramework>net6.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
