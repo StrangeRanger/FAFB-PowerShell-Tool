@@ -243,12 +243,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Need to fill in the queryName
         QueryName = currQuery.QueryName;
+
         // Fill in the queryDescription
         QueryDescription = currQuery.QueryDescription;
+
         // Fill in the commandName
         Command chosenCommand =
             ActiveDirectoryCommandsList.FirstOrDefault(item => item.CommandText == currQuery.CommandName);
         SelectedComboBoxCommand = chosenCommand;
+
         // Load the Possible Parameters Synchronously
         CommandParameters commandParameters = new CommandParameters();
         ((ICommandParameters)commandParameters).LoadCommandParameters(SelectedComboBoxCommand);
@@ -258,12 +261,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         for (int i = 0; i < currQuery.CommandParameters.Length; i++)
         {
+            Trace.WriteLine(currQuery.CommandParameters[i]);
+
             // Adds the Parameters boxes
             object temp = new();
             AddParameterComboBox(temp);
+
             // Fill in the parameter boxes
-            DynamicParametersCollection[i].SelectedParameter =
-                PossibleCommandParametersList.FirstOrDefault(currQuery.CommandParameters[i]);
+            DynamicParametersCollection[i].SelectedParameter = currQuery.CommandParameters[i];
+            
+
             DynamicParameterValuesCollection[i].SelectedParameterValue = currQuery.CommandParametersValues[i];
         }
     }
