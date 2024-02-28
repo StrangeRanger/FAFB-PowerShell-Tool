@@ -217,11 +217,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
 
         // Debug
+        /*
         foreach (Button t in QueryButtonStackPanel)
         {
             CustomQueries.Query test = (CustomQueries.Query)t.Tag;
             Trace.WriteLine(test.CommandName);
         }
+        */
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
@@ -328,6 +330,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _customQuery.LoadData();
 
             // Loop through the queries and create a button for each one
+            int i = 0;
             foreach (CustomQueries.Query cQuery in _customQuery.Queries)
             {
                 // Creates a new button for each query
@@ -335,6 +338,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
+                i++;
             }
         }
         catch (Exception ex)
@@ -694,30 +698,30 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <returns>This method returns a button that has been customized for the custom query list</returns>
     private Button CreateCustomButton(CustomQueries.Query query = null)
     {
-        GetCurrentQuery();
-
-        if (SelectedComboBoxCommand is null)
-        {
-            Trace.WriteLine("No command selected.");
-            MessageBox.Show("To save a query, you must first select a command.",
-                            "Warning",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-            return null; // TODO: Figure out what to return here!!!
-        }
-
         Button newButton = new Button();
 
         if (query != null)
         {
             newButton.Height = 48;
-            newButton.Content = query.QueryName ?? query.CommandName;
+            newButton.Content = (string.IsNullOrEmpty(query.QueryName) ? query.CommandName : query.QueryName);
             newButton.Tag = query;
         }
         else 
         {
+            //Check for null
+            if (SelectedComboBoxCommand is null)
+            {
+                Trace.WriteLine("No command selected.");
+                MessageBox.Show("To save a query, you must first select a command.",
+                                "Warning",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                return null; // TODO: Figure out what to return here!!!
+            }
+
+            GetCurrentQuery();
             newButton.Height = 48;
-            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText;
+            newButton.Content = (QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText);
             newButton.Tag = _currentQuery;
         }
 
