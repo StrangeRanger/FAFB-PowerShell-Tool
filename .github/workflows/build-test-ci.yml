@@ -30,7 +30,7 @@ jobs:
         Import-Module ActiveDirectory
 
     - name: Dotnet Restore & Build
-      run: dotnet build $env:Project_File -c Debug -f net6.0-windows -r win-${{ matrix.targetplatform }}
+      run: dotnet build $env:Project_File -c Debug -f net8.0-windows -r win-${{ matrix.targetplatform }}
 
     - name: Dotnet Test with Coverage
       run: |
