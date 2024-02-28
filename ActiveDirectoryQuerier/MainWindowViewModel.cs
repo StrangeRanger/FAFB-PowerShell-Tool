@@ -257,7 +257,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ((ICommandParameters)commandParameters).LoadCommandParameters(SelectedComboBoxCommand);
         PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
+        
         // Fill in Parameters and values
+
+        if(DynamicParametersCollection.Count != 0)
+        {
+            DynamicParametersCollection.Clear();
+            DynamicParameterValuesCollection.Clear();
+        }
 
         for (int i = 0; i < currQuery.CommandParameters.Length; i++)
         {
@@ -269,8 +276,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             // Fill in the parameter boxes
             DynamicParametersCollection[i].SelectedParameter = currQuery.CommandParameters[i];
-            
-
             DynamicParameterValuesCollection[i].SelectedParameterValue = currQuery.CommandParametersValues[i];
         }
     }
