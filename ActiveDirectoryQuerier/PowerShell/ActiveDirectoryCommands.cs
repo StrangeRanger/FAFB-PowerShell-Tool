@@ -1,8 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Windows;
 
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// Provides functionalities related to the ActiveDirectory PowerShell module.
@@ -25,12 +26,15 @@ public static class ActiveDirectoryCommands
         PowerShellExecutor powerShellExecutor = new();
         ObservableCollection<Command> commandList = new();
         ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(command);
-        
+
         // NOTE: This is more of an internal error...
         // TODO: Provide a more detailed error message??? Maybe log the error to a file???
         if (commandListTemp.HadErrors)
         {
-            MessageBoxOutput.Show(string.Join(" ", commandListTemp.StdErr), MessageBoxOutput.OutputType.Error);
+            MessageBox.Show(string.Join(" ", commandListTemp.StdErr),
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
             throw new InvalidPowerShellStateException(
                 "An error occurred while retrieving the ActiveDirectory commands.");
         }

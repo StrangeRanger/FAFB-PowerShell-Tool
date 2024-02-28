@@ -1,4 +1,4 @@
-namespace FAFB_PowerShell_Tool.PowerShell;
+namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// Encapsulates the return values from a PowerShell command, separated into standard output (StdOut) and standard

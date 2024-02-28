@@ -1,13 +1,13 @@
-﻿<Window x:Class="FAFB_PowerShell_Tool.MainWindow"
+﻿<Window x:Class="ActiveDirectoryQuerier.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FAFB_PowerShell_Tool"
+        xmlns:activeDirectoryQuerier="clr-namespace:ActiveDirectoryQuerier"
         mc:Ignorable="d"
         Title="Active Directory Querier" Height="720" Width="1280">
     <Window.DataContext>
-        <local:MainWindowViewModel />
+        <activeDirectoryQuerier:MainWindowViewModel />
     </Window.DataContext>
 
     <Grid>
@@ -36,28 +36,30 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left Side Query Bar (Content in first column) -->
-            <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
-                <Grid.BindingGroup>
-                    <BindingGroup/>
-                </Grid.BindingGroup>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
+                    <Grid.BindingGroup>
+                        <BindingGroup/>
+                    </Grid.BindingGroup>
 
-                <Grid.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FF616161" Offset="0"/>
-                        <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
-                        <GradientStop Color="#FF898989" Offset="0.737"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
+                    <Grid.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FF616161" Offset="0"/>
+                            <GradientStop Color="#FF5F5F5F" Offset="0.363"/>
+                            <GradientStop Color="#FF898989" Offset="0.737"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
 
-                <!-- Stacked Queries are placed here. -->
-                <ItemsControl ItemsSource="{Binding ButtonStackPanel}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding Content}" Command="{Binding Command}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
+                    <!-- Stacked Queries are placed here. -->
+                    <ItemsControl ItemsSource="{Binding QueryButtonStackPanel}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Content}" Command="{Binding Command}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
 
             <!-- Grid Splitter for resizing. -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" Background="Gray" />
@@ -102,9 +104,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <ComboBox x:Name="ComboBoxCommandList" 
-                                              ItemsSource="{Binding ActiveDirectoryCommandList}" 
-                                              SelectedItem="{Binding SelectedCommand}"
+                                <ComboBox ItemsSource="{Binding ActiveDirectoryCommandsList}" 
+                                              SelectedItem="{Binding SelectedComboBoxCommand}"
                                               DisplayMemberPath="CommandText" 
                                               HorizontalAlignment="Center" 
                                               VerticalAlignment="Center" 
@@ -113,8 +114,7 @@
                                               Grid.Column="0"/>
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
-                                <ItemsControl x:Name="DynamicComboBoxes" 
-                                              ItemsSource="{Binding DynamicParameterCollection}"
+                                <ItemsControl ItemsSource="{Binding DynamicParametersCollection}"
                                               Grid.Column="1">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -130,20 +130,10 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 <!-- TODO: Fill these-->
-                                <ItemsControl x:Name="DynamicComboBoxesValues" 
-                                              ItemsSource="{Binding DynamicParameterValuesCollection}"
+                                <ItemsControl ItemsSource="{Binding DynamicParameterValuesCollection}"
                                               Grid.Column="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <!--
-                                            <ComboBox Width="212"
-                                                      IsEditable="True"
-                                                      HorizontalAlignment="Left"
-                                                      VerticalAlignment="Center"
-                                                      Margin="5"
-                                                      SelectedItem="{Binding SelectedParameter}"
-                                                      />
-                                            -->
                                             <TextBox Width="212"
                                                      HorizontalAlignment="Left"
                                                      VerticalAlignment="Center"
@@ -154,7 +144,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Grid>
-                            <!--
+                   
                             <Grid Grid.Row="1" Margin="12,16,12,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -168,23 +158,22 @@
                                 
                                 
                                 <Button Content="Add New Command Slot"
-                                        Command="{Binding AddCommandComboBox}"
+                                        Command="{Binding AddCommandComboBoxRelay}"
                                         Grid.Column="0"/>
                                 <Button Content="Add New Parameter Slot"
-                                        Command="{Binding AddNewParameterComboBox}"
+                                        Command="{Binding AddParameterComboBoxRelay}"
                                         Grid.Column="1"/>
                                 <Button Content="Remove Parameter Slot"
-                                        Command="{Binding Remove_ParameterComboBox}"
+                                        Command="{Binding RemoveParameterComboBoxRelay}"
                                         Grid.Column="2"
-                                        Grid.Row="1"
                                         />
                                 
                                 <Button x:Name="SaveQueryButton"
                                             Content="Save Query"
-                                            Command="{Binding SavedQueries}"
+                                            Command="{Binding SaveCustomQueriesRelay}"
                                             Grid.Column="3" />
                                 <Button Content="Execute"
-                                            Command="{Binding ExecuteCommand}"
+                                            Command="{Binding ExecuteCommandRelay}"
                                             Grid.Column="4" />
                                 <Button Content="Export Console Output"
                                         Command="{Binding ExportConsoleOutput}"
@@ -193,7 +182,7 @@
                                         Command="{Binding ClearConsoleOutput}"
                                         Grid.Column="6" />
                             </Grid>
-                             -->
+                             
                             <!-- GridSplitter for resizing console area in the second row -->
                             <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White" Grid.Row="2" Grid.ColumnSpan="2"/>
 
@@ -203,30 +192,30 @@
                                 <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
                             <!-- Menu options  -->
-                                <Menu x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
+                                <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
                                 <MenuItem Header="Options">
                                     <MenuItem Header="Add New Command Slot"
-                                              Command="{Binding AddCommandComboBox}"
+                                              Command="{Binding AddCommandComboBoxRelay}"
                                               />
                                     <MenuItem Header="Add New Parameter Slot"
-                                              Command="{Binding AddNewParameterComboBox}"
+                                              Command="{Binding AddParameterComboBoxRelay}"
                                               />
                                     <MenuItem Header="Remove Parameter Slot"
-                                              Command="{Binding Remove_ParameterComboBox}"
+                                              Command="{Binding RemoveParameterComboBoxRelay}"
                                               />
                                     <MenuItem Header="Save Query"
-                                              Command="{Binding SavedQueries}"
+                                              Command="{Binding SaveCustomQueriesRelay}"
                                               />
                                     <MenuItem Header="Execute"
-                                              Command="{Binding ExecuteCommand}"
+                                              Command="{Binding ExecuteCommandRelay}"
                                               >
                                         <MenuItem Header="Output to console"
-                                                  Command="{Binding ExecuteCommand}"
+                                                  Command="{Binding ExecuteCommandRelay}"
                                                   />
                                         <MenuItem Header="Output to Csv"
-                                                  Command="{Binding OutputToCsv}"/>
+                                                  Command="{Binding OutputToCsvFileRelay}"/>
                                         <MenuItem Header="Output to Text"
-                                                  Command="{Binding _OutputToText}"/>
+                                                  Command="{Binding OutputToTextFileRelay}"/>
                                     </MenuItem>
                                     <MenuItem Header="Export Console Output"
                                               Command="{Binding ExportConsoleOutput}"

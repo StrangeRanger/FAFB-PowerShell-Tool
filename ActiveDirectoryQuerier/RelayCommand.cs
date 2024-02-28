@@ -1,13 +1,17 @@
 ﻿using System.Windows.Input;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.
+/// TODO: Remove any unused methods, after some investigation.
 /// </summary>
+/// <note>
+/// I'm unsure if I'm dealing with the nullability warnings correctly, in this situation...
+/// </note>
 public class RelayCommand : ICommand
 {
-    private readonly Action<object?> _execute;
+    private readonly Action<object> _execute;
     private readonly Predicate<object?>? _canExecute;
 
     /// <summary>
@@ -16,9 +20,9 @@ public class RelayCommand : ICommand
     /// <param name="execute">The execution logic.</param>
     /// <param name="canExecute">The execution status logic.</param>
     /// <exception cref="ArgumentNullException">If the execute argument is null.</exception>
-    public RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
+    public RelayCommand(Action<object> execute, Predicate<object?>? canExecute = null)
     {
-        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _execute = execute;
         _canExecute = canExecute;
     }
 
@@ -42,7 +46,8 @@ public class RelayCommand : ICommand
     /// </param>
     public void Execute(object? parameter)
     {
-        _execute(parameter);
+        // For now, we are ignoring the warning about the parameter being null.
+        _execute(parameter!);
     }
 
     /// <summary>

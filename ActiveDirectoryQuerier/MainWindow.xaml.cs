@@ -1,4 +1,4 @@
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 public partial class MainWindow
 {

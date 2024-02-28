@@ -1,4 +1,4 @@
-﻿namespace FAFB_PowerShell_Tool.Tests;
+﻿namespace ActiveDirectoryQuerier.Tests;
 
 public class RelayCommandTests
 {
@@ -76,6 +76,7 @@ public class RelayCommandTests
         RelayCommand command = new(
             _ =>
             {});
+        // ReSharper disable once EventUnsubscriptionViaAnonymousDelegate
         command.CanExecuteChanged -= (_, _) =>
         {};
     }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// ViewModel for a ComboBox that displays possible parameters for a PowerShell command.
@@ -12,13 +12,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private ObservableCollection<string> _possibleParameterList = new();
     private string _selectedParameter = string.Empty;
-    private string _selectedParameterValue = string.Empty;
-
-    /// <summary>
-    /// Empty constructor to initialize a new ComboBoxParameterViewModel.
-    /// </summary>
-    public ComboBoxParameterViewModel()
-    { }
 
     /// <summary>
     /// Initializes a new instance of the ComboBoxParameterViewModel class.
@@ -30,7 +23,7 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Sets a unique selected value for each combo box
+    /// Sets a unique selected value for each combo box.
     /// </summary>
     public string SelectedParameter
     {
@@ -40,21 +33,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
             {
                 _selectedParameter = value;
                 OnPropertyChanged(nameof(SelectedParameter));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the selected parameter value for the unique ComboBox.
-    /// </summary>
-    public string SelectedParameterValue
-    {
-        get => _selectedParameterValue;
-        set {
-            if (_selectedParameterValue != value)
-            {
-                _selectedParameterValue = value;
-                OnPropertyChanged(nameof(SelectedParameterValue));
             }
         }
     }

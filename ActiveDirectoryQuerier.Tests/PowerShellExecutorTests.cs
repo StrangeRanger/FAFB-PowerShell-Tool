@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation.Runspaces;
-using FAFB_PowerShell_Tool.PowerShell;
+using ActiveDirectoryQuerier.PowerShell;
 
-namespace FAFB_PowerShell_Tool.Tests;
+namespace ActiveDirectoryQuerier.Tests;
 
 public class PowerShellExecutorTests
 {
@@ -23,7 +23,7 @@ public class PowerShellExecutorTests
         Assert.Empty(result.StdErr);
         Assert.NotEmpty(result.StdOut);
     }
-    
+
     [Fact]
     public void Execute_CheckIfOutputChanged_ReturnsDifferentOutput()
     {
@@ -45,7 +45,7 @@ public class PowerShellExecutorTests
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    public async void ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
+    public async Task ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
                                                                                string paramName,
                                                                                string paramValue)
     {
@@ -85,7 +85,7 @@ public class PowerShellExecutorTests
     [Theory]
     [InlineData("Get-ADUser", "InvalidParameter", "*")]
     [InlineData("InvalidCommand", "Filter", "*")]
-    public async void ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd,
+    public async Task ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd,
                                                                                  string paramName,
                                                                                  string paramValue)
     {

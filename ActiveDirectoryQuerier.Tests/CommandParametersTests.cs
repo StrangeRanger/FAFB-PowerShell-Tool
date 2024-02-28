@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation.Runspaces;
-using FAFB_PowerShell_Tool.PowerShell;
+using ActiveDirectoryQuerier.PowerShell;
 
-namespace FAFB_PowerShell_Tool.Tests;
+namespace ActiveDirectoryQuerier.Tests;
 
 public class CommandParametersTests
 {
@@ -28,7 +28,7 @@ public class CommandParametersTests
         // Assert
         Assert.NotEmpty(commandParameters.PossibleParameters);
     }
-    
+
     [Fact]
     public async Task LoadCommandParametersAsync_CheckPossibleParameter_ContentIsCorrect()
     {

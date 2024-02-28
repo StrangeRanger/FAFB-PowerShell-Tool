@@ -16,7 +16,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Project_File: FAFB-PowerShell-Tool\FAFB-PowerShell-Tool.csproj
+      Project_File: ActiveDirectoryQuerier\ActiveDirectoryQuerier.csproj
 
     steps:
     - name: Checkout
@@ -30,15 +30,15 @@ jobs:
     - name: Dotnet Build & Publish
       run: |
         dotnet build $env:Project_File -c Release -f net6.0-windows -r win-${{ matrix.targetplatform }}
-        dotnet publish $env:Project_File -c Release -f net6.0-windows -r win-${{ matrix.targetplatform }} -o ./publish/FAFB_PowerShell_Tool_${{ matrix.targetplatform }}
+        dotnet publish $env:Project_File -c Release -f net6.0-windows -r win-${{ matrix.targetplatform }} -o ./publish/ActiveDirectoryQuerier_${{ matrix.targetplatform }}
 
     - name: Zip Release Files
-      run: Compress-Archive -Path .\publish\FAFB_PowerShell_Tool_${{ matrix.targetplatform }} -DestinationPath .\FAFB_PowerShell_Tool_${{ matrix.targetplatform }}.zip
+      run: Compress-Archive -Path .\publish\ActiveDirectoryQuerier_${{ matrix.targetplatform }} -DestinationPath .\ActiveDirectoryQuerier_${{ matrix.targetplatform }}.zip
 
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        files: FAFB_PowerShell_Tool_${{ matrix.targetplatform }}.zip
+        files: ActiveDirectoryQuerier_${{ matrix.targetplatform }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
