@@ -28,19 +28,33 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _powerShellOutput;
     private string _queryName;
     private string _queryDescription;
+    private bool _EditingEnabled;
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
     private readonly CustomQueries _customQuery;
-    private readonly CustomQueries.Query _currentQuery;
+    private readonly Query _currentQuery;
     // Probably want to add the ability to toggle editing vs not editing but filled in.
-    private CustomQueries.Query? _isEditing;
+    private Query? _isEditing;
     private readonly PowerShellExecutor _powerShellExecutor;
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
+
+    /// <summary>
+    /// This is tied to the Editing checkbox and will allow the user to edit the custom queries or not to
+    /// </summary>
+    public bool EditingEnabled
+    {
+        get { return _EditingEnabled; }
+        set
+        {
+            _EditingEnabled = value;
+            OnPropertyChanged("EditingEnabled");
+        }
+    }
 
     /// <summary>
     /// Gets or sets the output of the executed PowerShell command.
@@ -130,13 +144,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand SaveCustomQueriesRelay { get; }
 
     /// <summary>
+    /// This is the command tied to Clear Query calls the ClearQueryBuilder method 
+    /// </summary>
+    public ICommand ClearQueryBuilderRelay { get; }
+
+    /// <summary>
     /// This is the command for the edit option on custom queries
     /// TODO: Change property name to be a non-verb.
     /// </summary>
     private ICommand EditCustomQueryRelay { get; }
 
     /// <summary>
-    /// TODO: Add a summary.
+    /// This is tied to the Button menu calls the DeleteCustomQuery method to delete a CustomQuery button
     /// </summary>
     private ICommand DeleteCustomQueryRelay { get; }
 
@@ -195,7 +214,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _queryDescription = string.Empty;
         _powerShellExecutor = new PowerShellExecutor();
         _customQuery = new CustomQueries();
-        _currentQuery = new CustomQueries.Query();
+        _currentQuery = new Query();
 
         ActiveDirectoryCommandsList = new ObservableCollection<Command>();
         DynamicParametersCollection = new ObservableCollection<ComboBoxParameterViewModel>();
@@ -211,6 +230,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         EditCustomQueryRelay = new RelayCommand(EditCustomQuery);
         DeleteCustomQueryRelay = new RelayCommand(DeleteCustomQuery);
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
+        ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
         InitializeActiveDirectoryCommandsAsync();
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
@@ -238,9 +258,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         // Get the button that we are editing
         Button currButton = (Button)sender;
-        CustomQueries.Query currQuery = (CustomQueries.Query)currButton.Tag;
+        Query currQuery = (Query)currButton.Tag;
 
         _isEditing = currQuery;
+        EditingEnabled = true;
 
         // Need to fill in the queryName
         QueryName = currQuery.QueryName;
@@ -294,7 +315,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        CustomQueries.Query buttonQuery = (CustomQueries.Query)currentButton.Tag;
+        Query buttonQuery = (Query)currentButton.Tag;
         await ExecuteGenericCommand(buttonQuery.Command);
     }
 
@@ -313,7 +334,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         QueryButtonStackPanel.Remove(currentButton);
-        _customQuery.Queries.Remove((CustomQueries.Query)currentButton.Tag);
+        _customQuery.Queries.Remove((Query)currentButton.Tag);
         _customQuery.SerializeMethod();
     }
 
@@ -330,7 +351,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             // Loop through the queries and create a button for each one
             int i = 0;
-            foreach (CustomQueries.Query cQuery in _customQuery.Queries)
+            foreach (Query cQuery in _customQuery.Queries)
             {
                 // Creates a new button for each query
                 Button newButton = CreateCustomButton(cQuery);
@@ -552,7 +573,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// This method is for getting the currently selected command at anytime
     /// TODO: !Still in the works!
-    /// TODO: Remove any unused variables.
     /// TODO: Does this method do the same thing an another method???
     /// </summary>
     private void UpdateSelectedCommand()
@@ -650,13 +670,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        if (_isEditing is not null)
+        if (_isEditing is not null && EditingEnabled == true)
         {
             // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
             _customQuery.Queries[_customQuery.Queries.IndexOf(_isEditing)] = _currentQuery;
             _customQuery.SerializeMethod();
             _isEditing = null;
+            EditingEnabled = false;
         }
         else
         {
@@ -690,12 +711,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// This method will clear the query builder and reset the fields to their default values
+    /// </summary>
+    /// <param name="_">Object that the command is tied to</param>
+    private void ClearQueryBuilder(object _)
+    {
+        SelectedComboBoxCommand = null;
+        DynamicParametersCollection.Clear();
+        DynamicParameterValuesCollection.Clear();
+    }
+
+    /// <summary>
     /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but
     /// could be changed to also do it from the query list.
     /// TODO: Change method name???
     /// </summary>
     /// <returns>This method returns a button that has been customized for the custom query list</returns>
-    private Button CreateCustomButton(CustomQueries.Query query = null)
+    private Button CreateCustomButton(Query query = null)
     {
         Button newButton = new Button();
 

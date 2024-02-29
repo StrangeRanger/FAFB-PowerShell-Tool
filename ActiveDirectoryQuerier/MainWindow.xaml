@@ -144,7 +144,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Grid>
-                   
+
                             <Grid Grid.Row="1" Margin="12,16,12,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -155,8 +155,8 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                
-                                
+
+
                                 <Button Content="Add New Command Slot"
                                         Command="{Binding AddCommandComboBoxRelay}"
                                         Grid.Column="0"/>
@@ -167,7 +167,7 @@
                                         Command="{Binding RemoveParameterComboBoxRelay}"
                                         Grid.Column="2"
                                         />
-                                
+
                                 <Button x:Name="SaveQueryButton"
                                             Content="Save Query"
                                             Command="{Binding SaveCustomQueriesRelay}"
@@ -182,7 +182,7 @@
                                         Command="{Binding ClearConsoleOutput}"
                                         Grid.Column="6" />
                             </Grid>
-                             
+
                             <!-- GridSplitter for resizing console area in the second row -->
                             <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White" Grid.Row="2" Grid.ColumnSpan="2"/>
 
@@ -192,7 +192,7 @@
                                 <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
                             <!-- Menu options  -->
-                                <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
+                            <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
                                 <MenuItem Header="Options">
                                     <MenuItem Header="Add New Command Slot"
                                               Command="{Binding AddCommandComboBoxRelay}"
@@ -226,9 +226,12 @@
                                     <MenuItem Header="Add Button"
                                               Command="{Binding AddButton}"
                                               />
+                                    <MenuItem Header="Clear Query"
+                                              Command="{Binding ClearQueryBuilderRelay}"/>
 
                                 </MenuItem>
                             </Menu>
+                            <CheckBox x:Name="isEditing" Content="Editing" HorizontalAlignment="Left" Margin="14,57,0,0" VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Active Directory Information">

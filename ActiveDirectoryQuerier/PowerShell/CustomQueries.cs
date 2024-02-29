@@ -164,9 +164,9 @@ internal class CustomQueries
                 {
                     for (int i = 0; i < q.CommandParameters.Length; i++)
                     {
-                        // command.Parameters.Add(q.commandParameters[i], q.commandParametersValues[i]);  -- Once
+                        command.Parameters.Add(q.CommandParameters[i], q.CommandParametersValues[i]);
                         // the values are working then we will use this
-                        command.Parameters.Add(q.CommandParameters[i]);
+                        //command.Parameters.Add(q.CommandParameters[i]);
                     }
                 }
 
