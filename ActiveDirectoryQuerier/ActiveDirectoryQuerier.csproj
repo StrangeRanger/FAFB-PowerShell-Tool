@@ -18,7 +18,6 @@
 		<SelfContained>true</SelfContained>
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<TargetFramework>net7.0-windows</TargetFramework>
 	</PropertyGroup>
 
 	<ItemGroup>
