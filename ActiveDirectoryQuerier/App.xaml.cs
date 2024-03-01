@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace FAFB_PowerShell_Tool;
+namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// Interaction logic for App.xaml
