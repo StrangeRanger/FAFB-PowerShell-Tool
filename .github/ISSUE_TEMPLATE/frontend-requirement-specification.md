@@ -12,4 +12,3 @@ If the GUI element being mentioned relates to an issue for a backend requirement
 
 Example: The command dropdown menu implementation of requirement #53.
 -->
-
