@@ -48,7 +48,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public bool EditingEnabled
     {
-        get { return _editingEnabled; }
+        get => _editingEnabled;
         set
         {
             _editingEnabled = value;
@@ -107,7 +107,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         set {
             _selectedComboBoxCommand = value;
             OnPropertyChanged(nameof(SelectedComboBoxCommand));
-            LoadCommandParametersAsync(value);
+            // No need to load parameters if the command is null.
+            if (value is not null) 
+            {
+                LoadCommandParametersAsync(value);  // TODO: TODO: Maybe change this method to synchronous...
+            }
         }
     }
 
@@ -150,7 +154,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This is the command for the edit option on custom queries
-    /// TODO: Change property name to be a non-verb.
     /// </summary>
     private ICommand EditCustomQueryRelay { get; }
 
@@ -161,13 +164,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Command to execute the selected PowerShell command.
-    /// TODO: Change property name???
     /// </summary>
     public ICommand ExecuteCommandRelay { get; }
 
     /// <summary>
     /// Command to execute the buttons inside Custom Command buttons
-    /// TODO: Change property name???
     /// </summary>
     private ICommand ExecuteCommandButtonRelay { get; }
 
@@ -183,13 +184,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
-    /// TODO: Rename this property to match Property naming conventions!!!
     /// </summary>
     public ICommand RemoveParameterComboBoxRelay { get; }
 
     /// <summary>
     /// Command to have the output send to a text file when executing
-    /// TODO: Get-only auto-property 'OutputToTextFileAsync' is never assigned!!!
     /// </summary>
     public ICommand OutputToTextFileRelay { get; }
 
@@ -202,15 +201,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Class constructor.
-    /// TODO: Fix warnings about possible null values.
     /// </summary>
     public MainWindowViewModel()
     {
-        // TODO: Possibly make the fields nullable to enforce they are filled when saved and such.
         _powerShellOutput = string.Empty;
-        // TODO: Possibly make the fields nullable to enforce they are filled when saved and such.
         _queryName = string.Empty;
-        // TODO: Possibly make the fields nullable to enforce they are filled when saved and such.
         _queryDescription = string.Empty;
         _powerShellExecutor = new PowerShellExecutor();
         _customQuery = new CustomQueries();
@@ -232,17 +227,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
-        InitializeActiveDirectoryCommandsAsync();
+        InitializeActiveDirectoryCommandsAsync(); // TODO: Maybe change this method to synchronous...
         LoadCustomQueries(); // Calls method to deserialize and load buttons.
 
         // Debug
-        /*
-        foreach (Button t in QueryButtonStackPanel)
+        /*foreach (Button t in QueryButtonStackPanel)
         {
             CustomQueries.Query test = (CustomQueries.Query)t.Tag;
             Trace.WriteLine(test.CommandName);
-        }
-        */
+        }*/
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
@@ -250,28 +243,25 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// This method will edit the Query and fill out the field with the desired query and you can edit the query
     /// </summary>
-    /// <note>
-    /// This method is of scope internal because it is tested in the test project, but should remain private.
-    /// </note>
     /// <param name="sender">This is the object that is clicked when executing</param>
     private void EditCustomQuery(object sender)
     {
         // Get the button that we are editing
-        Button currButton = (Button)sender;
-        Query currQuery = (Query)currButton.Tag;
+        Button currentButton = (Button)sender;
+        Query currentQuery = (Query)currentButton.Tag;
 
-        _isEditing = currQuery;
+        _isEditing = currentQuery;
         EditingEnabled = true;
 
         // Need to fill in the queryName
-        QueryName = currQuery.QueryName;
+        QueryName = currentQuery.QueryName;
 
         // Fill in the queryDescription
-        QueryDescription = currQuery.QueryDescription;
+        QueryDescription = currentQuery.QueryDescription;
 
         // Fill in the commandName
         Command chosenCommand =
-            ActiveDirectoryCommandsList.FirstOrDefault(item => item.CommandText == currQuery.CommandName)!;
+            ActiveDirectoryCommandsList.FirstOrDefault(item => item.CommandText == currentQuery.CommandName)!;
         SelectedComboBoxCommand = chosenCommand;
 
         // Load the Possible Parameters Synchronously
@@ -288,17 +278,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         // Fill in Parameters and values
-        for (int i = 0; i < currQuery.CommandParameters.Length; i++)
+        for (int i = 0; i < currentQuery.CommandParameters.Length; i++)
         {
-            Trace.WriteLine(currQuery.CommandParameters[i]);
+            Trace.WriteLine(currentQuery.CommandParameters[i]);
 
             // Adds the Parameters boxes
             object temp = new();
             AddParameterComboBox(temp);
 
             // Fill in the parameter boxes
-            DynamicParametersCollection[i].SelectedParameter = currQuery.CommandParameters[i];
-            DynamicParameterValuesCollection[i].SelectedParameterValue = currQuery.CommandParametersValues[i];
+            DynamicParametersCollection[i].SelectedParameter = currentQuery.CommandParameters[i];
+            DynamicParameterValuesCollection[i].SelectedParameterValue = currentQuery.CommandParametersValues[i];
         }
     }
 
@@ -312,6 +302,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (currentButton is null)
         {
+            Trace.WriteLine("No button selected.");
+            MessageBox.Show("To execute a query, you must first select a query.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
             return;
         }
 
@@ -330,6 +325,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (currentButton is null)
         {
+            Trace.WriteLine("No button selected.");
+            MessageBox.Show("To delete a query, you must first select a query.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
             return;
         }
 
@@ -340,7 +340,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method will load the custom queries from the file.
-    /// TODO: Remove any unused variables.
     /// </summary>
     private void LoadCustomQueries()
     {
@@ -350,7 +349,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _customQuery.LoadData();
 
             // Loop through the queries and create a button for each one
-            int i = 0;
             foreach (Query cQuery in _customQuery.Queries)
             {
                 // Creates a new button for each query
@@ -358,7 +356,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
-                i++;
             }
         }
         catch (Exception ex)
@@ -448,9 +445,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Executes the inputted Command PowerShell command and updates the PowerShellOutput property with the result.
-    /// TODO: Rename this method...
-    /// TODO: Does this method do the same thing an another method???
     /// </summary>
+    /// <note>
+    /// TODO: Rename this method...
+    /// TODO: Does this method do the same thing an another method?
+    /// TODO: Add error handling for null values...
+    /// </note>
     /// <param name="toBeExecuted">This is the command to be executed</param>
     /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
     private async Task ExecuteGenericCommand(Command? toBeExecuted)
@@ -501,7 +501,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">This is the object that the command is bound to.</param>
     private void AddCommandComboBox(object _)
     {
-        // throw new NotImplementedException();
         Trace.WriteLine("Not implemented yet.");
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
@@ -516,7 +515,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Filepath
         // Write the text to a file & prompt user for the location
-
         SaveFileDialog saveFileDialog = new() {                       // Set properties of the OpenFileDialog
                                                FileName = "Document", // Default file name
                                                Filter = "All files(*.*) | *.*"
@@ -572,9 +570,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method is for getting the currently selected command at anytime
-    /// TODO: !Still in the works!
-    /// TODO: Does this method do the same thing an another method???
     /// </summary>
+    /// <note>
+    /// TODO: !Still in the works!
+    /// TODO: Does this method do the same thing an another method?
+    /// </note>
     private void UpdateSelectedCommand()
     {
         if (SelectedComboBoxCommand is null)
@@ -605,16 +605,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Updates the _currentQuery object with the current query information.
+    /// </summary>
+    /// <note>
     /// TODO: It needs to be tested! Still in the works!
     /// TODO: Fix any and all warnings about possible null values.
-    /// </summary>
+    /// </note>
     private void GetCurrentQuery()
     {
-        // Update the selected command
         UpdateSelectedCommand();
 
         try
         {
+            // TODO: Fix this method to handle null values...
             string[] commandParameters = new string[SelectedComboBoxCommand.Parameters.Count];
             string[] commandParameterValues = new string[SelectedComboBoxCommand.Parameters.Count];
 
@@ -623,6 +625,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             _currentQuery.CommandName = SelectedComboBoxCommand.CommandText;
 
+            // TODO: Possibly convert foreach into a for loop...
             int i = 0;
             foreach (CommandParameter commandParameter in SelectedComboBoxCommand.Parameters)
             {
@@ -654,8 +657,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// This method will serialize the command and add it to the list of buttons.
-    /// TODO: Fix any and all warnings about possible null values.
-    /// TODO: Remove any unused variables.
     /// </summary>
     /// <param name="commandParameter">This is not used but necessary for the relay command</param>
     private void SaveCustomQueries(object commandParameter)
@@ -670,7 +671,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        if (_isEditing is not null && EditingEnabled == true)
+        if (_isEditing is not null && EditingEnabled)
         {
             // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
@@ -684,6 +685,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // Try to get the content within the drop downs
             try
             {
+                // TODO: Possibly convert foreach into a for loop...
                 int i = 0;
                 foreach (var comboBoxData in DynamicParametersCollection)
                 {
@@ -727,7 +729,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// TODO: Change method name???
     /// </summary>
     /// <returns>This method returns a button that has been customized for the custom query list</returns>
-    private Button CreateCustomButton(Query query = null)
+    private Button CreateCustomButton(Query? query = null)
     {
         Button newButton = new Button();
 
@@ -752,7 +754,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             GetCurrentQuery();
             newButton.Height = 48;
-            newButton.Content = (QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText);
+            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText;
             newButton.Tag = _currentQuery;
         }
 
