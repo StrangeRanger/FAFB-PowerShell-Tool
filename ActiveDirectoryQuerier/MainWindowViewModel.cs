@@ -311,7 +311,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         Query buttonQuery = (Query)currentButton.Tag;
-        await ExecuteGenericCommand(buttonQuery.Command);
+        await ExecuteSelectedCommandAsync(buttonQuery.Command);
     }
 
     /// <summary>
@@ -405,9 +405,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
     /// </summary>
     /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
-    private async Task ExecuteSelectedCommandAsync()
+    private async Task ExecuteSelectedCommandAsync(Command? inCommand = null)
     {
-        if (SelectedComboBoxCommand is null)
+        if (SelectedComboBoxCommand is null && inCommand is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To execute a command, you must first select a command.",
@@ -417,48 +417,21 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
+        ReturnValues result;
+
         try
         {
-            // Add selected parameters and their values to the command.
-            for (int i = 0; i < DynamicParametersCollection.Count; i++)
+            if (inCommand is not null)
             {
-                string parameterName = DynamicParametersCollection[i].SelectedParameter;
-                string parameterValue = DynamicParameterValuesCollection[i].SelectedParameterValue;
-                SelectedComboBoxCommand.Parameters.Add(new CommandParameter(parameterName, parameterValue));
+                result = await _powerShellExecutor.ExecuteAsync(inCommand);
+            }
+            else
+            {
+                // Add selected parameters and their values to the command.
+                UpdateSelectedCommand();
+                result = await _powerShellExecutor.ExecuteAsync(SelectedComboBoxCommand);
             }
 
-            ReturnValues result = await _powerShellExecutor.ExecuteAsync(SelectedComboBoxCommand);
-
-            if (result.HadErrors)
-            {
-                PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
-                return;
-            }
-
-            PowerShellOutput = string.Join(Environment.NewLine, result.StdOut);
-        }
-        catch (Exception ex)
-        {
-            PowerShellOutput = $"Error executing command: {ex.Message}";
-        }
-    }
-
-    /// <summary>
-    /// Executes the inputted Command PowerShell command and updates the PowerShellOutput property with the result.
-    /// </summary>
-    /// <note>
-    /// TODO: Does this method do the same thing an another method?
-    /// TODO: Add error handling for null values...
-    /// </note>
-    /// <param name="toBeExecuted">This is the command to be executed</param>
-    /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
-    private async Task ExecuteGenericCommand(Command? toBeExecuted)
-    {
-        try
-        {
-            // Execute the command
-            ReturnValues result = await _powerShellExecutor.ExecuteAsync(toBeExecuted);
-            // Error handling
             if (result.HadErrors)
             {
                 PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
