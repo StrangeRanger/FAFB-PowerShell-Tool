@@ -18,7 +18,7 @@ namespace ActiveDirectoryQuerier;
 /// </summary>
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
-    // [ Fields ]-------------------------------------------------------------------- //
+    // [ Fields ] ------------------------------------------------------------------- //
     // [[ Event handler property ]] ------------------------------------------------- //
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -26,6 +26,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // [[ Backing fields for properties ]] ------------------------------------------ //
 
     private string _powerShellOutput;
+    private string _activeDirectoryInfoOutput; // Pieter TODO
     private string _queryName;
     private string _queryDescription;
     private bool _editingEnabled;
@@ -65,6 +66,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         set {
             _powerShellOutput = value;
             OnPropertyChanged(nameof(PowerShellOutput));
+        }
+    }
+
+    // Pieter TODO
+    public string ActiveDirectoryInfoOutput
+    {
+        get => _activeDirectoryInfoOutput;
+        set {
+            _activeDirectoryInfoOutput = value;
+            OnPropertyChanged(nameof(ActiveDirectoryInfoOutput));
         }
     }
 
@@ -108,7 +119,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _selectedComboBoxCommand = value;
             OnPropertyChanged(nameof(SelectedComboBoxCommand));
             // No need to load parameters if the command is null.
-            if (value is not null) 
+            if (value is not null)
             {
                 LoadCommandParametersAsync(value);  // TODO: TODO: Maybe change this method to synchronous...
             }
@@ -148,7 +159,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand SaveCustomQueriesRelay { get; }
 
     /// <summary>
-    /// This is the command tied to Clear Query calls the ClearQueryBuilder method 
+    /// This is the command tied to Clear Query calls the ClearQueryBuilder method
     /// </summary>
     public ICommand ClearQueryBuilderRelay { get; }
 
