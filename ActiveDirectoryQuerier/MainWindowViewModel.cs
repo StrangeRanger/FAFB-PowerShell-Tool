@@ -447,7 +447,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Executes the inputted Command PowerShell command and updates the PowerShellOutput property with the result.
     /// </summary>
     /// <note>
-    /// TODO: Rename this method...
     /// TODO: Does this method do the same thing an another method?
     /// TODO: Add error handling for null values...
     /// </note>
@@ -496,7 +495,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// TODO: Add a summary.
+    /// Adds a new command selection ComboBox to the UI.
     /// </summary>
     /// <param name="_">This is the object that the command is bound to.</param>
     private void AddCommandComboBox(object _)
