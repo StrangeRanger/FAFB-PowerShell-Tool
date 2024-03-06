@@ -28,7 +28,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _powerShellOutput;
     private string _queryName;
     private string _queryDescription;
-    private bool _EditingEnabled;
+    private bool _editingEnabled;
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
 
@@ -48,10 +48,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public bool EditingEnabled
     {
-        get { return _EditingEnabled; }
+        get { return _editingEnabled; }
         set
         {
-            _EditingEnabled = value;
+            _editingEnabled = value;
             OnPropertyChanged("EditingEnabled");
         }
     }
