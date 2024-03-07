@@ -562,11 +562,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Try to get the content within the drop downs
         try
         {
+            SelectedComboBoxCommand.Parameters.Clear();
             for (int i = 0; i < DynamicParametersCollection.Count; i++)
             {
-                SelectedComboBoxCommand.Parameters.Add(
-                    new CommandParameter(DynamicParametersCollection[i].SelectedParameter,
-                                         DynamicParameterValuesCollection[i].SelectedParameterValue));
+                SelectedComboBoxCommand.Parameters.Add(new CommandParameter(DynamicParametersCollection[i].SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
             }
         }
         catch (Exception ex)
