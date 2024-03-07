@@ -207,6 +207,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsvFileRelay { get; }
+    
+    /*
+     * AD Info options combobox dropdown
+     * Get all AD user
+     * Get all IP's on domain
+     * Get all etc, etc.
+     */
+    
+    /*
+     * another property to contain current AD Info selected command
+     */
 
     // [ Constructors ] ------------------------------------------------------------ //
 
