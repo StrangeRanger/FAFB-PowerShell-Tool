@@ -74,6 +74,8 @@ public class PowerShellExecutor
     {
         try
         {
+            _powerShell.Commands.Clear();
+
             PrepareCommand(command);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
