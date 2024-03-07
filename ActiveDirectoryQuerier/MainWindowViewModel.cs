@@ -255,6 +255,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method will edit the Query and fill out the field with the desired query and you can edit the query
     /// </summary>
     /// <param name="sender">This is the object that is clicked when executing</param>
+
+    ///Pieter TODO (New Code)
+    public void ActiveDirectoryInfo()
+    {
+        PowerShellExecutor powerShell = new PowerShellExecutor();
+        Command command = new Command("Get-ADUser");
+        command.Parameters.Add("Filter", "*");
+
+        Collection<PSObject> ReturnValue results = powerShell.ExecuteCommand(command);
+
+
+    }
     private void EditCustomQuery(object sender)
     {
         // Get the button that we are editing
