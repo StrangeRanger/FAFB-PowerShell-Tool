@@ -191,9 +191,8 @@
                                 <!-- TextBox as Console Output -->
                                 <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
-                            <!-- TextBox as Active Directory Output -->
-                            <TextBox Text="{Binding ActiveDirectoryInfoOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
-                            </Grid>
+                            
+                            
 
                         <!-- Menu options  -->
                             <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
