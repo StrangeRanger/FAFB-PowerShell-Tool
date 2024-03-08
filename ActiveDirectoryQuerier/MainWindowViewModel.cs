@@ -206,19 +206,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsvFileRelay { get; }
+    
+    /// <summary>
+    /// Command to export the console output to a text file.
+    /// </summary>
+    public ICommand ExportConsoleOutputRelay { get; }
+    
+    /// <summary>
+    /// Command to clear the console output.
+    /// </summary>
+    public ICommand ClearConsoleOutputRelay { get; }
 
-    /*
+    /* TODO: Info for Pieter to get started
      * AD Info options combobox dropdown
      * Get all AD user
      * Get all IP's on domain
      * Get all etc, etc.
      */
 
-    /*
+    /* TODO: Info for Pieter to get started
      * another property to contain current AD Info selected command
      */
 
-    // [ Constructors ] ------------------------------------------------------------ //
+    // [ Constructors ] ------------------------------------------------------------- //
 
     /// <summary>
     /// Class constructor.
@@ -240,6 +250,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteCommandRelay = new RelayCommand(ExecuteCommandAsync);
         OutputToCsvFileRelay = new RelayCommand(OutputToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputToTextFileAsync);
+        ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutput);
         AddParameterComboBoxRelay = new RelayCommand(AddParameterComboBox);
         AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBox);
         RemoveParameterComboBoxRelay = new RelayCommand(RemoveParameterComboBox);
@@ -247,12 +258,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         EditCustomQueryRelay = new RelayCommand(EditCustomQuery);
         DeleteCustomQueryRelay = new RelayCommand(DeleteCustomQuery);
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
+        ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
         InitializeActiveDirectoryCommandsAsync(); // TODO: Maybe change this method to synchronous...
         LoadCustomQueries();                      // Calls method to deserialize and load buttons.
 
-        // Debug
+        // Uncomment to test the deserialization of the custom queries with more information
         /*foreach (Button t in QueryButtonStackPanel)
         {
             CustomQueries.Query test = (CustomQueries.Query)t.Tag;
@@ -261,11 +273,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
-
-    /// <summary>
-    /// This method will edit the Query and fill out the field with the desired query and you can edit the query
-    /// </summary>
-    /// <param name="sender">This is the object that is clicked when executing</param>
 
     /// Pieter TODO (New Code)
     /*public void ActiveDirectoryInfo()
@@ -276,7 +283,36 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         Collection<PSObject> ReturnValue results = powerShell.ExecuteCommand(command);
     }*/
+    
+    private void ClearConsoleOutput(object _)
+    {
+        if (PowerShellOutput.ConsoleOutput.Length == 0)
+        {
+            MessageBox.Show("The console is already clear.",
+                            "Information",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+            return;
+        }
+        
+        // Display a gui box confirming if the user wants to confirm the clear
+        MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the console output?",
+                                                  "Warning",
+                                                  MessageBoxButton.YesNo,
+                                                  MessageBoxImage.Warning,
+                                                  MessageBoxResult.No);
+        
+        // If the user selects yes, clear the console
+        if (result == MessageBoxResult.Yes)
+        {
+            PowerShellOutput.ClearConsole();
+        }
+    }
 
+    /// <summary>
+    /// This method will edit the Query and fill out the field with the desired query and you can edit the query
+    /// </summary>
+    /// <param name="sender">This is the object that is clicked when executing</param>
     private void EditCustomQuery(object sender)
     {
         // Get the button that we are editing
@@ -571,6 +607,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             string filePath = saveFileDialog.FileName;
             await File.WriteAllTextAsync(filePath, csv.ToString());
         }
+    }
+    
+    /// <summary>
+    /// Adds a new command selection ComboBox to the UI.
+    /// </summary>
+    /// <param name="_">This is the object that the command is bound to.</param>
+    private void ExportConsoleOutput(object _)
+    {
+        Trace.WriteLine("Not implemented yet.");
+        MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     /// <summary>

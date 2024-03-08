@@ -36,8 +36,8 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left Side Query Bar (Content in first column) -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <Grid x:Name="LeftSideQueryGrid" Grid.Column="0">
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <Grid>
                     <Grid.BindingGroup>
                         <BindingGroup/>
                     </Grid.BindingGroup>
@@ -74,9 +74,9 @@
                                 <ColumnDefinition Width="163*"/>
                                 <ColumnDefinition Width="856*"/>
                             </Grid.ColumnDefinitions>
-                            <!-- Query Name TextBox.TODO: add a title/header to them  -->
-                            <TextBox Text="{Binding QueryName}" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50" Grid.ColumnSpan="2"/>
-                            <RichTextBox Margin="10,108,10,200" Grid.ColumnSpan="2">
+                            <!-- Query Name TextBox. -->
+                            <TextBox Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding QueryName}" Margin="10,29,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="50" />
+                            <RichTextBox Grid.Column="0" Margin="10,108,10,200" Grid.ColumnSpan="2">
                                 <FlowDocument>
                                     <Paragraph>
                                         <Run Text="{Binding QueryDescription}"/>
@@ -90,14 +90,14 @@
                         <Grid Background="#FFE5E5E5">
                             <!-- Define Rows. -->
                             <Grid.RowDefinitions>
-                                <!-- TODO: Figure out why the bottom row isn't stopping at the specified min height!!! -->
+                                <!-- TODO: Figure out why the bottom row isn't stopping at the specified min height! -->
                                 <RowDefinition Height="Auto" MinHeight="100"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="5"/>
                                 <RowDefinition Height="3*" MinHeight="100"/>
                             </Grid.RowDefinitions>
                             <!-- TODO: Fix the margin so that the combo boxes are not so spaced-->
-                            <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,100" Grid.RowSpan="2">
+                            <Grid Margin="0,0,0,100" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
@@ -130,7 +130,6 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <!-- TODO: Fill these-->
                                 <ItemsControl ItemsSource="{Binding DynamicParameterValuesCollection}"
                                               Grid.Column="2">
                                     <ItemsControl.ItemTemplate>
@@ -160,34 +159,32 @@
 
                                 <Button Content="Add New Command Slot"
                                         Command="{Binding AddCommandComboBoxRelay}"
-                                        Grid.Column="0"/>
+                                        Grid.Column="0" />
                                 <Button Content="Add New Parameter Slot"
                                         Command="{Binding AddParameterComboBoxRelay}"
-                                        Grid.Column="1"/>
+                                        Grid.Column="1 "/>
                                 <Button Content="Remove Parameter Slot"
                                         Command="{Binding RemoveParameterComboBoxRelay}"
-                                        Grid.Column="2"
-                                        />
+                                        Grid.Column="2" />
 
-                                <Button x:Name="SaveQueryButton"
-                                            Content="Save Query"
-                                            Command="{Binding SaveCustomQueriesRelay}"
-                                            Grid.Column="3" />
+                                <Button Content="Save Query"
+                                        Command="{Binding SaveCustomQueriesRelay}"
+                                        Grid.Column="3" />
                                 <Button Content="Execute"
                                             Command="{Binding ExecuteCommandRelay}"
                                             Grid.Column="4" />
                                 <Button Content="Export Console Output"
-                                        Command="{Binding ExportConsoleOutput}"
+                                        Command="{Binding ExportConsoleOutputRelay}"
                                         Grid.Column="5" />
                                 <Button Content="Clear Console Output"
-                                        Command="{Binding ClearConsoleOutput}"
+                                        Command="{Binding ClearConsoleOutputRelay}"
                                         Grid.Column="6" />
                             </Grid>
 
                             <!-- GridSplitter for resizing console area in the second row -->
                             <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White" Grid.Row="2" Grid.ColumnSpan="2"/>
 
-                            <!-- TODO: Figure out why I can't get the console to be resizable to the min height... -->
+                            <!-- TODO: Figure out why I can't get the console to be resizable to the min height! -->
                             <!-- TODO: Pieter refer here for the console output... try replicate for tab three -->
                             <Grid Grid.Row="3" Grid.ColumnSpan="2">
                                 <!-- TextBox as Console Output -->
@@ -226,7 +223,7 @@
                                               Command="{Binding ExportConsoleOutput}"
                                               />
                                     <MenuItem Header="Clear Console Output"
-                                              Command="{Binding ClearConsoleOutput}"
+                                              Command="{Binding ClearConsoleOutputRelay}"
                                               />
                                     <MenuItem Header="Add Button"
                                               Command="{Binding AddButton}"
@@ -236,7 +233,7 @@
 
                                 </MenuItem>
                             </Menu>
-                            <CheckBox x:Name="isEditing" Content="Editing" HorizontalAlignment="Left" Margin="14,57,0,0" VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}"/>
+                            <CheckBox Grid.Row="0" x:Name="isEditing" Content="Editing" HorizontalAlignment="Left" Margin="14,57,0,0" VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Active Directory Information">
