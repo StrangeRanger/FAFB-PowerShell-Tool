@@ -121,7 +121,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // No need to load parameters if the command is null.
             if (value is not null)
             {
-                LoadCommandParametersAsync(value);  // TODO: TODO: Maybe change this method to synchronous...
+                LoadCommandParametersAsync(value);  // TODO: Maybe change this method to synchronous...
             }
         }
     }
@@ -467,15 +467,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             if (result.HadErrors)
             {
-                PowerShellOutput = string.Join(Environment.NewLine, result.StdErr);
+                PowerShellOutput += string.Join(Environment.NewLine, result.StdErr);
                 return;
             }
 
-            PowerShellOutput = string.Join(Environment.NewLine, result.StdOut);
+            PowerShellOutput += string.Join(Environment.NewLine, result.StdOut);
         }
         catch (Exception ex)
         {
-            PowerShellOutput = $"Error executing command: {ex.Message}";
+            PowerShellOutput += $"Error executing command: {ex.Message}";
         }
     }
 
