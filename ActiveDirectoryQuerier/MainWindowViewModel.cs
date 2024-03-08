@@ -25,11 +25,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [[ Backing fields for properties ]] ------------------------------------------ //
 
-    private string _powerShellOutput;
-    private string _activeDirectoryInfoOutput; // Pieter TODO
+    private bool _editingEnabled;
     private string _queryName;
     private string _queryDescription;
-    private bool _editingEnabled;
+    private AppConsole _powerShellOutput;
+    private AppConsole _activeDirectoryInfoOutput; // Pieter TODO
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
 
@@ -50,8 +50,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public bool EditingEnabled
     {
         get => _editingEnabled;
-        set
-        {
+        set {
             _editingEnabled = value;
             OnPropertyChanged("EditingEnabled");
         }
@@ -60,7 +59,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the output of the executed PowerShell command.
     /// </summary>
-    public string PowerShellOutput
+    public AppConsole PowerShellOutput
     {
         get => _powerShellOutput;
         set {
@@ -70,7 +69,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     // Pieter TODO
-    public string ActiveDirectoryInfoOutput
+    public AppConsole ActiveDirectoryInfoOutput
     {
         get => _activeDirectoryInfoOutput;
         set {
@@ -121,7 +120,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // No need to load parameters if the command is null.
             if (value is not null)
             {
-                LoadCommandParametersAsync(value);  // TODO: Maybe change this method to synchronous...
+                LoadCommandParametersAsync(value); // TODO: Maybe change this method to synchronous...
             }
         }
     }
@@ -207,14 +206,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsvFileRelay { get; }
-    
+
     /*
      * AD Info options combobox dropdown
      * Get all AD user
      * Get all IP's on domain
      * Get all etc, etc.
      */
-    
+
     /*
      * another property to contain current AD Info selected command
      */
@@ -226,9 +225,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public MainWindowViewModel()
     {
-        _powerShellOutput = string.Empty;
         _queryName = string.Empty;
         _queryDescription = string.Empty;
+        _powerShellOutput = new AppConsole();
+        _activeDirectoryInfoOutput = new AppConsole();
         _powerShellExecutor = new PowerShellExecutor();
         _customQuery = new CustomQueries();
         _currentQuery = new Query();
@@ -250,7 +250,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
         InitializeActiveDirectoryCommandsAsync(); // TODO: Maybe change this method to synchronous...
-        LoadCustomQueries(); // Calls method to deserialize and load buttons.
+        LoadCustomQueries();                      // Calls method to deserialize and load buttons.
 
         // Debug
         /*foreach (Button t in QueryButtonStackPanel)
@@ -267,7 +267,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     /// <param name="sender">This is the object that is clicked when executing</param>
 
-    ///Pieter TODO (New Code)
+    /// Pieter TODO (New Code)
     /*public void ActiveDirectoryInfo()
     {
         PowerShellExecutor powerShell = new PowerShellExecutor();
@@ -467,15 +467,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             if (result.HadErrors)
             {
-                PowerShellOutput += string.Join(Environment.NewLine, result.StdErr);
+                PowerShellOutput.Append(result.StdErr);
                 return;
             }
 
-            PowerShellOutput += string.Join(Environment.NewLine, result.StdOut);
+            PowerShellOutput.Append(result.StdOut);
         }
         catch (Exception ex)
         {
-            PowerShellOutput += $"Error executing command: {ex.Message}";
+            PowerShellOutput.Append($"Error executing command: {ex.Message}" + ex.Message);
         }
     }
 
@@ -533,7 +533,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // Open document
             string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, PowerShellOutput);
+            await File.WriteAllTextAsync(filePath, PowerShellOutput.ConsoleOutput);
         }
     }
 
@@ -547,7 +547,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ExecuteSelectedCommandAsync();
 
         var csv = new StringBuilder();
-        string[] output = PowerShellOutput.Split(' ', '\n');
+        string[] output = PowerShellOutput.ConsoleOutput.Split(' ', '\n');
 
         for (int i = 0; i < output.Length - 2; i++)
         {
@@ -598,7 +598,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             SelectedComboBoxCommand.Parameters.Clear();
             for (int i = 0; i < DynamicParametersCollection.Count; i++)
             {
-                SelectedComboBoxCommand.Parameters.Add(new CommandParameter(DynamicParametersCollection[i].SelectedParameter, DynamicParameterValuesCollection[i].SelectedParameterValue));
+                SelectedComboBoxCommand.Parameters.Add(
+                    new CommandParameter(DynamicParametersCollection[i].SelectedParameter,
+                                         DynamicParameterValuesCollection[i].SelectedParameterValue));
             }
         }
         catch (Exception ex)
@@ -745,7 +747,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
         else
         {
-            //Check for null
+            // Check for null
             if (SelectedComboBoxCommand is null)
             {
                 Trace.WriteLine("No command selected.");

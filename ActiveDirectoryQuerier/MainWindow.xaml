@@ -191,7 +191,7 @@
                             <!-- TODO: Pieter refer here for the console output... try replicate for tab three -->
                             <Grid Grid.Row="3" Grid.ColumnSpan="2">
                                 <!-- TextBox as Console Output -->
-                                <TextBox Text="{Binding PowerShellOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                                <TextBox Text="{Binding PowerShellOutput.ConsoleOutput}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
                             </Grid>
                             
                             
