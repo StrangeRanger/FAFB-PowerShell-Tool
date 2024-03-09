@@ -140,10 +140,10 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Button Content="Add New Command Slot"
+                                <Button Content="Add Command Slot"
                                         Command="{Binding AddCommandComboBoxRelay}"
                                         Grid.Column="0" />
-                                <Button Content="Add New Parameter Slot"
+                                <Button Content="Add Parameter Slot"
                                         Command="{Binding AddParameterComboBoxRelay}"
                                         Grid.Column="1 " />
                                 <Button Content="Remove Parameter Slot"
@@ -179,30 +179,10 @@
                             <!-- Menu options  -->
                             <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
                                 <MenuItem Header="Options">
-                                    <MenuItem Header="Add New Command Slot"
-                                              Command="{Binding AddCommandComboBoxRelay}" />
-                                    <MenuItem Header="Add New Parameter Slot"
-                                              Command="{Binding AddParameterComboBoxRelay}" />
-                                    <MenuItem Header="Remove Parameter Slot"
-                                              Command="{Binding RemoveParameterComboBoxRelay}" />
-                                    <MenuItem Header="Save Query"
-                                              Command="{Binding SaveCustomQueriesRelay}" />
-                                    <MenuItem Header="Execute"
-                                              Command="{Binding ExecuteCommandRelay}" />
-                                    <MenuItem Header="Output to console"
-                                              Command="{Binding ExecuteCommandRelay}" />
-                                    <MenuItem Header="Output to Csv"
+                                    <MenuItem Header="Execute to CSV file"
                                               Command="{Binding OutputToCsvFileRelay}" />
-                                    <MenuItem Header="Output to Text"
+                                    <MenuItem Header="Output to Text file"
                                               Command="{Binding OutputToTextFileRelay}" />
-                                    <MenuItem Header="Export Console Output"
-                                              Command="{Binding }" />
-                                    <MenuItem Header="Clear Console Output"
-                                              Command="{Binding ClearConsoleOutputRelay}" />
-                                    <MenuItem Header="Add Button"
-                                              Command="{Binding }" />
-                                    <MenuItem Header="Clear Query"
-                                              Command="{Binding ClearQueryBuilderRelay}" />
                                 </MenuItem>
                             </Menu>
                             <CheckBox Grid.Row="0" Content="Editing" HorizontalAlignment="Left" Margin="14,57,0,0"
