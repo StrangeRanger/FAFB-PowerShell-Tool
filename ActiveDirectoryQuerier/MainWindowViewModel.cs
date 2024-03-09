@@ -299,7 +299,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // If the user selects yes, clear the console
         if (result == MessageBoxResult.Yes)
         {
-            PowerShellOutput.ClearConsole();
+            PowerShellOutput.Clear();
         }
     }
 

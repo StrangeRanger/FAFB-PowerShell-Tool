@@ -41,7 +41,7 @@ public class AppConsoleTests : IDisposable
         var (appConsole, _) = await ExecuteCommandAsync(command);
 
         // Act
-        appConsole.ClearConsole();
+        appConsole.Clear();
 
         // Assert
         Assert.Empty(appConsole.ConsoleOutput);

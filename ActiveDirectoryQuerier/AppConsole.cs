@@ -17,6 +17,7 @@ public sealed class AppConsole : INotifyPropertyChanged
     /// <important>
     /// Do not set this property directly. Use the Append method instead. It's public for data binding purposes.
     /// </important>
+    /// TODO: Find a way to make the set of this property private.
     public string ConsoleOutput
     {
         get => _consoleOutput;
@@ -33,7 +34,7 @@ public sealed class AppConsole : INotifyPropertyChanged
     /// <summary>
     /// Clears the console output.
     /// </summary>
-    public void ClearConsole()
+    public void Clear()
     {
         ConsoleOutput = string.Empty;
     }
