@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO;
 
 namespace ActiveDirectoryQuerier;
 
@@ -14,8 +15,7 @@ public sealed class AppConsole : INotifyPropertyChanged
     /// Gets or sets the console output.
     /// </summary>
     /// <important>
-    /// Do not set this property directly. Use the <see cref="Append"/> method instead. It's public for data binding
-    /// purposes.
+    /// Do not set this property directly. Use the Append method instead. It's public for data binding purposes.
     /// </important>
     public string ConsoleOutput
     {
@@ -54,6 +54,15 @@ public sealed class AppConsole : INotifyPropertyChanged
     public void Append(string outputText)
     {
         ConsoleOutput += outputText;
+    }
+
+    /// <summary>
+    /// Exports the console output to a text file.
+    /// </summary>
+    /// <param name="filePath">The file path to export the console output to.</param>
+    public void ExportToText(string filePath = "output.txt")
+    {
+        File.WriteAllText(filePath, ConsoleOutput);
     }
 
     /// <summary>

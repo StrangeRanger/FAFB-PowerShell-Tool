@@ -3,28 +3,44 @@ using ActiveDirectoryQuerier.PowerShell;
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class AppConsoleTests
+public class AppConsoleTests : IDisposable
 {
-    [Fact]
-    public void ClearConsole_ClearsConsole_SuccessfullyCleared()
+    // TODO: Make sure this is how I should perform cleanups...
+    public void Dispose()
     {
-        // Arrange
-        PowerShellExecutor powerShellExecutor = new();
-        Command command = new("Get-Process");
-        AppConsole appConsole = new();
-
-        // Act
-        command.Parameters.Add("Name", "explorer");
-        // TODO: Maybe implement an interface of PowerShellExecutor and use a mock object to test to prevent execution
-        // errors.
-        var result = powerShellExecutor.Execute(command);
-
-        if (result.HadErrors)
+        if (File.Exists("output.txt"))
         {
-            throw new Exception("Error occurred while executing command");
+            File.Delete("output.txt");
         }
 
-        appConsole.Append(result.StdOut);
+        if (File.Exists("output.csv"))
+        {
+            File.Delete("output.csv");
+        }
+
+        GC.SuppressFinalize(this);
+    }
+
+    private static async Task<(AppConsole, ReturnValues)> ExecuteCommandAsync(Command command)
+    {
+        PowerShellExecutor powerShellExecutor = new();
+        AppConsole appConsole = new();
+        ReturnValues result = await powerShellExecutor.ExecuteAsync(command);
+
+        appConsole.Append(result.HadErrors ? result.StdErr : result.StdOut);
+
+        return (appConsole, result);
+    }
+
+    [Fact]
+    public async Task ClearConsole_ClearsConsole_SuccessfullyCleared()
+    {
+        // Arrange
+        Command command = new("Get-Process");
+        command.Parameters.Add("Name", "explorer");
+        var (appConsole, _) = await ExecuteCommandAsync(command);
+
+        // Act
         appConsole.ClearConsole();
 
         // Assert
@@ -36,12 +52,32 @@ public class AppConsoleTests
     {
         // Arrange
         AppConsole appConsole = new();
-        string output = "Output";
+        const string output = "Output";
 
         // Act
         appConsole.Append(output);
 
         // Assert
         Assert.Equal(output, appConsole.ConsoleOutput);
+    }
+
+    [Fact]
+    public async Task ExportToText_ExportToText_SuccessfullyExported()
+    {
+        // Arrange
+        Command command = new("Get-Process");
+        command.Parameters.Add("Name", "explorer");
+        var (appConsole, returnValues) = await ExecuteCommandAsync(command);
+
+        // Act
+        appConsole.ExportToText();
+        string fileContents = await File.ReadAllTextAsync("output.txt");
+
+        // Assert
+        Assert.True(File.Exists("output.txt"));
+
+        Assert.Equal(returnValues.HadErrors ? string.Join(Environment.NewLine, returnValues.StdErr)
+                                            : string.Join(Environment.NewLine, returnValues.StdOut),
+                     fileContents);
     }
 }
