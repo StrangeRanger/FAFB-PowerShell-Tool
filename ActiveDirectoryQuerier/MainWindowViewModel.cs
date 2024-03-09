@@ -741,19 +741,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // Try to get the content within the drop downs
             try
             {
-                // TODO: Possibly convert foreach into a for loop...
-                int i = 0;
-                foreach (var comboBoxData in DynamicParametersCollection)
-                {
-                    // string selectedItem = comboBoxData.SelectedParameter;
-                    // Need to look at this to see if it is working with the object type and then serialize it
-                    // Trace.WriteLine(DynamicParameterValuesCollection[i].SelectedParameterValue);
 
-                    SelectedComboBoxCommand.Parameters.Add(
-                        new CommandParameter(comboBoxData.SelectedParameter,
-                                             DynamicParameterValuesCollection[i].SelectedParameterValue));
-                    i++;
-                }
+                UpdateSelectedCommand();
 
                 _customQuery.SerializeCommand(SelectedComboBoxCommand, QueryName, QueryDescription);
 
