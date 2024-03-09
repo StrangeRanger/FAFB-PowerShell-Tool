@@ -6,6 +6,7 @@ using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using ActiveDirectoryQuerier.PowerShell;
 using Microsoft.Win32;
@@ -32,6 +33,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _activeDirectoryInfoOutput; // Pieter TODO
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
+    private bool _isTextBoxFocused;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
@@ -263,13 +265,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         InitializeActiveDirectoryCommandsAsync(); // TODO: Maybe change this method to synchronous...
         LoadCustomQueries();                      // Calls method to deserialize and load buttons.
-
-        // Uncomment to test the deserialization of the custom queries with more information
-        /*foreach (Button t in QueryButtonStackPanel)
-        {
-            CustomQueries.Query test = (CustomQueries.Query)t.Tag;
-            Trace.WriteLine(test.CommandName);
-        }*/
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
@@ -713,6 +708,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="commandParameter">This is not used but necessary for the relay command</param>
     private void SaveCustomQueries(object commandParameter)
     {
+   
         if (SelectedComboBoxCommand is null)
         {
             Trace.WriteLine("No command selected.");
@@ -727,6 +723,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
+            Trace.WriteLine(_customQuery.Queries.IndexOf(_isEditing));  
             _customQuery.Queries[_customQuery.Queries.IndexOf(_isEditing)] = _currentQuery;
             _customQuery.SerializeMethod();
             _isEditing = null;
@@ -809,10 +806,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText;
             newButton.Tag = _currentQuery;
         }
-
-        // Button newButton =
-        // new() { Height = 48, Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText, Tag =
-        // _currentQuery };
 
         // Want to add right click context menu to each button
         ContextMenu contextMenu = new();
