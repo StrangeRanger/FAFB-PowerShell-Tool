@@ -80,13 +80,13 @@
                             <!-- Define Rows. -->
                             <Grid.RowDefinitions>
                                 <!-- TODO: Figure out why the bottom row isn't stopping at the specified min height! -->
-                                <RowDefinition Height="Auto" MinHeight="100" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="5" />
-                                <RowDefinition Height="3*" MinHeight="100" />
+                                <RowDefinition Height="Auto" MinHeight="160" />
+                                <RowDefinition Height="Auto" MinHeight="23" />
+                                <RowDefinition Height="26" />
+                                <RowDefinition MinHeight="100" />
                             </Grid.RowDefinitions>
                             <!-- TODO: Fix the margin so that the combo boxes are not so spaced-->
-                            <Grid Margin="0,0,0,100" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2">
+                            <Grid Margin="0,0,0,49" Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
@@ -128,7 +128,40 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <ComboBox Margin="24,10,364,81" Width="Auto" Height="20" Grid.Row="0">
+                                    <ComboBoxItem>
+                                        <Button Content="Add New Command Slot" Command="{Binding AddCommandComboBoxRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Add New Parameter Slot" Command="{Binding AddParameterComboBoxRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Remove Parameter Slot" Command="{Binding RemoveParameterComboBoxRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Save Query" Command="{Binding SaveCustomQueriesRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Execute" Command="{Binding ExecuteCommandRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Execute to CSV" Command="{Binding OutputToCsvFileRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Execute to Text" Command="{Binding OutputToTextFileRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Export Console Output" Command="{Binding ExportConsoleOutputRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Clear Console Output" Command="{Binding ClearConsoleOutputRelay}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <Button Content="Clear Query" Command="{Binding ClearQueryBuilderRelay}" />
+                                    </ComboBoxItem>
+                                </ComboBox>
                             </Grid>
+                            <!-- 
                             <Grid Grid.Row="1" Margin="12,16,12,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -165,48 +198,23 @@
                                         Command="{Binding ClearQueryBuilderRelay}" 
                                         Grid.Column="7" />
                             </Grid>
-                            <!-- GridSplitter for resizing console area in the second row -->
-                            <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                          Background="White" Grid.Row="2" Grid.ColumnSpan="2" />
+                            -->
+                            <!--  for resizing console area in the second row -->
+                            <GridSplitter Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                          Background="White" Grid.Row="2" />
                             <!-- TODO: Figure out why I can't get the console to be resizable to the min height! -->
                             <!-- TODO: Pieter refer here for the console output... try replicate for tab three -->
-                            <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                            <Grid Grid.Row="3">
                                 <!-- TextBox as Console Output -->
                                 <TextBox Text="{Binding PowerShellOutput.ConsoleOutput}" HorizontalAlignment="Stretch"
                                          VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                          VerticalScrollBarVisibility="Auto" />
                             </Grid>
+
                             <!-- Menu options  -->
-                            <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
-                                <MenuItem Header="Options">
-                                    <MenuItem Header="Add New Command Slot"
-                                              Command="{Binding AddCommandComboBoxRelay}" />
-                                    <MenuItem Header="Add New Parameter Slot"
-                                              Command="{Binding AddParameterComboBoxRelay}" />
-                                    <MenuItem Header="Remove Parameter Slot"
-                                              Command="{Binding RemoveParameterComboBoxRelay}" />
-                                    <MenuItem Header="Save Query"
-                                              Command="{Binding SaveCustomQueriesRelay}" />
-                                    <MenuItem Header="Execute"
-                                              Command="{Binding ExecuteCommandRelay}" />
-                                    <MenuItem Header="Output to console"
-                                              Command="{Binding ExecuteCommandRelay}" />
-                                    <MenuItem Header="Output to Csv"
-                                              Command="{Binding OutputToCsvFileRelay}" />
-                                    <MenuItem Header="Output to Text"
-                                              Command="{Binding OutputToTextFileRelay}" />
-                                    <MenuItem Header="Export Console Output"
-                                              Command="{Binding }" />
-                                    <MenuItem Header="Clear Console Output"
-                                              Command="{Binding ClearConsoleOutputRelay}" />
-                                    <MenuItem Header="Add Button"
-                                              Command="{Binding }" />
-                                    <MenuItem Header="Clear Query"
-                                              Command="{Binding ClearQueryBuilderRelay}" />
-                                </MenuItem>
-                            </Menu>
+
                             <CheckBox Grid.Row="0" Content="Editing" HorizontalAlignment="Left" Margin="14,57,0,0"
-                                      VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}" />
+                                      VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}" Height="15" Width="57" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Active Directory Information">
