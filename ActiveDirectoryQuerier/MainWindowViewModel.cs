@@ -768,16 +768,38 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Object that the command is tied to</param>
     private void ClearQueryBuilder(object _)
     {
-        SelectedComboBoxCommand = null;
-        DynamicParametersCollection.Clear();
-        DynamicParameterValuesCollection.Clear();
+        if (SelectedComboBoxCommand is null && DynamicParametersCollection.Count == 0)
+        {
+            MessageBox.Show("The query builder is already clear.",
+                            "Information",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+            return;
+        }
+
+        // Display a gui box confirming if the user wants to confirm the clear
+        MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the query builder?",
+                                                  "Warning",
+                                                  MessageBoxButton.YesNo,
+                                                  MessageBoxImage.Warning,
+                                                  MessageBoxResult.No);
+
+        // If the user selects yes, clear the console
+        if (result == MessageBoxResult.Yes)
+        {
+            SelectedComboBoxCommand = null;
+            DynamicParametersCollection.Clear();
+            DynamicParameterValuesCollection.Clear();
+        }
     }
 
     /// <summary>
     /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but
     /// could be changed to also do it from the query list.
-    /// TODO: Change method name???
     /// </summary>
+    /// <note>
+    /// TODO: Change method name?
+    /// </note>
     /// <returns>This method returns a button that has been customized for the custom query list</returns>
     private Button CreateCustomButton(Query? query = null)
     {
