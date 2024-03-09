@@ -83,7 +83,6 @@
                                 <RowDefinition Height="Auto" MinHeight="140" />
                                 <RowDefinition MinHeight="100" />
                             </Grid.RowDefinitions>
-                            <!-- TODO: Fix the margin so that the combo boxes are not so spaced-->
                             <!-- ROW 0 START -->
                             <Grid Margin="0,0,0,49" Grid.Row="0">
                                 <Grid.ColumnDefinitions>
@@ -109,7 +108,7 @@
                                           Grid.Row="1"/>
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
-                                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Center">Parameter</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Left">Parameter</TextBlock>
                                 <ItemsControl ItemsSource="{Binding DynamicParametersCollection}"
                                               Grid.Column="1"
                                               Grid.Row="1">
@@ -127,8 +126,9 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                
                                 <!-- Parameter Values ComboBox -->
-                                <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Center">Value</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left">Value</TextBlock>
                                 <ItemsControl ItemsSource="{Binding DynamicParameterValuesCollection}"
                                               Grid.Column="2"
                                               Grid.Row="1">
@@ -145,7 +145,7 @@
                                 <!-- END of Dynamic ComboxBoxes for parameters and values-->
 
                                 <!-- START of Button ComboBox -->
-                                <ComboBox Margin="0,4,0,6" Height="20" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" MinWidth="160" Width="Auto">
+                                <ComboBox Margin="0,4,0,6" Height="Auto" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" MinWidth="160" Width="Auto">
                                     <ComboBoxItem>
                                         <Button Content="Add New Command Slot" Command="{Binding AddCommandComboBoxRelay}" />
                                     </ComboBoxItem>
@@ -194,18 +194,6 @@
                                          VerticalScrollBarVisibility="Auto" />
                             </Grid>
                             <!-- GRID ROW 1 END -->
-
-                            <!-- Menu options  -->
-                            <!--
-                            <Menu Grid.Row="0" x:Name="OptionsMenu" Width="Auto" Height="20" Margin="10,15,934,64">
-                                <MenuItem Header="Options">
-                                    <MenuItem Header="Execute to CSV file"
-                                              Command="{Binding OutputToCsvFileRelay}" />
-                                    <MenuItem Header="Output to Text file"
-                                              Command="{Binding OutputToTextFileRelay}" />
-                                </MenuItem>
-                            </Menu>
-                            -->
                         </Grid>
                     </TabItem>
                     <TabItem Header="Active Directory Information">
