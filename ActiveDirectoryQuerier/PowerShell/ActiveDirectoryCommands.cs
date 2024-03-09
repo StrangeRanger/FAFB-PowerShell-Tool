@@ -21,30 +21,30 @@ public static class ActiveDirectoryCommands
     /// </exception>
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {
-        Command command = new("Get-Command");
-        command.Parameters.Add("Module", "ActiveDirectory");
+        Command powerShellCommand = new("Get-Command");
+        powerShellCommand.Parameters.Add("Module", "ActiveDirectory");
         PowerShellExecutor powerShellExecutor = new();
-        ObservableCollection<Command> commandList = new();
-        ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(command);
+        ObservableCollection<Command> activeDirectoryCommands = new();
+        ReturnValues powerShellOutput = await powerShellExecutor.ExecuteAsync(powerShellCommand);
 
         // NOTE: This is more of an internal error...
         // TODO: Provide a more detailed error message, possibly to the user and to a log file.
-        if (commandListTemp.HadErrors)
+        if (powerShellOutput.HadErrors)
         {
-            MessageBox.Show(string.Join(" ", commandListTemp.StdErr),
+            MessageBox.Show(string.Join(" ", powerShellOutput.StdErr),
                             "Error",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error);
             throw new InvalidPowerShellStateException(
                 $"An error occurred while retrieving the ActiveDirectory commands: " +
-                $"{string.Join(" ", commandListTemp.StdErr)}");
+                $"{string.Join(" ", powerShellOutput.StdErr)}");
         }
 
-        foreach (string cmd in commandListTemp.StdOut)
+        foreach (string cmd in powerShellOutput.StdOut)
         {
-            commandList.Add(new Command(cmd));
+            activeDirectoryCommands.Add(new Command(cmd));
         }
 
-        return commandList;
+        return activeDirectoryCommands;
     }
 }

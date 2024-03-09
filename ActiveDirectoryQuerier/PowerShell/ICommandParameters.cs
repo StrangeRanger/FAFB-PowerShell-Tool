@@ -4,5 +4,5 @@ namespace ActiveDirectoryQuerier.PowerShell;
 
 public interface ICommandParameters
 {
-    void LoadCommandParameters(Command? commandObject);
+    void LoadCommandParameters(Command? powerShellCommand);
 }
