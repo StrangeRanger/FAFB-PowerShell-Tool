@@ -6,7 +6,6 @@ using System.Management.Automation.Runspaces;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using ActiveDirectoryQuerier.PowerShell;
 using Microsoft.Win32;
@@ -208,12 +207,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsvFileRelay { get; }
-    
+
     /// <summary>
     /// Command to export the console output to a text file.
     /// </summary>
     public ICommand ExportConsoleOutputRelay { get; }
-    
+
     /// <summary>
     /// Command to clear the console output.
     /// </summary>
@@ -278,7 +277,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         Collection<PSObject> ReturnValue results = powerShell.ExecuteCommand(command);
     }*/
-    
+
     private void ClearConsoleOutput(object _)
     {
         if (PowerShellOutput.ConsoleOutput.Length == 0)
@@ -289,14 +288,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Information);
             return;
         }
-        
+
         // Display a gui box confirming if the user wants to confirm the clear
         MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the console output?",
                                                   "Warning",
                                                   MessageBoxButton.YesNo,
                                                   MessageBoxImage.Warning,
                                                   MessageBoxResult.No);
-        
+
         // If the user selects yes, clear the console
         if (result == MessageBoxResult.Yes)
         {
@@ -603,15 +602,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             await File.WriteAllTextAsync(filePath, csv.ToString());
         }
     }
-    
+
     /// <summary>
-    /// Adds a new command selection ComboBox to the UI.
+    /// This method is for getting the currently selected command at anytime.
     /// </summary>
     /// <param name="_">This is the object that the command is bound to.</param>
     private void ExportConsoleOutput(object _)
     {
-        Trace.WriteLine("Not implemented yet.");
-        MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
+
+        bool? result = saveFileDialog.ShowDialog();
+
+        if (result == true)
+        {
+            string filename = saveFileDialog.FileName;
+            PowerShellOutput.ExportToText(filename);
+        }
     }
 
     /// <summary>
@@ -715,7 +721,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="commandParameter">This is not used but necessary for the relay command</param>
     private void SaveCustomQueries(object commandParameter)
     {
-   
         if (SelectedComboBoxCommand is null)
         {
             Trace.WriteLine("No command selected.");
@@ -730,7 +735,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
-            Trace.WriteLine(_customQuery.Queries.IndexOf(_isEditing));  
+            Trace.WriteLine(_customQuery.Queries.IndexOf(_isEditing));
             _customQuery.Queries[_customQuery.Queries.IndexOf(_isEditing)] = _currentQuery;
             _customQuery.SerializeMethod();
             _isEditing = null;
@@ -820,9 +825,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
 
-       MenuItem outputToCSV = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
+        MenuItem outputToCSV = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
         MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay };
-        MenuItem exportToConsole = new() { Header = "Execute to Console", Command = ExecuteCommandRelay};
+        MenuItem exportToConsole = new() { Header = "Execute to Console", Command = ExecuteCommandRelay };
 
         menuItem1.Items.Add(outputToCSV);
         menuItem1.Items.Add(outputToText);
