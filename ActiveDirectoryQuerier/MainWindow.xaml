@@ -111,7 +111,7 @@
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
                                                       Margin="5"
-                                                      ItemsSource="{Binding PossibleParameterList}"
+                                                      ItemsSource="{Binding PossibleParameters}"
                                                       SelectedItem="{Binding SelectedParameter}" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
