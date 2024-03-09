@@ -32,7 +32,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _activeDirectoryInfoOutput; // Pieter TODO
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
-    private bool _isTextBoxFocused;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
@@ -669,25 +668,33 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         try
         {
-            // TODO: Fix this method to handle null values...
-            string[] commandParameters = new string[SelectedComboBoxCommand.Parameters.Count];
-            string[] commandParameterValues = new string[SelectedComboBoxCommand.Parameters.Count];
+            string[] commandParameters;
+            string[] commandParameterValues;
 
-            _currentQuery.QueryDescription = QueryDescription;
-            _currentQuery.QueryName = QueryName;
-
-            _currentQuery.CommandName = SelectedComboBoxCommand.CommandText;
-
-            // TODO: Possibly convert foreach into a for loop...
-            int i = 0;
-            foreach (CommandParameter commandParameter in SelectedComboBoxCommand.Parameters)
+            if (SelectedComboBoxCommand is not null && SelectedComboBoxCommand.Parameters is not null)
             {
-                commandParameters[i] = commandParameter.Name;
-                commandParameterValues[i] = commandParameter.Value.ToString();
-                i++;
+                commandParameters = new string[SelectedComboBoxCommand.Parameters.Count];
+                commandParameterValues = new string[SelectedComboBoxCommand.Parameters.Count];
+
+
+
+                _currentQuery.QueryDescription = QueryDescription;
+                _currentQuery.QueryName = QueryName;
+
+                _currentQuery.CommandName = SelectedComboBoxCommand.CommandText;
+
+                // TODO: Possibly convert foreach into a for loop...
+                for(int i = 0; i < SelectedComboBoxCommand.Parameters.Count; i++)
+                {
+                    CommandParameter commandParameter = SelectedComboBoxCommand.Parameters[i];
+
+                    commandParameters[i] = commandParameter.Name;
+                    commandParameterValues[i] = commandParameter.Value.ToString()!;
+                    i++;
+                }
+                _currentQuery.CommandParameters = commandParameters;
+                _currentQuery.CommandParametersValues = commandParameterValues;
             }
-            _currentQuery.CommandParameters = commandParameters;
-            _currentQuery.CommandParametersValues = commandParameterValues;
         }
         catch (Exception ex)
         {
