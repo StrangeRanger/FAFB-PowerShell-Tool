@@ -31,11 +31,8 @@ public class PowerShellExecutor
     /// <param name="command">The command to be prepared for execution.</param>
     private void PrepareCommand(Command? command)
     {
-        // TODO: Might change to just return if command is null...
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
+        // TODO: Add a test to identify if throwing an exception is necessary, or a return value is better.
+        ArgumentNullException.ThrowIfNull(command);
 
         _powerShell.Commands.AddCommand(command.CommandText);
         foreach (var parameter in command.Parameters)
@@ -91,18 +88,18 @@ public class PowerShellExecutor
     /// <summary>
     /// Handles exceptions that occur during the execution of a PowerShell command.
     /// </summary>
-    /// <param name="ex">The exception that occurred during the execution of the PowerShell command.</param>
+    /// <param name="exception">The exception that occurred during the execution of the PowerShell command.</param>
     /// <returns>A ReturnValues object containing the exception details.</returns>
-    private ReturnValues ExecutionExceptionHandler(Exception ex)
+    private ReturnValues ExecutionExceptionHandler(Exception exception)
     {
-        StringBuilder sb = new();
+        StringBuilder errorMessage = new();
 
-        sb.AppendLine("An error occurred while executing the PowerShell command:");
-        sb.AppendLine(ex.Message);
-        sb.AppendLine(ex.StackTrace);
-        Debug.WriteLine(sb.ToString());
+        errorMessage.AppendLine("An error occurred while executing the PowerShell command:");
+        errorMessage.AppendLine(exception.Message);
+        errorMessage.AppendLine(exception.StackTrace);
+        Debug.WriteLine(errorMessage.ToString());
 
-        return new ReturnValues { StdErr = { sb.ToString() } };
+        return new ReturnValues { StdErr = { errorMessage.ToString() } };
     }
 
     /// <summary>
@@ -112,24 +109,24 @@ public class PowerShellExecutor
     /// <returns>A ReturnValues object containing the processed results.</returns>
     private ReturnValues ProcessPowerShellResults(IEnumerable<PSObject> results)
     {
-        ReturnValues returnValues = new();
+        ReturnValues powerShellOutput = new();
 
         if (_powerShell.HadErrors)
         {
             foreach (var error in _powerShell.Streams.Error)
             {
-                returnValues.StdErr.Add($"Error: {error}");
+                powerShellOutput.StdErr.Add($"Error: {error}");
             }
         }
         else
         {
             foreach (var result in results)
             {
-                returnValues.StdOut.Add(result.ToString());
+                powerShellOutput.StdOut.Add(result.ToString());
             }
         }
 
-        return returnValues;
+        return powerShellOutput;
     }
 
     /// <summary>

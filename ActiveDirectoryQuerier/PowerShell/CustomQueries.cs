@@ -144,8 +144,8 @@ internal class CustomQueries
     }
     /// <summary>
     /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
-    /// TODO: Fix any and all warnings about possible null values.
     /// </summary>
+    /// TODO: Fix any and all warnings about possible null values.
     public void LoadData()
     {
         try

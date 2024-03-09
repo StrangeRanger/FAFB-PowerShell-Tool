@@ -10,16 +10,16 @@ namespace ActiveDirectoryQuerier;
 public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    private ObservableCollection<string> _possibleParameterList = new();
+    private ObservableCollection<string> _possibleParameters = new();
     private string _selectedParameter = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the ComboBoxParameterViewModel class.
     /// </summary>
-    /// <param name="possibleParameterList">Initial list of possible parameters for the ComboBox.</param>
-    public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameterList)
+    /// <param name="possibleParameters">Initial list of possible parameters for the ComboBox.</param>
+    public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameters)
     {
-        PossibleParameterList = possibleParameterList ?? throw new ArgumentNullException(nameof(possibleParameterList));
+        PossibleParameters = possibleParameters ?? throw new ArgumentNullException(nameof(possibleParameters));
     }
 
     /// <summary>
@@ -40,19 +40,19 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the list of possible parameters that can be selected for a command.
     /// </summary>
-    public ObservableCollection<string> PossibleParameterList
+    public ObservableCollection<string> PossibleParameters
     {
-        get => _possibleParameterList;
+        get => _possibleParameters;
         set {
             if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
 
-            if (_possibleParameterList != value)
+            if (_possibleParameters != value)
             {
-                _possibleParameterList = value;
-                OnPropertyChanged(nameof(PossibleParameterList));
+                _possibleParameters = value;
+                OnPropertyChanged(nameof(PossibleParameters));
             }
         }
     }

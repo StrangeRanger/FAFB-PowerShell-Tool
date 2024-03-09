@@ -19,6 +19,7 @@ public class CommandParameters : ICommandParameters
     /// <note>
     /// I realize that this isn't a very clean way of doing things, but it's the best I could come up with at the time.
     /// </note>
+    /// TODO: Refactor this to be more clean and less error-prone.
     public ObservableCollection<string> PossibleParameters
     {
         get {
@@ -35,34 +36,35 @@ public class CommandParameters : ICommandParameters
     /// <summary>
     /// Retrieves the parameters available for a given command asynchronously.
     /// </summary>
-    /// <param name="commandObject">The command object to retrieve parameters for.</param>
-    public async Task LoadCommandParametersAsync(Command? commandObject)
+    /// <param name="powerShellCommand">The command object to retrieve parameters for.</param>
+    public async Task LoadCommandParametersAsync(Command? powerShellCommand)
     {
-        await LoadCommandParametersInternal(commandObject, true);
+        await LoadCommandParametersInternal(powerShellCommand, true);
     }
 
     /// <summary>
     /// Retrieves the parameters available for a given command synchronously.
     /// </summary>
-    /// <param name="commandObject">The command object to retrieve parameters for.</param>
-    void ICommandParameters.LoadCommandParameters(Command? commandObject)
+    /// <param name="powerShellCommand">The command to retrieve parameters for.</param>
+    void ICommandParameters.LoadCommandParameters(Command? powerShellCommand)
     {
-        LoadCommandParametersInternal(commandObject, false).Wait();
+        LoadCommandParametersInternal(powerShellCommand, false).Wait();
     }
 
     /// <summary>
     /// Retrieves the parameters available for a given command.
     /// </summary>
-    /// <param name="commandObject">The command object to retrieve parameters for.</param>
+    /// <param name="powerShellCommand">The command to retrieve parameters for.</param>
     /// <param name="isAsync">Determines whether the operation should be asynchronous or not.</param>
-    private async Task LoadCommandParametersInternal(Command? commandObject, bool isAsync)
+    private async Task LoadCommandParametersInternal(Command? powerShellCommand, bool isAsync)
     {
-        // commandObject can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
+        // powerShellCommand can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
         // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandsList in
-        // MainWindowViewModel.cs, commandObject will be null, causing an exception to be thrown, crashing the program.
-        if (commandObject is null)
+        // MainWindowViewModel.cs, powerShellCommand will be null, causing an exception to be thrown, crashing the
+        // program.
+        if (powerShellCommand is null)
         {
-            Trace.WriteLine("Error: commandObject is null");
+            Trace.WriteLine("Error: command is null");
             _possibleParameters.Add("No valid command provided");
             return;
         }
@@ -71,7 +73,7 @@ public class CommandParameters : ICommandParameters
         {
             using var powerShell = System.Management.Automation.PowerShell.Create();
             string commandString =
-                $"Get-Command {commandObject.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+                $"Get-Command {powerShellCommand.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
 
             powerShell.Commands.Clear();
             powerShell.AddScript(commandString);

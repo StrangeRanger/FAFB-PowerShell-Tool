@@ -299,7 +299,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // If the user selects yes, clear the console
         if (result == MessageBoxResult.Yes)
         {
-            PowerShellOutput.ClearConsole();
+            PowerShellOutput.Clear();
         }
     }
 
@@ -460,7 +460,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Update the possible properties of the ComboBoxParameterViewModels.
         foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicParametersCollection)
         {
-            comboBoxParameterViewModel.PossibleParameterList = PossibleCommandParametersList;
+            comboBoxParameterViewModel.PossibleParameters = PossibleCommandParametersList;
         }
     }
 

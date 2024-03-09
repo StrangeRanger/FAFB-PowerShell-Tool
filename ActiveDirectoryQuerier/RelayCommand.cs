@@ -4,11 +4,11 @@ namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.
-/// TODO: Remove any unused methods, after some investigation.
 /// </summary>
 /// <note>
 /// I'm unsure if I'm dealing with the nullability warnings correctly, in this situation...
 /// </note>
+/// TODO: Remove any unused methods, after some investigation.
 public class RelayCommand : ICommand
 {
     private readonly Action<object> _execute;
@@ -19,7 +19,6 @@ public class RelayCommand : ICommand
     /// </summary>
     /// <param name="execute">The execution logic.</param>
     /// <param name="canExecute">The execution status logic.</param>
-    /// <exception cref="ArgumentNullException">If the execute argument is null.</exception>
     public RelayCommand(Action<object> execute, Predicate<object?>? canExecute = null)
     {
         _execute = execute;
@@ -44,6 +43,7 @@ public class RelayCommand : ICommand
     /// <param name="parameter">
     /// Data used by the command. If the command does not require data to be passed, this object can be set to null.
     /// </param>
+    /// TODO: Perform null checking before calling the _execute property.
     public void Execute(object? parameter)
     {
         // For now, we are ignoring the warning about the parameter being null.
