@@ -700,6 +700,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicParametersCollection.RemoveAt(DynamicParametersCollection.Count - 1);
             DynamicParameterValuesCollection.RemoveAt(DynamicParameterValuesCollection.Count - 1);
         }
+        else
+        {
+            MessageBox.Show("There are no parameters to remove.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+        }
     }
 
     /// <summary>
