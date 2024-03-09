@@ -28,18 +28,19 @@ public static class ActiveDirectoryCommands
         ReturnValues commandListTemp = await powerShellExecutor.ExecuteAsync(command);
 
         // NOTE: This is more of an internal error...
-        // TODO: Provide a more detailed error message??? Maybe log the error to a file???
+        // TODO: Provide a more detailed error message, possibly to the user and to a log file.
         if (commandListTemp.HadErrors)
         {
             MessageBox.Show(string.Join(" ", commandListTemp.StdErr),
-                            "Warning",
+                            "Error",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error);
             throw new InvalidPowerShellStateException(
-                "An error occurred while retrieving the ActiveDirectory commands.");
+                $"An error occurred while retrieving the ActiveDirectory commands: " +
+                $"{string.Join(" ", commandListTemp.StdErr)}");
         }
 
-        foreach (var cmd in commandListTemp.StdOut)
+        foreach (string cmd in commandListTemp.StdOut)
         {
             commandList.Add(new Command(cmd));
         }
