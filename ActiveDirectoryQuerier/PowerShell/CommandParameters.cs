@@ -32,16 +32,29 @@ public class CommandParameters : ICommandParameters
         }
     }
     
+    /// <summary>
+    /// Retrieves the parameters available for a given command asynchronously.
+    /// </summary>
+    /// <param name="commandObject">The command object to retrieve parameters for.</param>
     public async Task LoadCommandParametersAsync(Command? commandObject)
     {
         await LoadCommandParametersInternal(commandObject, true);
     }
 
+    /// <summary>
+    /// Retrieves the parameters available for a given command synchronously.
+    /// </summary>
+    /// <param name="commandObject">The command object to retrieve parameters for.</param>
     void ICommandParameters.LoadCommandParameters(Command? commandObject)
     {
         LoadCommandParametersInternal(commandObject, false).Wait();
     }
 
+    /// <summary>
+    /// Retrieves the parameters available for a given command.
+    /// </summary>
+    /// <param name="commandObject">The command object to retrieve parameters for.</param>
+    /// <param name="isAsync">Determines whether the operation should be asynchronous or not.</param>
     private async Task LoadCommandParametersInternal(Command? commandObject, bool isAsync)
     {
         // commandObject can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
