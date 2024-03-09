@@ -138,6 +138,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Button Content="Add New Command Slot"
                                         Command="{Binding AddCommandComboBoxRelay}"
@@ -160,6 +161,9 @@
                                 <Button Content="Clear Console Output"
                                         Command="{Binding ClearConsoleOutputRelay}"
                                         Grid.Column="6" />
+                                <Button Content="Clear Query"
+                                        Command="{Binding ClearQueryBuilderRelay}" 
+                                        Grid.Column="7" />
                             </Grid>
                             <!-- GridSplitter for resizing console area in the second row -->
                             <GridSplitter Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center"
