@@ -820,6 +820,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
 
+       MenuItem outputToCSV = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
+        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay };
+        MenuItem exportToConsole = new() { Header = "Execute to Console", Command = ExecuteCommandRelay};
+
+        menuItem1.Items.Add(outputToCSV);
+        menuItem1.Items.Add(outputToText);
+        menuItem1.Items.Add(exportToConsole);
+
         MenuItem menuItem2 = new() { Header = "Edit", Command = EditCustomQueryRelay, CommandParameter = newButton };
 
         MenuItem menuItem3 =
