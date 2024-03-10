@@ -33,7 +33,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _activeDirectoryInfoOutput; // Pieter TODO
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
-    private object _optionsSelectedComboBoxItem;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
@@ -54,7 +53,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         get => _editingEnabled;
         set {
             _editingEnabled = value;
-            OnPropertyChanged("EditingEnabled");
+            OnPropertyChanged(nameof(EditingEnabled));
         }
     }
 
