@@ -9,8 +9,8 @@
 
 		<!-- Project Info. -->
 		<Title>Active Directory Querier</Title>
-		<Version>0.4.1</Version>
-		<Authors>Hunter T., Pieter Landry Sobtafo, Joseph</Authors>
+		<Version>0.5.0</Version>
+		<Authors>Hunter T., Pieter, Joseph</Authors>
 		<RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
 
 		<!-- Project Compile Time Settings. -->
