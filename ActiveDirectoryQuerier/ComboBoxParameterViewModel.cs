@@ -10,7 +10,7 @@ namespace ActiveDirectoryQuerier;
 public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    private ObservableCollection<string> _possibleParameters = new();
+    private ObservableCollection<string> _possibleParameterListList = new();
     private string _selectedParameter = string.Empty;
 
     /// <summary>
@@ -19,7 +19,7 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     /// <param name="possibleParameters">Initial list of possible parameters for the ComboBox.</param>
     public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameters)
     {
-        PossibleParameters = possibleParameters ?? throw new ArgumentNullException(nameof(possibleParameters));
+        PossibleParameterList = possibleParameters ?? throw new ArgumentNullException(nameof(possibleParameters));
     }
 
     /// <summary>
@@ -40,19 +40,19 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     /// <summary>
     /// Gets or sets the list of possible parameters that can be selected for a command.
     /// </summary>
-    public ObservableCollection<string> PossibleParameters
+    public ObservableCollection<string> PossibleParameterList
     {
-        get => _possibleParameters;
+        get => _possibleParameterListList;
         set {
             if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
 
-            if (_possibleParameters != value)
+            if (_possibleParameterListList != value)
             {
-                _possibleParameters = value;
-                OnPropertyChanged(nameof(PossibleParameters));
+                _possibleParameterListList = value;
+                OnPropertyChanged(nameof(PossibleParameterList));
             }
         }
     }
