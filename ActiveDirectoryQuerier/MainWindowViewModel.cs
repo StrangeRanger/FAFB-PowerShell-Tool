@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,6 +33,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _activeDirectoryInfoOutput; // Pieter TODO
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
+    private object _optionsSelectedComboBoxItem;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
@@ -122,6 +124,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 // TODO: Figure out how to resolve the warning about the async method not being awaited.
                 LoadCommandParametersAsync(value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public object OptionsSelectedComboBoxItem
+    {
+        get { return _optionsSelectedComboBoxItem; }
+        set
+        {
+            _optionsSelectedComboBoxItem = value;
+            OnPropertyChanged("SelectedItem");
+
+            ComboBoxItem? tempCBI = value as ComboBoxItem;
+
+            if (tempCBI != null)
+            {
+                Button? tempButton = tempCBI.Content as Button;
+                tempButton.Command.Execute(this);
             }
         }
     }
@@ -261,6 +284,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
         ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
+
 
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         InitializeActiveDirectoryCommandsAsync();
