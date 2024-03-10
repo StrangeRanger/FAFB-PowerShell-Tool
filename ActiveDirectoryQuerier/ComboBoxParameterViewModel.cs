@@ -44,11 +44,6 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     {
         get => _possibleParameters;
         set {
-            if (value is null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
             if (_possibleParameters != value)
             {
                 _possibleParameters = value;
