@@ -613,6 +613,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">This is the object that the command is bound to.</param>
     private void ExportConsoleOutput(object _)
     {
+        if (PowerShellOutput.ConsoleOutput.Length == 0)
+        {
+            MessageBox.Show("The console is empty.",
+                            "Information",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+            return;
+        }
+        
         SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
 
         bool? result = saveFileDialog.ShowDialog();
