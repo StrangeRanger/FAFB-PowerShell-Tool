@@ -28,10 +28,10 @@ public static class ActiveDirectoryCommands
         ReturnValues powerShellOutput = await powerShellExecutor.ExecuteAsync(powerShellCommand);
 
         // This is more of an internal error catch, as even through this command shouldn't fail, it's possible that it
-        // could.
+        // could. If this is the case, we want to know about it.
         if (powerShellOutput.HadErrors)
         {
-            string errorMessage = "An error occurred while retrieving the Active Directory commands: " +
+            string errorMessage = "Internal Error: An error occurred while retrieving the Active Directory commands: " +
                                   $"({string.Join(" ", powerShellOutput.StdErr)})";
             MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             throw new InvalidPowerShellStateException(errorMessage);
