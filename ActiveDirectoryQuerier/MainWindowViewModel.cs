@@ -811,13 +811,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but
     /// could be changed to also do it from the query list.
     /// </summary>
-    /// <note>
-    /// TODO: Change method name?
-    /// </note>
     /// <returns>This method returns a button that has been customized for the custom query list</returns>
+    /// TODO: Change method name?
     private Button CreateCustomButton(Query? query = null)
     {
-        Button newButton = new Button();
+        Button newButton = new();
 
         if (query != null)
         {
@@ -850,13 +848,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
 
-        MenuItem outputToCSV = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
+        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
         MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay };
-        MenuItem exportToConsole = new() { Header = "Execute to Console", Command = ExecuteCommandRelay };
+        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteCommandRelay };
 
-        menuItem1.Items.Add(outputToCSV);
+        menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);
-        menuItem1.Items.Add(exportToConsole);
+        menuItem1.Items.Add(outputToConsole);
 
         MenuItem menuItem2 = new() { Header = "Edit", Command = EditCustomQueryRelay, CommandParameter = newButton };
 
