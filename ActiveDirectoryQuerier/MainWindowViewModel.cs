@@ -129,27 +129,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    public object OptionsSelectedComboBoxItem
-    {
-        get { return _optionsSelectedComboBoxItem; }
-        set
-        {
-            _optionsSelectedComboBoxItem = value;
-            OnPropertyChanged("SelectedItem");
-
-            ComboBoxItem? tempCBI = value as ComboBoxItem;
-
-            if (tempCBI != null)
-            {
-                Button? tempButton = tempCBI.Content as Button;
-                tempButton.Command.Execute(this);
-            }
-        }
-    }
-
-    /// <summary>
     /// This property creates a collection of buttons to be added to the stack panel for custom queries
     /// </summary>
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();

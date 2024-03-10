@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:activeDirectoryQuerier="clr-namespace:ActiveDirectoryQuerier" 
+        xmlns:activeDirectoryQuerier="clr-namespace:ActiveDirectoryQuerier"
         mc:Ignorable="d"
         Title="Active Directory Querier" Height="720" Width="1280">
     <Window.DataContext>
@@ -105,7 +105,7 @@
                                           Width="212"
                                           IsEditable="True"
                                           Grid.Column="0"
-                                          Grid.Row="1"/>
+                                          Grid.Row="1" />
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Left">Parameter</TextBlock>
@@ -120,13 +120,13 @@
                                                       VerticalAlignment="Center"
                                                       Margin="5"
                                                       ItemsSource="{Binding PossibleParameters}"
-                                                      SelectedItem="{Binding SelectedParameter}" 
+                                                      SelectedItem="{Binding SelectedParameter}"
                                                       Grid.Row="0"
-                                                      Grid.Column="1"/>
+                                                      Grid.Column="1" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                
+
                                 <!-- Parameter Values ComboBox -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left">Value</TextBlock>
                                 <ItemsControl ItemsSource="{Binding DynamicParameterValuesCollection}"
@@ -145,83 +145,59 @@
                                 <!-- END of Dynamic ComboxBoxes for parameters and values-->
 
                                 <!-- START of Button ComboBox -->
-                                <ComboBox SelectedItem="{Binding OptionsSelectedComboBoxItem}" Margin="0,4,0,6" Height="Auto" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" MinWidth="160" Width="Auto" >
-                                    <ComboBoxItem>
-                                        <Button Content="Add New Command Slot" 
-                                                Command="{Binding AddCommandComboBoxRelay}"            
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Add New Parameter Slot" Command="{Binding AddParameterComboBoxRelay}"
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Remove Parameter Slot" Command="{Binding RemoveParameterComboBoxRelay}" 
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Save Query" Command="{Binding SaveCustomQueriesRelay}"
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Execute" Command="{Binding ExecuteCommandRelay}"
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Execute to CSV" Command="{Binding OutputToCsvFileRelay}"
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False" />
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Execute to Text" Command="{Binding OutputToTextFileRelay}" 
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Export Console Output" Command="{Binding ExportConsoleOutputRelay}"
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Clear Console Output" Command="{Binding ClearConsoleOutputRelay}" 
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <Button Content="Clear Query" Command="{Binding ClearQueryBuilderRelay}"
-                                                Background="Transparent" 
-                                                BorderBrush="Transparent"
-                                                IsHitTestVisible="False"/>  
-                                    </ComboBoxItem>
+                                <ComboBox Margin="0,4,0,6" Height="Auto" Grid.Row="2" Grid.Column="0"
+                                          HorizontalAlignment="Center" MinWidth="160" Width="Auto">
+                                    <Button Content="Add New Command Slot"
+                                            Command="{Binding AddCommandComboBoxRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Add New Parameter Slot"
+                                            Command="{Binding AddParameterComboBoxRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Remove Parameter Slot"
+                                            Command="{Binding RemoveParameterComboBoxRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Save Query" Command="{Binding SaveCustomQueriesRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Execute" Command="{Binding ExecuteCommandRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Execute to CSV" Command="{Binding OutputToCsvFileRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Execute to Text" Command="{Binding OutputToTextFileRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Export Console Output"
+                                            Command="{Binding ExportConsoleOutputRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Clear Console Output" Command="{Binding ClearConsoleOutputRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
+                                    <Button Content="Clear Query" Command="{Binding ClearQueryBuilderRelay}"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent" />
                                 </ComboBox>
                                 <!-- END of Button ComboBox-->
-
-                                <CheckBox Grid.Row="2" Grid.Column="0" Content="Editing" HorizontalAlignment="Left" Margin="10,6,10,0"
-                                      VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}" Height="15" Width="57" />
+                                <CheckBox Grid.Row="2" Grid.Column="0" Content="Editing" HorizontalAlignment="Left"
+                                          Margin="10,6,10,0"
+                                          VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}" Height="15"
+                                          Width="57" />
                             </Grid>
                             <!-- ROW 0 END -->
 
                             <!-- TODO: Figure out why I can't get the console to be resizable to the min height! -->
                             <!-- TODO: Pieter refer here for the console output... try replicate for tab three -->
                             <!-- GRID ROW 1 START -->
-                                <!-- TextBox as Console Output -->
-                            <TextBox Grid.Row="1" Text="{Binding PowerShellOutput.ConsoleOutput}" HorizontalAlignment="Stretch"
-                                         VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
-                                         VerticalScrollBarVisibility="Auto" />
+                            <!-- TextBox as Console Output -->
+                            <TextBox Grid.Row="1" Text="{Binding PowerShellOutput.ConsoleOutput}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto" />
                             <!-- GRID ROW 1 END -->
                         </Grid>
                     </TabItem>
