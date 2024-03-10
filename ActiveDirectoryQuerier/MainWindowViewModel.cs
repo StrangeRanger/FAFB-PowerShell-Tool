@@ -120,7 +120,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // No need to load parameters if the command is null.
             if (value is not null)
             {
-                LoadCommandParametersAsync(value); // TODO: Maybe change this method to synchronous...
+                // TODO: Figure out how to resolve the warning about the async method not being awaited.
+                LoadCommandParametersAsync(value);
             }
         }
     }
@@ -261,7 +262,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
-        InitializeActiveDirectoryCommandsAsync(); // TODO: Maybe change this method to synchronous...
+        // TODO: Figure out how resolve the warning about the async method not being awaited.
+        InitializeActiveDirectoryCommandsAsync();
         LoadCustomQueries();                      // Calls method to deserialize and load buttons.
     }
 
@@ -327,7 +329,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SelectedComboBoxCommand = chosenCommand;
 
         // Load the Possible Parameters Synchronously
-        CommandParameters commandParameters = new CommandParameters();
+        CommandParameters commandParameters = new();
         ((ICommandParameters)commandParameters).LoadCommandParameters(SelectedComboBoxCommand);
         PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
