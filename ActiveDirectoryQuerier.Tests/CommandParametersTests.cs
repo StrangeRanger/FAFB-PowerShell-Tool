@@ -6,13 +6,13 @@ namespace ActiveDirectoryQuerier.Tests;
 public class CommandParametersTests
 {
     [Fact]
-    public void PossibleParameters_LoadCommandParametersAsyncNotPopulated_ThrowInvalidOperationException()
+    public void PossibleParameters_LoadCommandParametersNotPopulated_NoValidCommandProvided()
     {
         // Arrange
         CommandParameters commandParameters = new();
 
         // Assert
-        Assert.Throws<InvalidOperationException>(() => commandParameters.PossibleParameters);
+        Assert.Contains("No valid command provided", commandParameters.PossibleParameters);
     }
 
     [Fact]

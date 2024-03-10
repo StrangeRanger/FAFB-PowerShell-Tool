@@ -7,7 +7,7 @@ using System.Text;
 namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
-/// Manages execution of PowerShell commands, providing both synchronous and asynchronous execution methods.
+/// Manages the execution of PowerShell commands, providing both synchronous and asynchronous execution methods.
 /// </summary>
 public class PowerShellExecutor
 {
@@ -29,9 +29,8 @@ public class PowerShellExecutor
     /// Prepares a PowerShell command for execution.
     /// </summary>
     /// <param name="command">The command to be prepared for execution.</param>
-    private void PrepareCommand(Command? command)
+    private void PrepareCommand(Command command)
     {
-        // TODO: Add a test to identify if throwing an exception is necessary, or a return value is better.
         ArgumentNullException.ThrowIfNull(command);
 
         _powerShell.Commands.AddCommand(command.CommandText);
@@ -46,7 +45,7 @@ public class PowerShellExecutor
     /// </summary>
     /// <param name="command">The command to be executed.</param>
     /// <returns>A ReturnValues object containing the results of the command execution.</returns>
-    public ReturnValues Execute(Command? command)
+    public ReturnValues Execute(Command command)
     {
         try
         {
@@ -67,7 +66,7 @@ public class PowerShellExecutor
     /// </summary>
     /// <param name="command">The command to be executed.</param>
     /// <returns>A task containing a ReturnValues object with the results of the command execution.</returns>
-    public async Task<ReturnValues> ExecuteAsync(Command? command)
+    public async Task<ReturnValues> ExecuteAsync(Command command)
     {
         try
         {

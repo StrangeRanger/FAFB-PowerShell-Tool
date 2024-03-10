@@ -39,7 +39,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly Query _currentQuery;
     private readonly CustomQueries _customQuery;
     private readonly PowerShellExecutor _powerShellExecutor;
-    // Probably want to add the ability to toggle editing vs not editing but filled in.
     private Query? _isEditing;
 
     // [ Properties ] --------------------------------------------------------------- //
@@ -263,10 +262,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
-
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         InitializeActiveDirectoryCommandsAsync();
-        LoadCustomQueries();                      // Calls method to deserialize and load buttons.
+        LoadCustomQueries(); // Calls method to deserialize and load buttons.
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
@@ -295,13 +293,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Information);
             return;
         }
-        
+
         MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the console output?",
                                                   "Warning",
                                                   MessageBoxButton.YesNo,
                                                   MessageBoxImage.Warning,
                                                   MessageBoxResult.No);
-        
+
         if (result == MessageBoxResult.Yes)
         {
             PowerShellOutput.Clear();
@@ -334,7 +332,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Load the Possible Parameters Synchronously
         CommandParameters commandParameters = new();
-        ((ICommandParameters)commandParameters).LoadCommandParameters(SelectedComboBoxCommand);
+        commandParameters.LoadCommandParameters(SelectedComboBoxCommand);
         PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
 
@@ -616,13 +614,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (PowerShellOutput.ConsoleOutput.Length == 0)
         {
-            MessageBox.Show("The console is empty.",
-                            "Information",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information);
+            MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
-        
+
         SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
 
         bool? result = saveFileDialog.ShowDialog();
@@ -691,15 +686,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 commandParameters = new string[SelectedComboBoxCommand.Parameters.Count];
                 commandParameterValues = new string[SelectedComboBoxCommand.Parameters.Count];
 
-
-
                 _currentQuery.QueryDescription = QueryDescription;
                 _currentQuery.QueryName = QueryName;
 
                 _currentQuery.CommandName = SelectedComboBoxCommand.CommandText;
 
                 // TODO: Possibly convert foreach into a for loop...
-                for(int i = 0; i < SelectedComboBoxCommand.Parameters.Count; i++)
+                for (int i = 0; i < SelectedComboBoxCommand.Parameters.Count; i++)
                 {
                     CommandParameter commandParameter = SelectedComboBoxCommand.Parameters[i];
 
@@ -768,7 +761,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // Try to get the content within the drop downs
             try
             {
-
                 UpdateSelectedCommand();
 
                 _customQuery.SerializeCommand(SelectedComboBoxCommand, QueryName, QueryDescription);

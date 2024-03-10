@@ -5,10 +5,7 @@ namespace ActiveDirectoryQuerier;
 /// <summary>
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.
 /// </summary>
-/// <note>
-/// I'm unsure if I'm dealing with the nullability warnings correctly, in this situation...
-/// </note>
-/// TODO: Remove any unused methods, after some investigation.
+/// TODO: Ensure nullability is being handled correctly.
 public class RelayCommand : ICommand
 {
     private readonly Action<object> _execute;

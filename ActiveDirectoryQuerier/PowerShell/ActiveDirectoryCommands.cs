@@ -27,22 +27,19 @@ public static class ActiveDirectoryCommands
         ObservableCollection<Command> activeDirectoryCommands = new();
         ReturnValues powerShellOutput = await powerShellExecutor.ExecuteAsync(powerShellCommand);
 
-        // NOTE: This is more of an internal error...
-        // TODO: Provide a more detailed error message, possibly to the user and to a log file.
+        // This is more of an internal error catch, as even through this command shouldn't fail, it's possible that it
+        // could.
         if (powerShellOutput.HadErrors)
         {
-            MessageBox.Show(string.Join(" ", powerShellOutput.StdErr),
-                            "Error",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-            throw new InvalidPowerShellStateException(
-                $"An error occurred while retrieving the ActiveDirectory commands: " +
-                $"{string.Join(" ", powerShellOutput.StdErr)}");
+            string errorMessage = "An error occurred while retrieving the Active Directory commands: " +
+                                  $"({string.Join(" ", powerShellOutput.StdErr)})";
+            MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            throw new InvalidPowerShellStateException(errorMessage);
         }
 
-        foreach (string cmd in powerShellOutput.StdOut)
+        foreach (string command in powerShellOutput.StdOut)
         {
-            activeDirectoryCommands.Add(new Command(cmd));
+            activeDirectoryCommands.Add(new Command(command));
         }
 
         return activeDirectoryCommands;

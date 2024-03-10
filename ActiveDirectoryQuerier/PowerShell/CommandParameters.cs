@@ -8,7 +8,7 @@ namespace ActiveDirectoryQuerier.PowerShell;
 /// <summary>
 /// Manages and provides the parameters available for a given PowerShell command.
 /// </summary>
-public class CommandParameters : ICommandParameters
+public class CommandParameters
 {
     private readonly ObservableCollection<string> _possibleParameters = new();
 
@@ -16,23 +16,24 @@ public class CommandParameters : ICommandParameters
     /// Gets the collection of possible parameters for a command.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the collection has not been populated yet.</exception>
-    /// <note>
-    /// I realize that this isn't a very clean way of doing things, but it's the best I could come up with at the time.
-    /// </note>
-    /// TODO: Refactor this to be more clean and less error-prone.
+    /// <important>
+    /// This property should not be accessed before the collection has been populated via LoadCommandParametersAsync, to
+    /// ensure asynchronous loading of parameters.
+    /// </important>
     public ObservableCollection<string> PossibleParameters
     {
         get {
             if (_possibleParameters.Count == 0)
             {
-                throw new InvalidOperationException(
-                    "'PossibleParameters' has not been populated via 'LoadCommandParametersAsync'.");
+                Debug.WriteLine("Warning: LoadCommandParametersAsync should be called before accessing " +
+                                "PossibleParameters, to ensure asynchronous loading of parameters.");
+                LoadCommandParameters(null);
             }
 
             return _possibleParameters;
         }
     }
-    
+
     /// <summary>
     /// Retrieves the parameters available for a given command asynchronously.
     /// </summary>
@@ -46,7 +47,7 @@ public class CommandParameters : ICommandParameters
     /// Retrieves the parameters available for a given command synchronously.
     /// </summary>
     /// <param name="powerShellCommand">The command to retrieve parameters for.</param>
-    void ICommandParameters.LoadCommandParameters(Command? powerShellCommand)
+    public void LoadCommandParameters(Command? powerShellCommand)
     {
         LoadCommandParametersInternal(powerShellCommand, false).Wait();
     }

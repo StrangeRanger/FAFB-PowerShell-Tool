@@ -5,7 +5,7 @@ namespace ActiveDirectoryQuerier;
 
 /// <summary>
 /// ViewModel for a ComboBox that displays possible parameters for a PowerShell command.
-/// It is used when adding a new parameter slot to a command in the UI.
+/// It is used when adding a new parameter slot to a command in the GUI.
 /// </summary>
 public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
 {
