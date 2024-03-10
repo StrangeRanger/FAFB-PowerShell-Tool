@@ -158,7 +158,8 @@
                                         <MenuItem Header="Execute to Text" Command="{Binding OutputToTextFileRelay}" />
                                         <MenuItem Header="Export Console Output"
                                                   Command="{Binding ExportConsoleOutputRelay}" />
-                                        <MenuItem Header="Clear Console Output" Command="{Binding ClearConsoleOutputRelay}" />
+                                        <MenuItem Header="Clear Console Output"
+                                                  Command="{Binding ClearConsoleOutputRelay}" />
                                         <MenuItem Header="Clear Query" Command="{Binding ClearQueryBuilderRelay}" />
                                     </MenuItem>
                                 </Menu>
