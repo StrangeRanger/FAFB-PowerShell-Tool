@@ -30,17 +30,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _queryName;
     private string _queryDescription;
     private AppConsole _powerShellOutput;
-    private AppConsole _activeDirectoryInfoOutput; // Pieter TODO
+    private AppConsole _activeDirectoryInfoOutput; // TODO: Info for Pieter to get started
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
-    private readonly CustomQueries _customQuery;
     private readonly Query _currentQuery;
+    private readonly CustomQueries _customQuery;
+    private readonly PowerShellExecutor _powerShellExecutor;
     // Probably want to add the ability to toggle editing vs not editing but filled in.
     private Query? _isEditing;
-    private readonly PowerShellExecutor _powerShellExecutor;
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
@@ -69,7 +69,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    // Pieter TODO
+    // TODO: Info for Pieter to get started
     public AppConsole ActiveDirectoryInfoOutput
     {
         get => _activeDirectoryInfoOutput;
@@ -121,7 +121,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // No need to load parameters if the command is null.
             if (value is not null)
             {
-                // TODO: Figure out how to resolve the warning about the async method not being awaited.
+                // TODO: Figure out how to resolve the warning about the async method not being awaited!!!
                 LoadCommandParametersAsync(value);
             }
         }
@@ -271,7 +271,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    /// Pieter TODO (New Code)
+    // TODO: Info for Pieter to get started
     /*public void ActiveDirectoryInfo()
     {
         PowerShellExecutor powerShell = new PowerShellExecutor();
@@ -281,6 +281,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Collection<PSObject> ReturnValue results = powerShell.ExecuteCommand(command);
     }*/
 
+    /// <summary>
+    /// This method will clear the console output and prompt the user if they are sure they want to clear the console.
+    /// </summary>
+    /// <param name="_">This is the object that the command is tied to.</param>
     private void ClearConsoleOutput(object _)
     {
         if (PowerShellOutput.ConsoleOutput.Length == 0)
@@ -291,15 +295,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Information);
             return;
         }
-
-        // Display a gui box confirming if the user wants to confirm the clear
+        
         MessageBoxResult result = MessageBox.Show("Are you sure you want to clear the console output?",
                                                   "Warning",
                                                   MessageBoxButton.YesNo,
                                                   MessageBoxImage.Warning,
                                                   MessageBoxResult.No);
-
-        // If the user selects yes, clear the console
+        
         if (result == MessageBoxResult.Yes)
         {
             PowerShellOutput.Clear();
@@ -433,7 +435,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Executes the selected PowerShell command asynchronously.
     /// </summary>
-    /// <param name="_">Parameter is not used, but required for the ICommand interface.</param>
+    /// <param name="_">This is the object that the command is bound to.</param>
     private async void ExecuteCommandAsync(object _)
     {
         await ExecuteSelectedCommandAsync();
@@ -445,7 +447,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
         ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
-        ActiveDirectoryCommandsList = new(list);
+        ActiveDirectoryCommandsList = new ObservableCollection<Command>(list);
         OnPropertyChanged(nameof(ActiveDirectoryCommandsList));
     }
 
@@ -470,10 +472,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
     /// </summary>
+    /// <param name="command">The PowerShell command to execute.</param>
     /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
-    private async Task ExecuteSelectedCommandAsync(Command? inCommand = null)
+    private async Task ExecuteSelectedCommandAsync(Command? command = null)
     {
-        if (SelectedComboBoxCommand is null && inCommand is null)
+        if (SelectedComboBoxCommand is null && command is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To execute a command, you must first select a command.",
@@ -483,13 +486,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        ReturnValues result;
-
         try
         {
-            if (inCommand is not null)
+            ReturnValues result;
+            if (command is not null)
             {
-                result = await _powerShellExecutor.ExecuteAsync(inCommand);
+                result = await _powerShellExecutor.ExecuteAsync(command);
             }
             else
             {
