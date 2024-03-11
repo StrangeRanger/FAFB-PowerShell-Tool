@@ -23,7 +23,7 @@ public class AdCommandParametersTests
         Command command = new("Get-Process");
 
         // Act
-        await adCommandParameters.LoadParametersAsync(command);
+        await adCommandParameters.LoadAvailableParametersAsync(command);
 
         // Assert
         Assert.NotEmpty(adCommandParameters.AvailableParameters);
@@ -37,7 +37,7 @@ public class AdCommandParametersTests
         Command command = new("Get-Process");
 
         // Act
-        await adCommandParameters.LoadParametersAsync(command);
+        await adCommandParameters.LoadAvailableParametersAsync(command);
 
         // Assert
         Assert.Contains("-Name", adCommandParameters.AvailableParameters);

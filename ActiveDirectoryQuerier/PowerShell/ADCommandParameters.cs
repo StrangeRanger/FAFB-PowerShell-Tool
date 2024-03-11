@@ -15,32 +15,32 @@ public class ADCommandParameters
         get {
             if (_availableParameters.Count == 0)
             {
-                Debug.WriteLine("Warning: LoadParametersAsync should be called before accessing " +
+                Debug.WriteLine("Warning: LoadAvailableParametersAsync should be called before accessing " +
                                 "AvailableParameters, to ensure asynchronous loading of parameters.");
-                LoadParameters(null);
+                LoadAvailableParameters(null);
             }
 
             return _availableParameters;
         }
     }
     
-    public async Task LoadParametersAsync(Command? powerShellCommand)
+    public async Task LoadAvailableParametersAsync(Command? psCommand)
     {
-        await LoadParametersCore(powerShellCommand, true);
+        await LoadAvailableParametersCore(psCommand, true);
     }
 
-    public void LoadParameters(Command? powerShellCommand)
+    public void LoadAvailableParameters(Command? psCommand)
     {
-        LoadParametersCore(powerShellCommand, false).Wait();
+        LoadAvailableParametersCore(psCommand, false).Wait();
     }
     
-    private async Task LoadParametersCore(Command? powerShellCommand, bool isAsync)
+    private async Task LoadAvailableParametersCore(Command? psCommand, bool isAsync)
     {
-        // powerShellCommand can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
+        // psCommand can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
         // More specifically, if the entered command doesn't exist in the ActiveDirectoryCommandsList in
-        // MainWindowViewModel.cs, powerShellCommand will be null, causing an exception to be thrown, crashing the
+        // MainWindowViewModel.cs, psCommand will be null, causing an exception to be thrown, crashing the
         // program.
-        if (powerShellCommand is null)
+        if (psCommand is null)
         {
             Trace.WriteLine("Error: command is null");
             _availableParameters.Add("No valid command provided");
@@ -51,7 +51,7 @@ public class ADCommandParameters
         {
             using var powerShell = System.Management.Automation.PowerShell.Create();
             string commandString =
-                $"Get-Command {powerShellCommand.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+                $"Get-Command {psCommand.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
 
             powerShell.Commands.Clear();
             powerShell.AddScript(commandString);
@@ -59,17 +59,17 @@ public class ADCommandParameters
             if (isAsync)
             {
                 PSDataCollection<PSObject> result = await powerShell.InvokeAsync();
-                foreach (PSObject cmd in result)
+                foreach (PSObject adCommandParameter in result)
                 {
-                    _availableParameters.Add($"-{cmd}");
+                    _availableParameters.Add($"-{adCommandParameter}");
                 }
             }
             else
             {
                 Collection<PSObject> result = powerShell.Invoke();
-                foreach (PSObject cmd in result)
+                foreach (PSObject adCommandParameter in result)
                 {
-                    _availableParameters.Add($"-{cmd}");
+                    _availableParameters.Add($"-{adCommandParameter}");
                 }
             }
         }

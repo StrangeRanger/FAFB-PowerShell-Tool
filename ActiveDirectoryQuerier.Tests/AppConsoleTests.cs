@@ -21,11 +21,11 @@ public class AppConsoleTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static async Task<(AppConsole, ReturnValues)> ExecuteCommandAsync(Command command)
+    private static async Task<(AppConsole, PSOutput)> ExecuteCommandAsync(Command command)
     {
-        PowerShellExecutor powerShellExecutor = new();
+        PSExecutor psExecutor = new();
         AppConsole appConsole = new();
-        ReturnValues result = await powerShellExecutor.ExecuteAsync(command);
+        PSOutput result = await psExecutor.ExecuteAsync(command);
 
         appConsole.Append(result.HadErrors ? result.StdErr : result.StdOut);
 

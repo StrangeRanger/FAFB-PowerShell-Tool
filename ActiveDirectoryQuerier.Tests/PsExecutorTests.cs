@@ -3,7 +3,7 @@ using ActiveDirectoryQuerier.PowerShell;
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class PowerShellExecutorTests
+public class PsExecutorTests
 {
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
@@ -13,10 +13,10 @@ public class PowerShellExecutorTests
         // Arrange
         Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
-        PowerShellExecutor powerShellExecutor = new();
+        PSExecutor psExecutor = new();
 
         // Act
-        ReturnValues result = powerShellExecutor.Execute(command);
+        PSOutput result = psExecutor.Execute(command);
 
         // Assert
         Assert.False(result.HadErrors);
@@ -32,11 +32,11 @@ public class PowerShellExecutorTests
         command.Parameters.Add("Module", "ActiveDirectory");
         Command command2 = new("Get-Process");
         command.Parameters.Add("Name", "explorer");
-        PowerShellExecutor powerShellExecutor = new();
+        PSExecutor psExecutor = new();
 
         // Act
-        ReturnValues result = powerShellExecutor.Execute(command);
-        ReturnValues result2 = powerShellExecutor.Execute(command2);
+        PSOutput result = psExecutor.Execute(command);
+        PSOutput result2 = psExecutor.Execute(command2);
 
         // Assert
         Assert.NotEqual(result, result2);
@@ -52,10 +52,10 @@ public class PowerShellExecutorTests
         // Arrange
         Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
-        PowerShellExecutor powerShellExecutor = new();
+        PSExecutor psExecutor = new();
 
         // Act
-        ReturnValues result = await powerShellExecutor.ExecuteAsync(command);
+        PSOutput result = await psExecutor.ExecuteAsync(command);
 
         // Assert
         Assert.False(result.HadErrors);
@@ -71,10 +71,10 @@ public class PowerShellExecutorTests
         // Arrange
         Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
-        PowerShellExecutor powerShellExecutor = new();
+        PSExecutor psExecutor = new();
 
         // Act
-        ReturnValues result = powerShellExecutor.Execute(command);
+        PSOutput result = psExecutor.Execute(command);
 
         // Assert
         Assert.True(result.HadErrors);
@@ -92,10 +92,10 @@ public class PowerShellExecutorTests
         // Arrange
         Command command = new(cmd);
         command.Parameters.Add(paramName, paramValue);
-        PowerShellExecutor powerShellExecutor = new();
+        PSExecutor psExecutor = new();
 
         // Act
-        ReturnValues result = await powerShellExecutor.ExecuteAsync(command);
+        PSOutput result = await psExecutor.ExecuteAsync(command);
 
         // Assert
         Assert.True(result.HadErrors);

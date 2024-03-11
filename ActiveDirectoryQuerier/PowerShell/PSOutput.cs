@@ -2,9 +2,10 @@ namespace ActiveDirectoryQuerier.PowerShell;
 
 /// <summary>
 /// Encapsulates the return values from a PowerShell command, separated into standard output (StdOut) and standard
-/// error (StdErr).
+/// error output (StdErr).
 /// </summary>
-public record ReturnValues
+// ReSharper disable once InconsistentNaming
+public record PSOutput
 {
     /// <summary>
     /// Gets a value indicating whether the command execution resulted in any errors.

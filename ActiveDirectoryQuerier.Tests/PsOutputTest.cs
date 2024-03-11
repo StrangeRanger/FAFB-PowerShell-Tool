@@ -2,13 +2,13 @@
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class ReturnValuesTest
+public class PsOutputTest
 {
     [Fact]
     public void HadErrors_StdErrHasEntries_ReturnsTrue()
     {
         // Arrange
-        var returnValues = new ReturnValues();
+        var returnValues = new PSOutput();
         returnValues.StdErr.Add("Error");
 
         // Act
@@ -24,7 +24,7 @@ public class ReturnValuesTest
     public void NoErrors_StdOutHasEntries_ReturnsFalse()
     {
         // Arrange
-        var returnValues = new ReturnValues();
+        var returnValues = new PSOutput();
         returnValues.StdOut.Add("Output");
 
         // Act

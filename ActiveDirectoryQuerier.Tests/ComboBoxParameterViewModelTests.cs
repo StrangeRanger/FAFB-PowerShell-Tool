@@ -15,7 +15,7 @@ public class ComboBoxParameterViewModelTests
         ComboBoxParameterViewModel comboBoxParameterViewModel;
         
         // Act
-        await adCommandParameters.LoadParametersAsync(command);
+        await adCommandParameters.LoadAvailableParametersAsync(command);
         comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         
         // Assert
@@ -32,7 +32,7 @@ public class ComboBoxParameterViewModelTests
         ComboBoxParameterViewModel comboBoxParameterViewModel;
         
         // Act
-        await adCommandParameters.LoadParametersAsync(command);
+        await adCommandParameters.LoadAvailableParametersAsync(command);
         comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         
         // Assert
@@ -53,7 +53,7 @@ public class ComboBoxParameterViewModelTests
         ComboBoxParameterViewModel comboBoxParameterViewModel;
         
         // Act
-        await adCommandParameters.LoadParametersAsync(command);
+        await adCommandParameters.LoadAvailableParametersAsync(command);
         comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         selectedParameter = comboBoxParameterViewModel.PossibleParameters[0];
         comboBoxParameterViewModel.SelectedParameter = selectedParameter;

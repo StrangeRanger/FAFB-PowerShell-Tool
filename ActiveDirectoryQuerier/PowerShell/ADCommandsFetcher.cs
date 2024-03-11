@@ -5,31 +5,33 @@ using System.Windows;
 
 namespace ActiveDirectoryQuerier.PowerShell;
 
-public static class ActiveDirectoryCommandFetcher
+// ReSharper disable once InconsistentNaming
+public static class ADCommandsFetcher
 {
+    // TODO: Possibly rename this method to GetADCommandList...
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {
-        Command powerShellCommand = new("Get-Command");
-        powerShellCommand.Parameters.Add("Module", "ActiveDirectory");
-        PowerShellExecutor powerShellExecutor = new();
-        ObservableCollection<Command> activeDirectoryCommands = new();
-        ReturnValues powerShellOutput = await powerShellExecutor.ExecuteAsync(powerShellCommand);
+        Command psCommand = new("Get-Command");
+        psCommand.Parameters.Add("Module", "ActiveDirectory");
+        PSExecutor psExecutor = new();
+        ObservableCollection<Command> adCommands = new();
+        PSOutput psOutput = await psExecutor.ExecuteAsync(psCommand);
 
         // This is more of an internal error catch, as even through this command shouldn't fail, it's possible that it
         // could. If this is the case, we want to know about it.
-        if (powerShellOutput.HadErrors)
+        if (psOutput.HadErrors)
         {
             string errorMessage = "Internal Error: An error occurred while retrieving the Active Directory commands: " +
-                                  $"({string.Join(" ", powerShellOutput.StdErr)})";
+                                  $"({string.Join(" ", psOutput.StdErr)})";
             MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             throw new InvalidPowerShellStateException(errorMessage);
         }
 
-        foreach (string command in powerShellOutput.StdOut)
+        foreach (string command in psOutput.StdOut)
         {
-            activeDirectoryCommands.Add(new Command(command));
+            adCommands.Add(new Command(command));
         }
 
-        return activeDirectoryCommands;
+        return adCommands;
     }
 }

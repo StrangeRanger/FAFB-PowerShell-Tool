@@ -4,13 +4,13 @@ using ActiveDirectoryQuerier.PowerShell;
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class ActiveDirectoryCommandFetcherTests
+public class AdCommandsFetcherTests
 {
     [Fact]
     public async Task GetActiveDirectoryCommands_ReturnsCommandList_IsNotEmpty()
     {
         // Act
-        ObservableCollection<Command> commandList = await ActiveDirectoryCommandFetcher.GetActiveDirectoryCommands();
+        ObservableCollection<Command> commandList = await ADCommandsFetcher.GetActiveDirectoryCommands();
 
         // Assert
         Assert.NotEmpty(commandList);
@@ -23,7 +23,7 @@ public class ActiveDirectoryCommandFetcherTests
     public async Task GetActiveDirectoryCommands_ReturnsCommandList_ContainsCommand(string commandName)
     {
         // Act
-        ObservableCollection<Command> commandList = await ActiveDirectoryCommandFetcher.GetActiveDirectoryCommands();
+        ObservableCollection<Command> commandList = await ADCommandsFetcher.GetActiveDirectoryCommands();
 
         // Assert
         Assert.Contains(commandList, cmd => cmd.CommandText == commandName);

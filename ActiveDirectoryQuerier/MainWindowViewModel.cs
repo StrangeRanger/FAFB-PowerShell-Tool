@@ -38,7 +38,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private readonly Query _currentQuery;
     private readonly CustomQueries _customQuery;
-    private readonly PowerShellExecutor _powerShellExecutor;
+    private readonly PSExecutor _psExecutor;
     private Query? _isEditing;
 
     // [ Properties ] --------------------------------------------------------------- //
@@ -237,7 +237,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _queryDescription = string.Empty;
         _powerShellOutput = new AppConsole();
         _activeDirectoryInfoOutput = new AppConsole();
-        _powerShellExecutor = new PowerShellExecutor();
+        _psExecutor = new PSExecutor();
         _customQuery = new CustomQueries();
         _currentQuery = new Query();
 
@@ -337,7 +337,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Load the Possible Parameters Synchronously
         ADCommandParameters adCommandParameters = new();
-        adCommandParameters.LoadParameters(SelectedComboBoxCommand);
+        adCommandParameters.LoadAvailableParameters(SelectedComboBoxCommand);
         PossibleCommandParametersList = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
 
@@ -449,7 +449,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
-        ObservableCollection<Command> list = await ActiveDirectoryCommandFetcher.GetActiveDirectoryCommands();
+        ObservableCollection<Command> list = await ADCommandsFetcher.GetActiveDirectoryCommands();
         ActiveDirectoryCommandsList = new ObservableCollection<Command>(list);
         OnPropertyChanged(nameof(ActiveDirectoryCommandsList));
     }
@@ -461,7 +461,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
         ADCommandParameters adCommandParameters = new();
-        await adCommandParameters.LoadParametersAsync(selectedCommand);
+        await adCommandParameters.LoadAvailableParametersAsync(selectedCommand);
         PossibleCommandParametersList = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
 
@@ -491,16 +491,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         try
         {
-            ReturnValues result;
+            PSOutput result;
             if (command is not null)
             {
-                result = await _powerShellExecutor.ExecuteAsync(command);
+                result = await _psExecutor.ExecuteAsync(command);
             }
             else
             {
                 // Add selected parameters and their values to the command.
                 UpdateSelectedCommand();
-                result = await _powerShellExecutor.ExecuteAsync(SelectedComboBoxCommand);
+                result = await _psExecutor.ExecuteAsync(SelectedComboBoxCommand);
             }
 
             if (result.HadErrors)
