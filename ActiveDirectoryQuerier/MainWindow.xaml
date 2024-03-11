@@ -185,8 +185,10 @@
                                 <RowDefinition MinHeight="100" />
                             </Grid.RowDefinitions>
                             <Grid Margin="0,0,0,49" Grid.Row="0">
+                                <!-- TODO: Pieter: Bind button to another property inside the MainWindowViewModel -->
                                 <Button Content="Execute" HorizontalAlignment="Left" Margin="368,43,0,0"
                                         VerticalAlignment="Top" Height="23" Width="95" />
+                                <!-- TODO: Pieter: Bind combobox to another property for the SelectedItem and ItemsSource, inside the MainWindowViewModel -->
                                 <ComboBox HorizontalAlignment="Left" Margin="31,44,0,0" VerticalAlignment="Top"
                                           Width="207"
                                           Height="26" />

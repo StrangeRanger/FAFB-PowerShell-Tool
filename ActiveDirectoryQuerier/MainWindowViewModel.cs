@@ -30,7 +30,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _queryName;
     private string _queryDescription;
     private AppConsole _powerShellOutput;
-    private AppConsole _activeDirectoryInfoOutput; // TODO: Info for Pieter to get started
+    private AppConsole _activeDirectoryInfoOutput;
     private Command? _selectedComboBoxCommand;
     private ObservableCollection<Button>? _buttons;
 
@@ -68,7 +68,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    // TODO: Info for Pieter to get started
     public AppConsole ActiveDirectoryInfoOutput
     {
         get => _activeDirectoryInfoOutput;
@@ -218,15 +217,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     public ICommand ClearConsoleOutputRelay { get; }
 
-    /* TODO: Info for Pieter to get started
-     * AD Info options combobox dropdown
-     * Get all AD user
-     * Get all IP's on domain
-     * Get all etc, etc.
-     */
-
-    /* TODO: Info for Pieter to get started
-     * another property to contain current AD Info selected command
+    /* TODO: for Pieter
+     *
+     * Create a property that contains the ComboBox dropdown options/text.
+     *
+     * Create a property that will contain the selected item.
+     *
+     * Create a property to act as the relay to the execution button.
      */
 
     // [ Constructors ] ------------------------------------------------------------- //
@@ -261,6 +258,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
         ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
+        
+        /* TODO: For Pieter
+         * Connect the relay property to for the execute button to you method that performs the execution.
+         */
+        
 
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         InitializeActiveDirectoryCommandsAsync();
@@ -269,16 +271,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    // TODO: Info for Pieter to get started
-    /*public void ActiveDirectoryInfo()
-    {
-        PowerShellExecutor powerShell = new PowerShellExecutor();
-        Command command = new Command("Get-ADUser");
-        command.Parameters.Add("Filter", "*");
-
-        Collection<PSObject> ReturnValue results = powerShell.ExecuteCommand(command);
-    }*/
-
+    /* TODO: Info for Pieter to get started
+     * Create a class (outside of this one) that will contain three methods, all of each will perform one specific
+     * action, such as getting the users on the domain, getting computers on the domain, and getting the IP of each
+     * system on the domain.
+     *      - The methods in this class should use the powershell executor to execute the specific command.
+     *      - Make method async, and utilize the async execute methods in the powershell executor.
+     *
+     *      public async Task<the return type> MethodName() { } // don't forget to use await when dealing with async
+     *                                                             methods.
+     *
+     * In this class, create a method or two, that will be used to execute the specific selected action.
+     */
+    
     /// <summary>
     /// This method will clear the console output and prompt the user if they are sure they want to clear the console.
     /// </summary>
