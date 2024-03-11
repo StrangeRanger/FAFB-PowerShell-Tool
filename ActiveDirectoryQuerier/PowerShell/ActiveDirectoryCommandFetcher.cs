@@ -5,20 +5,8 @@ using System.Windows;
 
 namespace ActiveDirectoryQuerier.PowerShell;
 
-/// <summary>
-/// Provides functionalities related to the ActiveDirectory PowerShell module.
-/// </summary>
-public static class ActiveDirectoryCommands
+public static class ActiveDirectoryCommandFetcher
 {
-    /// <summary>
-    /// Retrieves a list of commands available in the ActiveDirectory PowerShell module.
-    /// </summary>
-    /// <returns>
-    /// An ObservableCollection of Command objects representing each command in the ActiveDirectory module.
-    /// </returns>
-    /// <exception cref="InvalidPowerShellStateException">
-    /// Thrown if an error occurs during the execution of the PowerShell command.
-    /// </exception>
     public static async Task<ObservableCollection<Command>> GetActiveDirectoryCommands()
     {
         Command powerShellCommand = new("Get-Command");

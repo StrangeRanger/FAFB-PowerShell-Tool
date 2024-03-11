@@ -5,15 +5,12 @@ using System.Management.Automation.Runspaces;
 
 namespace ActiveDirectoryQuerier.PowerShell;
 
-/// <summary>
-/// Manages and provides the parameters available for a given PowerShell command.
-/// </summary>
 public class CommandParameters
 {
     private readonly ObservableCollection<string> _possibleParameters = new();
 
     /// <summary>
-    /// Gets the collection of possible parameters for a command.
+    /// A collection of possible parameters for a given command.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the collection has not been populated yet.</exception>
     /// <important>

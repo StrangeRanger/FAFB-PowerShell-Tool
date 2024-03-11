@@ -449,7 +449,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
-        ObservableCollection<Command> list = await ActiveDirectoryCommands.GetActiveDirectoryCommands();
+        ObservableCollection<Command> list = await ActiveDirectoryCommandFetcher.GetActiveDirectoryCommands();
         ActiveDirectoryCommandsList = new ObservableCollection<Command>(list);
         OnPropertyChanged(nameof(ActiveDirectoryCommandsList));
     }
