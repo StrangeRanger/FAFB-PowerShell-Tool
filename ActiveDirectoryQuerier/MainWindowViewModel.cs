@@ -239,7 +239,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         EditCustomQueryRelay = new RelayCommand(EditCustomQuery);
         DeleteCustomQueryRelay = new RelayCommand(DeleteCustomQuery);
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
-        ClearConsoleOutputRelay = new ParameterizedRelayCommand(ClearConsoleOutput);
+        ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
         
         /* TODO: For Pieter
