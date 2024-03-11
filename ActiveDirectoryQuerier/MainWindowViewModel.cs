@@ -336,9 +336,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SelectedComboBoxCommand = chosenCommand;
 
         // Load the Possible Parameters Synchronously
-        CommandParameters commandParameters = new();
-        commandParameters.LoadCommandParameters(SelectedComboBoxCommand);
-        PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
+        ADCommandParameters adCommandParameters = new();
+        adCommandParameters.LoadParameters(SelectedComboBoxCommand);
+        PossibleCommandParametersList = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
 
         // Check to see if the DynamicParametersCollection is empty and clear it if it is
@@ -460,9 +460,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="selectedCommand">The PowerShell command whose parameters are to be loaded.</param>
     private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
-        CommandParameters commandParameters = new();
-        await commandParameters.LoadCommandParametersAsync(selectedCommand);
-        PossibleCommandParametersList = new ObservableCollection<string>(commandParameters.PossibleParameters);
+        ADCommandParameters adCommandParameters = new();
+        await adCommandParameters.LoadParametersAsync(selectedCommand);
+        PossibleCommandParametersList = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
         OnPropertyChanged(nameof(PossibleCommandParametersList));
 
         // Update the possible properties of the ComboBoxParameterViewModels.

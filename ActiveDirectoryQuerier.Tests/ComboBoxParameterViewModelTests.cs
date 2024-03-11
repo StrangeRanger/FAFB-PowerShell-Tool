@@ -11,12 +11,12 @@ public class ComboBoxParameterViewModelTests
     {
         // Arrange
         Command command = new("Get-ADUser");
-        CommandParameters commandParameters = new();
+        ADCommandParameters adCommandParameters = new();
         ComboBoxParameterViewModel comboBoxParameterViewModel;
         
         // Act
-        await commandParameters.LoadCommandParametersAsync(command);
-        comboBoxParameterViewModel = new(commandParameters.PossibleParameters);
+        await adCommandParameters.LoadParametersAsync(command);
+        comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         
         // Assert
         Assert.NotNull(comboBoxParameterViewModel.PossibleParameters);
@@ -28,12 +28,12 @@ public class ComboBoxParameterViewModelTests
     {
         // Arrange
         Command command = new("Get-ADUser");
-        CommandParameters commandParameters = new();
+        ADCommandParameters adCommandParameters = new();
         ComboBoxParameterViewModel comboBoxParameterViewModel;
         
         // Act
-        await commandParameters.LoadCommandParametersAsync(command);
-        comboBoxParameterViewModel = new(commandParameters.PossibleParameters);
+        await adCommandParameters.LoadParametersAsync(command);
+        comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         
         // Assert
         Assert.Contains(comboBoxParameterViewModel.PossibleParameters, param => param == "-Filter");
@@ -49,12 +49,12 @@ public class ComboBoxParameterViewModelTests
         // Arrange
         string selectedParameter;
         Command command = new("Get-ADUser");
-        CommandParameters commandParameters = new();
+        ADCommandParameters adCommandParameters = new();
         ComboBoxParameterViewModel comboBoxParameterViewModel;
         
         // Act
-        await commandParameters.LoadCommandParametersAsync(command);
-        comboBoxParameterViewModel = new(commandParameters.PossibleParameters);
+        await adCommandParameters.LoadParametersAsync(command);
+        comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         selectedParameter = comboBoxParameterViewModel.PossibleParameters[0];
         comboBoxParameterViewModel.SelectedParameter = selectedParameter;
         

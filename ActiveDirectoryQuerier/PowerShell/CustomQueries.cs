@@ -49,7 +49,7 @@ internal class CustomQueries
         /*public Query(string cN, string[] commandParams)
         {
             this.CommandName = cN;
-            this.CommandParameters = commandParams;
+            this.ADCommandParameters = commandParams;
         }*/
 
         /// <summary>
@@ -166,7 +166,7 @@ internal class CustomQueries
                     {
                         command.Parameters.Add(q.CommandParameters[i], q.CommandParametersValues[i]);
                         // the values are working then we will use this
-                        // command.Parameters.Add(q.CommandParameters[i]);
+                        // command.Parameters.Add(q.ADCommandParameters[i]);
                     }
                 }
 
