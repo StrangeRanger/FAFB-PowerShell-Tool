@@ -96,7 +96,7 @@
                                 </Grid.RowDefinitions>
                                 <!-- TODO: Pieter refer to here regarding combobox setup -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Center">Command</TextBlock>
-                                <ComboBox ItemsSource="{Binding ActiveDirectoryCommandsList}"
+                                <ComboBox ItemsSource="{Binding ADCommands}"
                                           SelectedItem="{Binding SelectedComboBoxCommand}"
                                           DisplayMemberPath="CommandText"
                                           HorizontalAlignment="Center"
@@ -108,7 +108,7 @@
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Left">Parameter</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicParametersCollection}"
+                                <ItemsControl ItemsSource="{Binding DynamicParameterComboBoxes}"
                                               Grid.Column="1"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -126,7 +126,7 @@
 
                                 <!-- Parameter Values ComboBox -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left">Value</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicParameterValuesCollection}"
+                                <ItemsControl ItemsSource="{Binding DynamicParameterValueTextBoxes}"
                                               Grid.Column="2"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -171,7 +171,7 @@
                             <!-- ROW 0 END -->
                             <!-- GRID ROW 1 START -->
                             <!-- TextBox as Console Output -->
-                            <TextBox Grid.Row="1" Text="{Binding PowerShellOutput.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding QueryBuilderConsoleOutput.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
@@ -193,7 +193,7 @@
                                           Width="207"
                                           Height="26" />
                             </Grid>
-                            <TextBox Grid.Row="1" Text="{Binding ActiveDirectoryInfoOutput.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ActiveDirectoryInfoConsoleOutput.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />

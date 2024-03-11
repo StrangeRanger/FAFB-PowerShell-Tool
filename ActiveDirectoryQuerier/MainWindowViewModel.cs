@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,9 +13,6 @@ using static ActiveDirectoryQuerier.PowerShell.CustomQueries;
 
 namespace ActiveDirectoryQuerier;
 
-/// <summary>
-/// Primary view model for the MainWindow.
-/// </summary>
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
     // [ Fields ] ------------------------------------------------------------------- //
@@ -29,9 +25,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _editingEnabled;
     private string _queryName;
     private string _queryDescription;
-    private AppConsole _powerShellOutput;
-    private AppConsole _activeDirectoryInfoOutput;
-    private Command? _selectedComboBoxCommand;
+    private AppConsole _queryBuilderConsoleOutput;
+    private AppConsole _activeDirectoryInfoConsoleOutput;
+    private Command? _selectedComboBoxCommand; // TODO: Change the name of this field?
     private ObservableCollection<Button>? _buttons;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
@@ -55,25 +51,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(EditingEnabled));
         }
     }
-
-    /// <summary>
-    /// Gets or sets the output of the executed PowerShell command.
-    /// </summary>
-    public AppConsole PowerShellOutput
+    
+    public AppConsole QueryBuilderConsoleOutput
     {
-        get => _powerShellOutput;
+        get => _queryBuilderConsoleOutput;
         set {
-            _powerShellOutput = value;
-            OnPropertyChanged(nameof(PowerShellOutput));
+            _queryBuilderConsoleOutput = value;
+            OnPropertyChanged(nameof(QueryBuilderConsoleOutput));
         }
     }
 
-    public AppConsole ActiveDirectoryInfoOutput
+    public AppConsole ActiveDirectoryInfoConsoleOutput
     {
-        get => _activeDirectoryInfoOutput;
+        get => _activeDirectoryInfoConsoleOutput;
         set {
-            _activeDirectoryInfoOutput = value;
-            OnPropertyChanged(nameof(ActiveDirectoryInfoOutput));
+            _activeDirectoryInfoConsoleOutput = value;
+            OnPropertyChanged(nameof(ActiveDirectoryInfoConsoleOutput));
         }
     }
 
@@ -106,10 +99,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-
-    /// <summary>
-    /// Gets or sets the currently selected PowerShell command.
-    /// </summary>
+    
+    // TODO: Change the name of this property?
     public Command? SelectedComboBoxCommand
     {
         get => _selectedComboBoxCommand;
@@ -131,26 +122,21 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
     // [[ Other properties ]] ------------------------------------------------------- //
-
-    /// <summary>
-    /// Collection of Active Directory commands available for execution.
-    /// </summary>
-    public ObservableCollection<Command> ActiveDirectoryCommandsList { get; private set; }
-
-    /// <summary>
-    /// Collection of possible parameters for the currently selected command.
-    /// </summary>
-    public ObservableCollection<string>? PossibleCommandParametersList { get; private set; }
+    
+    // ReSharper disable once InconsistentNaming
+    public ObservableCollection<Command> ADCommands { get; private set; }
+    // ReSharper disable once InconsistentNaming
+    public ObservableCollection<string>? AvailableADCommandParameters { get; private set; }
 
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter selections.
     /// </summary>
-    public ObservableCollection<ComboBoxParameterViewModel> DynamicParametersCollection { get; }
+    public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterComboBoxes { get; }
 
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter value selections.
     /// </summary>
-    public ObservableCollection<TextBoxViewModel> DynamicParameterValuesCollection { get; }
+    public ObservableCollection<TextBoxViewModel> DynamicParameterValueTextBoxes { get; }
 
     /// <summary>
     /// This is a helper command for running SaveCustomQueries
@@ -175,6 +161,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Command to execute the selected PowerShell command.
     /// </summary>
+    /// TODO: Change the name of this property?
     public ICommand ExecuteCommandRelay { get; }
 
     /// <summary>
@@ -185,16 +172,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
+    /// TODO: Change the name of this property?
     public ICommand AddParameterComboBoxRelay { get; }
 
     /// <summary>
     /// Command to add a new command ComboBox to the UI.
     /// </summary>
+    /// TODO: Change the name of this property?
     public ICommand AddCommandComboBoxRelay { get; }
 
     /// <summary>
     /// Command to add a new parameter ComboBox to the UI.
     /// </summary>
+    /// TODO: Change the name of this property?
     public ICommand RemoveParameterComboBoxRelay { get; }
 
     /// <summary>
@@ -206,15 +196,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Command to output to a csv when executing
     /// </summary>
     public ICommand OutputToCsvFileRelay { get; }
-
-    /// <summary>
-    /// Command to export the console output to a text file.
-    /// </summary>
+    
     public ICommand ExportConsoleOutputRelay { get; }
-
-    /// <summary>
-    /// Command to clear the console output.
-    /// </summary>
     public ICommand ClearConsoleOutputRelay { get; }
 
     /* TODO: for Pieter
@@ -235,15 +218,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _queryName = string.Empty;
         _queryDescription = string.Empty;
-        _powerShellOutput = new AppConsole();
-        _activeDirectoryInfoOutput = new AppConsole();
+        _queryBuilderConsoleOutput = new AppConsole();
+        _activeDirectoryInfoConsoleOutput = new AppConsole();
         _psExecutor = new PSExecutor();
         _customQuery = new CustomQueries();
         _currentQuery = new Query();
 
-        ActiveDirectoryCommandsList = new ObservableCollection<Command>();
-        DynamicParametersCollection = new ObservableCollection<ComboBoxParameterViewModel>();
-        DynamicParameterValuesCollection = new ObservableCollection<TextBoxViewModel>();
+        ADCommands = new ObservableCollection<Command>();
+        DynamicParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
+        DynamicParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
 
         ExecuteCommandRelay = new RelayCommand(ExecuteCommandAsync);
         OutputToCsvFileRelay = new RelayCommand(OutputToCsvFileAsync);
@@ -256,7 +239,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         EditCustomQueryRelay = new RelayCommand(EditCustomQuery);
         DeleteCustomQueryRelay = new RelayCommand(DeleteCustomQuery);
         ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
-        ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
+        ClearConsoleOutputRelay = new ParameterizedRelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
         
         /* TODO: For Pieter
@@ -290,7 +273,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">This is the object that the command is tied to.</param>
     private void ClearConsoleOutput(object _)
     {
-        if (PowerShellOutput.ConsoleOutput.Length == 0)
+        if (QueryBuilderConsoleOutput.ConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is already clear.",
                             "Information",
@@ -307,7 +290,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (result == MessageBoxResult.Yes)
         {
-            PowerShellOutput.Clear();
+            QueryBuilderConsoleOutput.Clear();
         }
     }
 
@@ -332,20 +315,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Fill in the commandName
         Command chosenCommand =
-            ActiveDirectoryCommandsList.FirstOrDefault(item => item.CommandText == currentQuery.CommandName)!;
+            ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.CommandName)!;
         SelectedComboBoxCommand = chosenCommand;
 
         // Load the Possible Parameters Synchronously
         ADCommandParameters adCommandParameters = new();
         adCommandParameters.LoadAvailableParameters(SelectedComboBoxCommand);
-        PossibleCommandParametersList = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
-        OnPropertyChanged(nameof(PossibleCommandParametersList));
+        AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
+        OnPropertyChanged(nameof(AvailableADCommandParameters));
 
-        // Check to see if the DynamicParametersCollection is empty and clear it if it is
-        if (DynamicParametersCollection.Count != 0)
+        // Check to see if the DynamicParameterComboBoxes is empty and clear it if it is
+        if (DynamicParameterComboBoxes.Count != 0)
         {
-            DynamicParametersCollection.Clear();
-            DynamicParameterValuesCollection.Clear();
+            DynamicParameterComboBoxes.Clear();
+            DynamicParameterValueTextBoxes.Clear();
         }
 
         // Fill in Parameters and values
@@ -358,8 +341,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             AddParameterComboBox(temp);
 
             // Fill in the parameter boxes
-            DynamicParametersCollection[i].SelectedParameter = currentQuery.CommandParameters[i];
-            DynamicParameterValuesCollection[i].SelectedParameterValue = currentQuery.CommandParametersValues[i];
+            DynamicParameterComboBoxes[i].SelectedParameter = currentQuery.CommandParameters[i];
+            DynamicParameterValueTextBoxes[i].SelectedParameterValue = currentQuery.CommandParametersValues[i];
         }
     }
 
@@ -450,8 +433,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
         ObservableCollection<Command> list = await ADCommandsFetcher.GetActiveDirectoryCommands();
-        ActiveDirectoryCommandsList = new ObservableCollection<Command>(list);
-        OnPropertyChanged(nameof(ActiveDirectoryCommandsList));
+        ADCommands = new ObservableCollection<Command>(list);
+        OnPropertyChanged(nameof(ADCommands));
     }
 
     /// <summary>
@@ -462,18 +445,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         ADCommandParameters adCommandParameters = new();
         await adCommandParameters.LoadAvailableParametersAsync(selectedCommand);
-        PossibleCommandParametersList = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
-        OnPropertyChanged(nameof(PossibleCommandParametersList));
+        AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
+        OnPropertyChanged(nameof(AvailableADCommandParameters));
 
         // Update the possible properties of the ComboBoxParameterViewModels.
-        foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicParametersCollection)
+        foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicParameterComboBoxes)
         {
-            comboBoxParameterViewModel.AvailableParameters = PossibleCommandParametersList;
+            comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
         }
     }
 
     /// <summary>
-    /// Executes the currently selected PowerShell command and updates the PowerShellOutput property with the result.
+    /// Executes the currently selected PowerShell command and updates the QueryBuilderConsoleOutput property with the result.
     /// </summary>
     /// <param name="command">The PowerShell command to execute.</param>
     /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
@@ -505,28 +488,28 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             if (result.HadErrors)
             {
-                PowerShellOutput.Append(result.StdErr);
+                QueryBuilderConsoleOutput.Append(result.StdErr);
                 return;
             }
 
-            PowerShellOutput.Append(result.StdOut);
+            QueryBuilderConsoleOutput.Append(result.StdOut);
         }
         catch (Exception ex)
         {
-            PowerShellOutput.Append($"Error executing command: {ex.Message}" + ex.Message);
+            QueryBuilderConsoleOutput.Append($"Error executing command: {ex.Message}" + ex.Message);
         }
     }
 
     /// <summary>
-    /// Adds a new parameter and value selection ComboBox to the DynamicParametersCollection.
+    /// Adds a new parameter and value selection ComboBox to the DynamicParameterComboBoxes.
     /// </summary>
     /// <param name="_">This is the object that the command is bound to</param>
     private void AddParameterComboBox(object _)
     {
         // Check if some variable is null and throw an exception if it is
-        if (PossibleCommandParametersList is null)
+        if (AvailableADCommandParameters is null)
         {
-            Trace.WriteLine("PossibleCommandParametersList has not been populated yet.");
+            Trace.WriteLine("AvailableADCommandParameters has not been populated yet.");
             MessageBox.Show("To add a parameter, you must first select a command.",
                             "Warning",
                             MessageBoxButton.OK,
@@ -534,8 +517,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        DynamicParametersCollection.Add(new ComboBoxParameterViewModel(PossibleCommandParametersList));
-        DynamicParameterValuesCollection.Add(new TextBoxViewModel());
+        DynamicParameterComboBoxes.Add(new ComboBoxParameterViewModel(AvailableADCommandParameters));
+        DynamicParameterValueTextBoxes.Add(new TextBoxViewModel());
     }
 
     /// <summary>
@@ -571,7 +554,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // Open document
             string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, PowerShellOutput.ConsoleOutput);
+            await File.WriteAllTextAsync(filePath, QueryBuilderConsoleOutput.ConsoleOutput);
         }
     }
 
@@ -585,7 +568,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ExecuteSelectedCommandAsync();
 
         var csv = new StringBuilder();
-        string[] output = PowerShellOutput.ConsoleOutput.Split(' ', '\n');
+        string[] output = QueryBuilderConsoleOutput.ConsoleOutput.Split(' ', '\n');
 
         for (int i = 0; i < output.Length - 2; i++)
         {
@@ -617,7 +600,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">This is the object that the command is bound to.</param>
     private void ExportConsoleOutput(object _)
     {
-        if (PowerShellOutput.ConsoleOutput.Length == 0)
+        if (QueryBuilderConsoleOutput.ConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
@@ -630,7 +613,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == true)
         {
             string filename = saveFileDialog.FileName;
-            PowerShellOutput.ExportToText(filename);
+            QueryBuilderConsoleOutput.ExportToText(filename);
         }
     }
 
@@ -657,11 +640,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         try
         {
             SelectedComboBoxCommand.Parameters.Clear();
-            for (int i = 0; i < DynamicParametersCollection.Count; i++)
+            for (int i = 0; i < DynamicParameterComboBoxes.Count; i++)
             {
                 SelectedComboBoxCommand.Parameters.Add(
-                    new CommandParameter(DynamicParametersCollection[i].SelectedParameter,
-                                         DynamicParameterValuesCollection[i].SelectedParameterValue));
+                    new CommandParameter(DynamicParameterComboBoxes[i].SelectedParameter,
+                                         DynamicParameterValueTextBoxes[i].SelectedParameterValue));
             }
         }
         catch (Exception ex)
@@ -721,10 +704,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">This is the CommandParameter object that this command is tied to</param>
     private void RemoveParameterComboBox(object _)
     {
-        if (DynamicParametersCollection.Count != 0)
+        if (DynamicParameterComboBoxes.Count != 0)
         {
-            DynamicParametersCollection.RemoveAt(DynamicParametersCollection.Count - 1);
-            DynamicParameterValuesCollection.RemoveAt(DynamicParameterValuesCollection.Count - 1);
+            DynamicParameterComboBoxes.RemoveAt(DynamicParameterComboBoxes.Count - 1);
+            DynamicParameterValueTextBoxes.RemoveAt(DynamicParameterValueTextBoxes.Count - 1);
         }
         else
         {
@@ -787,7 +770,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Object that the command is tied to</param>
     private void ClearQueryBuilder(object _)
     {
-        if (SelectedComboBoxCommand is null && DynamicParametersCollection.Count == 0)
+        if (SelectedComboBoxCommand is null && DynamicParameterComboBoxes.Count == 0)
         {
             MessageBox.Show("The query builder is already clear.",
                             "Information",
@@ -807,8 +790,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == MessageBoxResult.Yes)
         {
             SelectedComboBoxCommand = null;
-            DynamicParametersCollection.Clear();
-            DynamicParameterValuesCollection.Clear();
+            DynamicParameterComboBoxes.Clear();
+            DynamicParameterValueTextBoxes.Clear();
         }
     }
 
@@ -877,11 +860,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     // [[ Event Handlers ]] --------------------------------------------------------- //
-
-    /// <summary>
-    /// Handles property change notifications.
-    /// </summary>
-    /// <param name="propertyName">Name of the property that changed.</param>
+    
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

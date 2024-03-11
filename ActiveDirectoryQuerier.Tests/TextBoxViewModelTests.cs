@@ -6,25 +6,21 @@ public class TextBoxViewModelTests
     public void TextBoxViewModel_WhenConstructed_SelectedParameterValueIsNotNullOrEmpty()
     {
         // Arrange
-        TextBoxViewModel textBoxViewModel = new()
-        {
-            // Act
-            SelectedParameterValue = "*"
+        TextBoxViewModel textBoxViewModel = new() {// Act
+                                                   SelectedParameterValue = "*"
         };
 
         // Assert
         Assert.NotNull(textBoxViewModel.SelectedParameterValue);
         Assert.NotEmpty(textBoxViewModel.SelectedParameterValue);
     }
-    
+
     [Fact]
     public void TextBoxViewModel_WhenSetToNull_NoExceptionIsThrown()
     {
         // Arrange
-        TextBoxViewModel textBoxViewModel = new()
-        {
-            // Act
-            SelectedParameterValue = null!
+        TextBoxViewModel textBoxViewModel = new() {// Act
+                                                   SelectedParameterValue = null!
         };
 
         // Assert

@@ -10,7 +10,7 @@ public sealed class TextBoxViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     private string? _selectedParameterValue;
-    
+
     public string? SelectedParameterValue
     {
         get => _selectedParameterValue;
@@ -22,7 +22,7 @@ public sealed class TextBoxViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

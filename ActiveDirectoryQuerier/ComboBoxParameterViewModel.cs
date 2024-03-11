@@ -12,12 +12,12 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     private ObservableCollection<string> _availableParameters = new();
     private string _selectedParameter = string.Empty;
-    
+
     public ComboBoxParameterViewModel(ObservableCollection<string> possibleParameters)
     {
         AvailableParameters = possibleParameters ?? throw new ArgumentNullException(nameof(possibleParameters));
     }
-    
+
     public string SelectedParameter
     {
         get => _selectedParameter;
@@ -29,7 +29,7 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     public ObservableCollection<string> AvailableParameters
     {
         get => _availableParameters;
@@ -41,7 +41,7 @@ public sealed class ComboBoxParameterViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

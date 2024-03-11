@@ -10,7 +10,7 @@ namespace ActiveDirectoryQuerier.PowerShell;
 public class PSExecutor
 {
     private readonly System.Management.Automation.PowerShell _powerShell;
-    
+
     public PSExecutor()
     {
         _powerShell = System.Management.Automation.PowerShell.Create();
@@ -21,7 +21,6 @@ public class PSExecutor
         _powerShell.Commands.Clear();
     }
 
-    
     private void PrepareCommand(Command psCommand)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
@@ -48,7 +47,7 @@ public class PSExecutor
             return HandleExecutionException(ex);
         }
     }
-    
+
     public async Task<PSOutput> ExecuteAsync(Command command)
     {
         try
@@ -66,7 +65,7 @@ public class PSExecutor
             return HandleExecutionException(exception);
         }
     }
-    
+
     private PSOutput ProcessExecutionResults(IEnumerable<PSObject> results)
     {
         PSOutput psOutput = new();
@@ -88,12 +87,12 @@ public class PSExecutor
 
         return psOutput;
     }
-    
+
     private Task<PSOutput> ProcessExecutionResultsAsync(IEnumerable<PSObject> results)
     {
         return Task.FromResult(ProcessExecutionResults(results));
     }
-    
+
     private PSOutput HandleExecutionException(Exception exception)
     {
         StringBuilder errorMessage = new();

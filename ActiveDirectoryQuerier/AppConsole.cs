@@ -25,27 +25,27 @@ public sealed class AppConsole : INotifyPropertyChanged
             }
         }
     }
-    
+
     public void Clear()
     {
         ConsoleOutput = string.Empty;
     }
-    
+
     public void Append(List<string> outputText)
     {
         ConsoleOutput += string.Join(Environment.NewLine, outputText);
     }
-    
+
     public void Append(string outputText)
     {
         ConsoleOutput += outputText;
     }
-    
+
     public void ExportToText(string filePath = "output.txt")
     {
         File.WriteAllText(filePath, ConsoleOutput);
     }
-    
+
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
