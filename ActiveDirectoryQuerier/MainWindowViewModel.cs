@@ -468,7 +468,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Update the possible properties of the ComboBoxParameterViewModels.
         foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicParametersCollection)
         {
-            comboBoxParameterViewModel.PossibleParameters = PossibleCommandParametersList;
+            comboBoxParameterViewModel.AvailableParameters = PossibleCommandParametersList;
         }
     }
 

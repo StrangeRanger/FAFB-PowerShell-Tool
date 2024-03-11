@@ -19,8 +19,8 @@ public class ComboBoxParameterViewModelTests
         comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         
         // Assert
-        Assert.NotNull(comboBoxParameterViewModel.PossibleParameters);
-        Assert.NotEmpty(comboBoxParameterViewModel.PossibleParameters);
+        Assert.NotNull(comboBoxParameterViewModel.AvailableParameters);
+        Assert.NotEmpty(comboBoxParameterViewModel.AvailableParameters);
     }
     
     [Fact]
@@ -36,11 +36,11 @@ public class ComboBoxParameterViewModelTests
         comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
         
         // Assert
-        Assert.Contains(comboBoxParameterViewModel.PossibleParameters, param => param == "-Filter");
-        Assert.Contains(comboBoxParameterViewModel.PossibleParameters, param => param == "-Identity");
-        Assert.Contains(comboBoxParameterViewModel.PossibleParameters, param => param == "-LDAPFilter");
-        Assert.Contains(comboBoxParameterViewModel.PossibleParameters, param => param == "-SearchBase");
-        Assert.Contains(comboBoxParameterViewModel.PossibleParameters, param => param == "-SearchScope");
+        Assert.Contains(comboBoxParameterViewModel.AvailableParameters, param => param == "-Filter");
+        Assert.Contains(comboBoxParameterViewModel.AvailableParameters, param => param == "-Identity");
+        Assert.Contains(comboBoxParameterViewModel.AvailableParameters, param => param == "-LDAPFilter");
+        Assert.Contains(comboBoxParameterViewModel.AvailableParameters, param => param == "-SearchBase");
+        Assert.Contains(comboBoxParameterViewModel.AvailableParameters, param => param == "-SearchScope");
     }
     
     [Fact]
@@ -55,7 +55,7 @@ public class ComboBoxParameterViewModelTests
         // Act
         await adCommandParameters.LoadAvailableParametersAsync(command);
         comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
-        selectedParameter = comboBoxParameterViewModel.PossibleParameters[0];
+        selectedParameter = comboBoxParameterViewModel.AvailableParameters[0];
         comboBoxParameterViewModel.SelectedParameter = selectedParameter;
         
         // Assert
