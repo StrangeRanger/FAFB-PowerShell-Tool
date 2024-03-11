@@ -24,7 +24,7 @@ public record PSOutput
     public List<string> StdOut { get; } = new();
 
     /// <summary>
-    /// Gets the standard error (StdErr) of the PowerShell command execution.
+    /// Gets the standard error output (StdErr) of the PowerShell command execution.
     /// </summary>
     /// <value>
     /// A list of strings representing the standard error output from the command.
