@@ -5,7 +5,9 @@ namespace ActiveDirectoryQuerier;
 /// <summary>
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.
 /// </summary>
-/// TODO: Ensure nullability is being handled correctly.
+/// <note>
+/// This is a very basic setup of the RelayCommand class. I imagine that this class can be expanded upon.
+/// </note>
 public class RelayCommand : ICommand
 {
     private readonly Action<object> _execute;
