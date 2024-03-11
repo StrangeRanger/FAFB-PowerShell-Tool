@@ -97,7 +97,7 @@
                                 <!-- TODO: Pieter refer to here regarding combobox setup -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Center">Command</TextBlock>
                                 <ComboBox ItemsSource="{Binding ADCommands}"
-                                          SelectedItem="{Binding SelectedComboBoxCommand}"
+                                          SelectedItem="{Binding SelectedComboBoxCommandInQueryBuilder}"
                                           DisplayMemberPath="CommandText"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
@@ -152,7 +152,7 @@
                                         <MenuItem Header="Remove Parameter Slot"
                                                   Command="{Binding RemoveParameterComboBoxRelay}" />
                                         <MenuItem Header="Save Query" Command="{Binding SaveCustomQueriesRelay}" />
-                                        <MenuItem Header="Execute" Command="{Binding ExecuteCommandRelay}" />
+                                        <MenuItem Header="Execute" Command="{Binding ExecuteSelectedCommandRelay}" />
                                         <MenuItem Header="Execute to CSV" Command="{Binding OutputToCsvFileRelay}" />
                                         <MenuItem Header="Execute to Text" Command="{Binding OutputToTextFileRelay}" />
                                         <MenuItem Header="Export Console Output"

@@ -27,7 +27,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _queryDescription;
     private AppConsole _queryBuilderConsoleOutput;
     private AppConsole _activeDirectoryInfoConsoleOutput;
-    private Command? _selectedComboBoxCommand; // TODO: Change the name of this field?
+    private Command? _selectedComboBoxCommandInQueryBuilder; // TODO: Change the name of this field?
     private ObservableCollection<Button>? _buttons;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
@@ -100,13 +100,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
     
-    // TODO: Change the name of this property?
-    public Command? SelectedComboBoxCommand
+    public Command? SelectedComboBoxCommandInQueryBuilder
     {
-        get => _selectedComboBoxCommand;
+        get => _selectedComboBoxCommandInQueryBuilder;
         set {
-            _selectedComboBoxCommand = value;
-            OnPropertyChanged(nameof(SelectedComboBoxCommand));
+            _selectedComboBoxCommandInQueryBuilder = value;
+            OnPropertyChanged(nameof(SelectedComboBoxCommandInQueryBuilder));
             // No need to load parameters if the command is null.
             if (value is not null)
             {
@@ -131,11 +130,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter selections.
     /// </summary>
+    /// TODO: Rename this property?
     public ObservableCollection<ComboBoxParameterViewModel> DynamicParameterComboBoxes { get; }
 
     /// <summary>
     /// Collection of ComboBoxParameterViewModels to dynamically handle multiple parameter value selections.
     /// </summary>
+    /// TODO: Rename this property?
     public ObservableCollection<TextBoxViewModel> DynamicParameterValueTextBoxes { get; }
 
     /// <summary>
@@ -157,46 +158,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This is tied to the Button menu calls the DeleteCustomQuery method to delete a CustomQuery button
     /// </summary>
     private ICommand DeleteCustomQueryRelay { get; }
-
-    /// <summary>
-    /// Command to execute the selected PowerShell command.
-    /// </summary>
-    /// TODO: Change the name of this property?
-    public ICommand ExecuteCommandRelay { get; }
-
-    /// <summary>
-    /// Command to execute the buttons inside Custom Command buttons
-    /// </summary>
-    private ICommand ExecuteCommandButtonRelay { get; }
-
-    /// <summary>
-    /// Command to add a new parameter ComboBox to the UI.
-    /// </summary>
-    /// TODO: Change the name of this property?
-    public ICommand AddParameterComboBoxRelay { get; }
-
-    /// <summary>
-    /// Command to add a new command ComboBox to the UI.
-    /// </summary>
-    /// TODO: Change the name of this property?
-    public ICommand AddCommandComboBoxRelay { get; }
-
-    /// <summary>
-    /// Command to add a new parameter ComboBox to the UI.
-    /// </summary>
-    /// TODO: Change the name of this property?
-    public ICommand RemoveParameterComboBoxRelay { get; }
-
-    /// <summary>
-    /// Command to have the output send to a text file when executing
-    /// </summary>
-    public ICommand OutputToTextFileRelay { get; }
-
-    /// <summary>
-    /// Command to output to a csv when executing
-    /// </summary>
-    public ICommand OutputToCsvFileRelay { get; }
     
+    public ICommand ExecuteSelectedCommandRelay { get; }
+    private ICommand ExecuteCustomQueryCommandButtonRelay { get; }
+    public ICommand AddParameterComboBoxRelay { get; }
+    public ICommand AddCommandComboBoxRelay { get; }
+    public ICommand RemoveParameterComboBoxRelay { get; }
+    public ICommand OutputToTextFileRelay { get; }
+    public ICommand OutputToCsvFileRelay { get; }
     public ICommand ExportConsoleOutputRelay { get; }
     public ICommand ClearConsoleOutputRelay { get; }
 
@@ -210,10 +179,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      */
 
     // [ Constructors ] ------------------------------------------------------------- //
-
-    /// <summary>
-    /// Class constructor.
-    /// </summary>
+    
     public MainWindowViewModel()
     {
         _queryName = string.Empty;
@@ -228,7 +194,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
 
-        ExecuteCommandRelay = new RelayCommand(ExecuteCommandAsync);
+        ExecuteSelectedCommandRelay = new RelayCommand(ExecuteSelectedCommandAsync);
         OutputToCsvFileRelay = new RelayCommand(OutputToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputToTextFileAsync);
         ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutput);
@@ -238,7 +204,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SaveCustomQueriesRelay = new RelayCommand(SaveCustomQueries);
         EditCustomQueryRelay = new RelayCommand(EditCustomQuery);
         DeleteCustomQueryRelay = new RelayCommand(DeleteCustomQuery);
-        ExecuteCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
+        ExecuteCustomQueryCommandButtonRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
         ClearConsoleOutputRelay = new RelayCommand(ClearConsoleOutput);
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
         
@@ -316,11 +282,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Fill in the commandName
         Command chosenCommand =
             ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.CommandName)!;
-        SelectedComboBoxCommand = chosenCommand;
+        SelectedComboBoxCommandInQueryBuilder = chosenCommand;
 
         // Load the Possible Parameters Synchronously
         ADCommandParameters adCommandParameters = new();
-        adCommandParameters.LoadAvailableParameters(SelectedComboBoxCommand);
+        adCommandParameters.LoadAvailableParameters(SelectedComboBoxCommandInQueryBuilder);
         AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
         OnPropertyChanged(nameof(AvailableADCommandParameters));
 
@@ -365,7 +331,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         Query buttonQuery = (Query)currentButton.Tag;
-        await ExecuteSelectedCommandAsync(buttonQuery.Command);
+        await ExecuteSelectedCommandCoreAsync(buttonQuery.Command);
     }
 
     /// <summary>
@@ -422,9 +388,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Executes the selected PowerShell command asynchronously.
     /// </summary>
     /// <param name="_">This is the object that the command is bound to.</param>
-    private async void ExecuteCommandAsync(object _)
+    private async void ExecuteSelectedCommandAsync(object _)
     {
-        await ExecuteSelectedCommandAsync();
+        await ExecuteSelectedCommandCoreAsync();
     }
 
     /// <summary>
@@ -460,9 +426,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </summary>
     /// <param name="command">The PowerShell command to execute.</param>
     /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
-    private async Task ExecuteSelectedCommandAsync(Command? command = null)
+    private async Task ExecuteSelectedCommandCoreAsync(Command? command = null)
     {
-        if (SelectedComboBoxCommand is null && command is null)
+        if (SelectedComboBoxCommandInQueryBuilder is null && command is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To execute a command, you must first select a command.",
@@ -483,7 +449,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 // Add selected parameters and their values to the command.
                 UpdateSelectedCommand();
-                result = await _psExecutor.ExecuteAsync(SelectedComboBoxCommand);
+                result = await _psExecutor.ExecuteAsync(SelectedComboBoxCommandInQueryBuilder);
             }
 
             if (result.HadErrors)
@@ -537,7 +503,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to.</param>
     private async void OutputToTextFileAsync(object _)
     {
-        await ExecuteSelectedCommandAsync();
+        await ExecuteSelectedCommandCoreAsync();
 
         // Filepath
         // Write the text to a file & prompt user for the location
@@ -565,7 +531,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void OutputToCsvFileAsync(object _)
     {
-        await ExecuteSelectedCommandAsync();
+        await ExecuteSelectedCommandCoreAsync();
 
         var csv = new StringBuilder();
         string[] output = QueryBuilderConsoleOutput.ConsoleOutput.Split(' ', '\n');
@@ -626,7 +592,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// </note>
     private void UpdateSelectedCommand()
     {
-        if (SelectedComboBoxCommand is null)
+        if (SelectedComboBoxCommandInQueryBuilder is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To save a query, you must first select a command.",
@@ -639,10 +605,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Try to get the content within the drop downs
         try
         {
-            SelectedComboBoxCommand.Parameters.Clear();
+            SelectedComboBoxCommandInQueryBuilder.Parameters.Clear();
             for (int i = 0; i < DynamicParameterComboBoxes.Count; i++)
             {
-                SelectedComboBoxCommand.Parameters.Add(
+                SelectedComboBoxCommandInQueryBuilder.Parameters.Add(
                     new CommandParameter(DynamicParameterComboBoxes[i].SelectedParameter,
                                          DynamicParameterValueTextBoxes[i].SelectedParameterValue));
             }
@@ -669,20 +635,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             string[] commandParameters;
             string[] commandParameterValues;
 
-            if (SelectedComboBoxCommand is not null && SelectedComboBoxCommand.Parameters is not null)
+            if (SelectedComboBoxCommandInQueryBuilder is not null && SelectedComboBoxCommandInQueryBuilder.Parameters is not null)
             {
-                commandParameters = new string[SelectedComboBoxCommand.Parameters.Count];
-                commandParameterValues = new string[SelectedComboBoxCommand.Parameters.Count];
+                commandParameters = new string[SelectedComboBoxCommandInQueryBuilder.Parameters.Count];
+                commandParameterValues = new string[SelectedComboBoxCommandInQueryBuilder.Parameters.Count];
 
                 _currentQuery.QueryDescription = QueryDescription;
                 _currentQuery.QueryName = QueryName;
 
-                _currentQuery.CommandName = SelectedComboBoxCommand.CommandText;
+                _currentQuery.CommandName = SelectedComboBoxCommandInQueryBuilder.CommandText;
 
                 // TODO: Possibly convert foreach into a for loop...
-                for (int i = 0; i < SelectedComboBoxCommand.Parameters.Count; i++)
+                for (int i = 0; i < SelectedComboBoxCommandInQueryBuilder.Parameters.Count; i++)
                 {
-                    CommandParameter commandParameter = SelectedComboBoxCommand.Parameters[i];
+                    CommandParameter commandParameter = SelectedComboBoxCommandInQueryBuilder.Parameters[i];
 
                     commandParameters[i] = commandParameter.Name;
                     commandParameterValues[i] = commandParameter.Value.ToString()!;
@@ -724,7 +690,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="commandParameter">This is not used but necessary for the relay command</param>
     private void SaveCustomQueries(object commandParameter)
     {
-        if (SelectedComboBoxCommand is null)
+        if (SelectedComboBoxCommandInQueryBuilder is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To save a query, you must first select a command.",
@@ -751,7 +717,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 UpdateSelectedCommand();
 
-                _customQuery.SerializeCommand(SelectedComboBoxCommand, QueryName, QueryDescription);
+                _customQuery.SerializeCommand(SelectedComboBoxCommandInQueryBuilder, QueryName, QueryDescription);
 
                 Button newButton = CreateCustomButton();
 
@@ -770,7 +736,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Object that the command is tied to</param>
     private void ClearQueryBuilder(object _)
     {
-        if (SelectedComboBoxCommand is null && DynamicParameterComboBoxes.Count == 0)
+        if (SelectedComboBoxCommandInQueryBuilder is null && DynamicParameterComboBoxes.Count == 0)
         {
             MessageBox.Show("The query builder is already clear.",
                             "Information",
@@ -789,7 +755,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // If the user selects yes, clear the console
         if (result == MessageBoxResult.Yes)
         {
-            SelectedComboBoxCommand = null;
+            SelectedComboBoxCommandInQueryBuilder = null;
             DynamicParameterComboBoxes.Clear();
             DynamicParameterValueTextBoxes.Clear();
         }
@@ -814,7 +780,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         else
         {
             // Check for null
-            if (SelectedComboBoxCommand is null)
+            if (SelectedComboBoxCommandInQueryBuilder is null)
             {
                 Trace.WriteLine("No command selected.");
                 MessageBox.Show("To save a query, you must first select a command.",
@@ -826,7 +792,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             GetCurrentQuery();
             newButton.Height = 48;
-            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommand.CommandText;
+            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedComboBoxCommandInQueryBuilder.CommandText;
             newButton.Tag = _currentQuery;
         }
 
@@ -834,11 +800,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ContextMenu contextMenu = new();
 
         MenuItem menuItem1 =
-            new() { Header = "Execute", Command = ExecuteCommandButtonRelay, CommandParameter = newButton };
+            new() { Header = "Execute", Command = ExecuteCustomQueryCommandButtonRelay, CommandParameter = newButton };
 
         MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
         MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay };
-        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteCommandRelay };
+        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteSelectedCommandRelay };
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);
