@@ -3,20 +3,21 @@ using ActiveDirectoryQuerier.PowerShell;
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class PsExecutorTests
+// ReSharper disable once InconsistentNaming
+public class PSExecutorTests
 {
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    public void Execute_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd, string paramName, string paramValue)
+    public void Execute_WhenGivenValidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
     {
         // Arrange
-        Command command = new(cmd);
-        command.Parameters.Add(paramName, paramValue);
+        Command psCommand = new(command);
+        psCommand.Parameters.Add(parameter, parameterValue);
         PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = psExecutor.Execute(command);
+        PSOutput result = psExecutor.Execute(psCommand);
 
         // Assert
         Assert.False(result.HadErrors);
@@ -45,17 +46,15 @@ public class PsExecutorTests
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    public async Task ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string cmd,
-                                                                               string paramName,
-                                                                               string paramValue)
+    public async Task ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
     {
         // Arrange
-        Command command = new(cmd);
-        command.Parameters.Add(paramName, paramValue);
+        Command psCommand = new(command);
+        psCommand.Parameters.Add(parameter, parameterValue);
         PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = await psExecutor.ExecuteAsync(command);
+        PSOutput result = await psExecutor.ExecuteAsync(psCommand);
 
         // Assert
         Assert.False(result.HadErrors);
@@ -66,15 +65,15 @@ public class PsExecutorTests
     [Theory]
     [InlineData("Get-ADUser", "InvalidParameter", "*")]
     [InlineData("InvalidCommand", "Filter", "*")]
-    public void Execute_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd, string paramName, string paramValue)
+    public void Execute_WhenGivenInvalidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
     {
         // Arrange
-        Command command = new(cmd);
-        command.Parameters.Add(paramName, paramValue);
+        Command psCommand = new(command);
+        psCommand.Parameters.Add(parameter, parameterValue);
         PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = psExecutor.Execute(command);
+        PSOutput result = psExecutor.Execute(psCommand);
 
         // Assert
         Assert.True(result.HadErrors);
@@ -85,17 +84,15 @@ public class PsExecutorTests
     [Theory]
     [InlineData("Get-ADUser", "InvalidParameter", "*")]
     [InlineData("InvalidCommand", "Filter", "*")]
-    public async Task ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string cmd,
-                                                                                 string paramName,
-                                                                                 string paramValue)
+    public async Task ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
     {
         // Arrange
-        Command command = new(cmd);
-        command.Parameters.Add(paramName, paramValue);
+        Command psCommand = new(command);
+        psCommand.Parameters.Add(parameter, parameterValue);
         PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = await psExecutor.ExecuteAsync(command);
+        PSOutput result = await psExecutor.ExecuteAsync(psCommand);
 
         // Assert
         Assert.True(result.HadErrors);
