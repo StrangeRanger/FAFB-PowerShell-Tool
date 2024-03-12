@@ -421,10 +421,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
-    /// <summary>
-    /// This method executes the currently selected command and saves the output to a text file.
-    /// </summary>
-    /// <param name="_">Represents the object that the command is bound to.</param>
     private async void OutputExecutionResultsToTextFileAsync(object _)
     {
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
