@@ -21,11 +21,13 @@ public class PSExecutor
         _powerShell.Commands.Clear();
     }
 
+    // TODO: Possibly rename method.
     private void PrepareCommand(Command psCommand)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
-
+        
         _powerShell.Commands.AddCommand(psCommand.CommandText);
+        
         foreach (var parameter in psCommand.Parameters)
         {
             _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
@@ -42,9 +44,9 @@ public class PSExecutor
 
             return ProcessExecutionResults(results);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            return HandleExecutionException(ex);
+            return HandleExecutionException(exception);
         }
     }
 
@@ -53,7 +55,6 @@ public class PSExecutor
         try
         {
             _powerShell.Commands.Clear();
-
             PrepareCommand(command);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
@@ -72,14 +73,14 @@ public class PSExecutor
 
         if (_powerShell.HadErrors)
         {
-            foreach (var error in _powerShell.Streams.Error)
+            foreach (ErrorRecord error in _powerShell.Streams.Error)
             {
                 psOutput.StdErr.Add($"Error: {error}");
             }
         }
         else
         {
-            foreach (var result in results)
+            foreach (PSObject result in results)
             {
                 psOutput.StdOut.Add(result.ToString());
             }

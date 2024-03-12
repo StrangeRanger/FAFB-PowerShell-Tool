@@ -6,7 +6,7 @@ namespace ActiveDirectoryQuerier;
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.
 /// </summary>
 /// <note>
-/// This is a very basic setup of the RelayCommand class. I imagine that this class can be expanded upon.
+/// This is a very basic setup of the RelayCommand class. I imagine that this class can be expanded and improved upon.
 /// </note>
 /// TODO: Place class into ViewModel folder.
 public class RelayCommand : ICommand

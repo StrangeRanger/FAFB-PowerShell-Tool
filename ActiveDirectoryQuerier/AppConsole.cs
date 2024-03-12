@@ -12,7 +12,7 @@ public sealed class AppConsole : INotifyPropertyChanged
     /// <important>
     /// Do not set this property directly. Use the Append method instead. It's public for data binding purposes.
     /// </important>
-    /// TODO: Find a way to make the set of this property private.
+    /// TODO: Find a way to make the set of this property private, while still allowing data binding.
     public string ConsoleOutput
     {
         get => _consoleOutput;
