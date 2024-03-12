@@ -650,7 +650,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                     commandParameters[i] = commandParameter.Name;
                     commandParameterValues[i] = commandParameter.Value.ToString()!;
-                    i++;  // TODO: Remove this line!
                 }
                 _currentQuery.PSCommandParameters = commandParameters;
                 _currentQuery.PSCommandParameterValues = commandParameterValues;
