@@ -3,7 +3,8 @@ using ActiveDirectoryQuerier.PowerShell;
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class AdCommandParametersTests
+// ReSharper disable once InconsistentNaming
+public class ADCommandParametersTests
 {
     [Fact]
     public void AvailableParameters_AvailableParametersNotPopulated_NoValidCommandProvided()
@@ -16,7 +17,7 @@ public class AdCommandParametersTests
     }
 
     [Fact]
-    public async Task LoadParametersAsync_PopulatesAvailableParameters_IsNotEmpty()
+    public async Task LoadAvailableParametersAsync_PopulatesAvailableParameters_IsNotEmpty()
     {
         // Arrange
         ADCommandParameters adCommandParameters = new();
@@ -30,7 +31,7 @@ public class AdCommandParametersTests
     }
 
     [Fact]
-    public async Task LoadParametersAsync_CheckAvailableParameters_ContainsNameAndId()
+    public async Task LoadAvailableParametersAsync_CheckAvailableParameters_ContainsNameAndId()
     {
         // Arrange
         ADCommandParameters adCommandParameters = new();
