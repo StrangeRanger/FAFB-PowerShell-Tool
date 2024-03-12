@@ -182,7 +182,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBox);
         RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBox);
         SaveQueryRelay = new RelayCommand(SaveQuery);
-        EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPane);
+        EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPanel);
         DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
         ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanel);
         ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(_ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
@@ -237,7 +237,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
     
-    private void EditQueryFromQueryStackPane(object queryButton)
+    private void EditQueryFromQueryStackPanel(object queryButton)
     {
         Query currentQuery = (Query)((Button)queryButton).Tag;
 
@@ -279,11 +279,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
     
-    private async void ExecuteQueryFromQueryStackPanel(object _)
+    private async void ExecuteQueryFromQueryStackPanel(object queryButton)
     {
-        var currentButton = _ as Button;
-
-        if (currentButton is null)
+        if (queryButton is not Button currentButton)
         {
             Trace.WriteLine("No button selected.");
             MessageBox.Show("To execute a query, you must first select a query.",
@@ -296,17 +294,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Query buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
-
-    /// <summary>
-    /// This method deletes the button from the list and saves the changes to the file
-    /// </summary>
-    /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
-    private void DeleteQueryFromQueryStackPanel(object _)
+    
+    private void DeleteQueryFromQueryStackPanel(object queryButton)
     {
-        // Delete a button from the custom queries list and from the file
-        var currentButton = _ as Button;
-
-        if (currentButton is null)
+        if (queryButton is not Button currentButton)
         {
             Trace.WriteLine("No button selected.");
             MessageBox.Show("To delete a query, you must first select a query.",
@@ -680,10 +671,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// This method will clear the query builder and reset the fields to their default values
-    /// </summary>
-    /// <param name="_">Object that the command is tied to</param>
     private void ClearQueryBuilder(object _)
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null && DynamicallyAvailableADCommandParametersComboBox.Count == 0)
