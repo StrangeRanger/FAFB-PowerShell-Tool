@@ -106,10 +106,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-
-    /// <summary>
-    /// This property creates a collection of buttons to be added to the stack panel for custom queries
-    /// </summary>
+    
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
     // [[ Other properties ]] ------------------------------------------------------- //
@@ -155,7 +152,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      * Create a property to act as the relay to the execution button.
      */
 
-    // [ Constructors ] ------------------------------------------------------------- //
+    // [ Constructor ] ------------------------------------------------------------- //
     
     public MainWindowViewModel()
     {
@@ -171,16 +168,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicallyAvailableADCommandParametersComboBox = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBox = new ObservableCollection<TextBoxViewModel>();
         
-        OutputToCsvFileRelay = new RelayCommand(OutputToCsvFileAsync);
-        OutputToTextFileRelay = new RelayCommand(OutputToTextFileAsync);
-        ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutput);
+        OutputToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
+        OutputToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
+        ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutputToFile);
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         ExecuteQueryFromQueryBuilderRelay = new RelayCommand(_ => ExecuteQuery(_consoleOutputInQueryBuilder));
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(_ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
-        AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBox);
-        AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBox);
-        RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBox);
+        AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
+        AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
+        RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBoxInQueryBuilder);
         SaveQueryRelay = new RelayCommand(SaveQuery);
         EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPanel);
         DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
@@ -196,7 +193,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         InitializeActiveDirectoryCommandsAsync();
-        LoadCustomQueries(); // Calls method to deserialize and load buttons.
+        LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
@@ -239,7 +236,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     
     private void EditQueryFromQueryStackPanel(object queryButton)
     {
-        Query currentQuery = (Query)((Button)queryButton).Tag;
+        var currentQuery = (Query)((Button)queryButton).Tag;
 
         _isEditing = currentQuery;
         QueryEditingEnabled = true;
@@ -265,13 +262,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         // Fill in Parameters and values
-        for (int i = 0; i < currentQuery.PSCommandParameters.Length; i++)
+        for (var i = 0; i < currentQuery.PSCommandParameters.Length; i++)
         {
             Trace.WriteLine(currentQuery.PSCommandParameters[i]);
 
             // Adds the Parameters boxes
-            object temp = new();
-            AddParameterComboBox(temp);
+            AddParameterComboBoxInQueryBuilder(null!);  // Null is never used, so we use null forgiveness operator.
 
             // Fill in the parameter boxes
             DynamicallyAvailableADCommandParametersComboBox[i].SelectedParameter = currentQuery.PSCommandParameters[i];
@@ -291,7 +287,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        Query buttonQuery = (Query)currentButton.Tag;
+        var buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
     
@@ -311,27 +307,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _customQuery.Queries.Remove((Query)currentButton.Tag);
         _customQuery.SaveQueriesToJson();
     }
-
-    /// <summary>
-    /// This method will load the custom queries from the file.
-    /// </summary>
-    private void LoadCustomQueries()
+    
+    private void LoadSavedQueriesFromFile()
     {
         try
         {
             // Load the custom queries from the file (Deserialize)
             _customQuery.LoadData();
 
-            // Loop through the queries and create a button for each one
-            foreach (Query cQuery in _customQuery.Queries)
+            // Loop through the queries and create a button for each one.
+            foreach (var newButton in _customQuery.Queries.Select(CreateCustomButton))
             {
-                // Creates a new button for each query
-                Button newButton = CreateCustomButton(cQuery);
-
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
             }
         }
+        // TODO: Possibly provide more comprehensive error handling.
         catch (Exception ex)
         {
             Trace.WriteLine(ex);
@@ -352,10 +343,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(ADCommands));
     }
 
-    /// <summary>
-    /// Loads the parameters for the selected PowerShell command asynchronously.
-    /// </summary>
-    /// <param name="selectedCommand">The PowerShell command whose parameters are to be loaded.</param>
     private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
         ADCommandParameters adCommandParameters = new();
@@ -370,6 +357,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
     
+    // TODO: Hunter: Re-review this method and make any necessary changes.
     private async Task ExecuteQueryCoreAsync(AppConsole appConsole, Command? command = null)
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null && command is null)
@@ -410,11 +398,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Adds a new parameter and value selection ComboBox to the DynamicallyAvailableADCommandParametersComboBox.
-    /// </summary>
-    /// <param name="_">This is the object that the command is bound to</param>
-    private void AddParameterComboBox(object _)
+    private void AddParameterComboBoxInQueryBuilder(object _)
     {
         // Check if some variable is null and throw an exception if it is
         if (AvailableADCommandParameters is null)
@@ -431,11 +415,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicallyAvailableADCommandParameterValueTextBox.Add(new TextBoxViewModel());
     }
 
-    /// <summary>
-    /// Adds a new command selection ComboBox to the UI.
-    /// </summary>
-    /// <param name="_">This is the object that the command is bound to.</param>
-    private void AddCommandComboBox(object _)
+    private void AddCommandComboBoxInQueryBuilder(object _)
     {
         Trace.WriteLine("Not implemented yet.");
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -445,7 +425,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method executes the currently selected command and saves the output to a text file.
     /// </summary>
     /// <param name="_">Represents the object that the command is bound to.</param>
-    private async void OutputToTextFileAsync(object _)
+    private async void OutputExecutionResultsToTextFileAsync(object _)
     {
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
 
@@ -473,7 +453,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Status: prompts user for file path and saves correctly though the string could be edited to be better
     /// </summary>
     /// <param name="_">Represents the object that the command is bound to</param>
-    private async void OutputToCsvFileAsync(object _)
+    private async void OutputExecutionResultsToCsvFileAsync(object _)
     {
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
 
@@ -504,11 +484,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// This method is for getting the currently selected command at anytime.
-    /// </summary>
-    /// <param name="_">This is the object that the command is bound to.</param>
-    private void ExportConsoleOutput(object _)
+    private void ExportConsoleOutputToFile(object _)
     {
         if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
         {
@@ -599,17 +575,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 _currentQuery.PSCommandParameterValues = commandParameterValues;
             }
         }
+        // TODO: Possibly provide more comprehensive error handling.
         catch (Exception ex)
         {
             Trace.WriteLine(ex);
         }
     }
 
-    /// <summary>
-    /// Removes the parameter box after adding them
-    /// </summary>
-    /// <param name="_">This is the CommandParameter object that this command is tied to</param>
-    private void RemoveCommandParameterComboBox(object _)
+    private void RemoveCommandParameterComboBoxInQueryBuilder(object _)
     {
         if (DynamicallyAvailableADCommandParametersComboBox.Count != 0)
         {
@@ -625,10 +598,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// This method will serialize the command and add it to the list of buttons.
-    /// </summary>
-    /// <param name="commandParameter">This is not used but necessary for the relay command</param>
     private void SaveQuery(object commandParameter)
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null)
