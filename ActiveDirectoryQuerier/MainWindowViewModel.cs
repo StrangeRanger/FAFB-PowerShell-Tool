@@ -40,7 +40,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
-    
+
     public bool QueryEditingEnabled
     {
         get => _queryEditingEnabled;
@@ -49,7 +49,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(QueryEditingEnabled));
         }
     }
-    
+
     public AppConsole ConsoleOutputInQueryBuilder
     {
         get => _consoleOutputInQueryBuilder;
@@ -67,7 +67,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(ConsoleOutputInActiveDirectoryInfo));
         }
     }
-    
+
     public string QueryName
     {
         get => _queryName;
@@ -79,7 +79,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     public string QueryDescription
     {
         get => _queryDescription;
@@ -91,7 +91,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     public Command? SelectedCommandFromComboBoxInQueryBuilder
     {
         get => _selectedCommandFromComboBoxInQueryBuilder;
@@ -106,11 +106,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
     // [[ Other properties ]] ------------------------------------------------------- //
-    
+
     // ReSharper disable once InconsistentNaming
     public ObservableCollection<Command> ADCommands { get; private set; }
     // ReSharper disable once InconsistentNaming
@@ -119,16 +119,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<ComboBoxParameterViewModel> DynamicallyAvailableADCommandParametersComboBox { get; }
     // ReSharper disable once InconsistentNaming
     public ObservableCollection<TextBoxViewModel> DynamicallyAvailableADCommandParameterValueTextBox { get; }
-    
+
     // [[ GUI element relays ]] ----------------------------------------------------- //
     // [[[ Dynamically created elements ]]] ----------------------------------------- //
-    
+
     private ICommand EditQueryFromQueryStackPanelRelay { get; }
     private ICommand DeleteQueryFromQueryStackPanelRelay { get; }
     private ICommand ExecuteQueryFromQueryStackPanelRelay { get; }
-    
+
     // [[[ Existing GUI elements ]]] ------------------------------------------------ //
-    
+
     public ICommand SaveQueryRelay { get; }
     public ICommand ClearQueryBuilderRelay { get; }
     public ICommand ExecuteQueryFromQueryBuilderRelay { get; }
@@ -140,8 +140,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand OutputToCsvFileRelay { get; }
     public ICommand ExportConsoleOutputRelay { get; }
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } // TODO: Pieter use this for clear console button
-
+    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay {
+        get;
+    } // TODO: Pieter use this for clear console button
 
     /* TODO: for Pieter
      *
@@ -153,7 +154,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      */
 
     // [ Constructor ] ------------------------------------------------------------- //
-    
+
     public MainWindowViewModel()
     {
         _queryName = string.Empty;
@@ -167,14 +168,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ADCommands = new ObservableCollection<Command>();
         DynamicallyAvailableADCommandParametersComboBox = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBox = new ObservableCollection<TextBoxViewModel>();
-        
+
         OutputToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
         ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutputToFile);
         // TODO: Figure out how resolve the warning about the async method not being awaited.
-        ExecuteQueryFromQueryBuilderRelay = new RelayCommand(_ => ExecuteQuery(_consoleOutputInQueryBuilder));
+        ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
+            _ => ExecuteQuery(_consoleOutputInQueryBuilder));
         // TODO: Figure out how resolve the warning about the async method not being awaited.
-        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(_ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
+        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(
+            _ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
         AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
         RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBoxInQueryBuilder);
@@ -182,14 +185,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPanel);
         DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
         ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanel);
-        ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(_ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
-        ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(_ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
+        ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(
+            _ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
+        ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(
+            _ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
-        
+
         /* TODO: For Pieter
          * Connect the relay property to for the execute button to you method that performs the execution.
          */
-        
 
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         InitializeActiveDirectoryCommandsAsync();
@@ -210,7 +214,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      *
      * In this class, create a method or two, that will be used to execute the specific selected action.
      */
-    
+
     private void ClearConsoleOutput(AppConsole appConsole)
     {
         if (appConsole.ConsoleOutput.Length == 0)
@@ -233,7 +237,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             appConsole.Clear();
         }
     }
-    
+
     private void EditQueryFromQueryStackPanel(object queryButton)
     {
         var currentQuery = (Query)((Button)queryButton).Tag;
@@ -244,8 +248,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         QueryDescription = currentQuery.QueryDescription;
 
         // Fill in the commandName
-        Command chosenCommand = 
-            ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
+        Command chosenCommand = ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
         SelectedCommandFromComboBoxInQueryBuilder = chosenCommand;
 
         // Load the Possible Parameters Synchronously
@@ -267,14 +270,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             Trace.WriteLine(currentQuery.PSCommandParameters[i]);
 
             // Adds the Parameters boxes
-            AddParameterComboBoxInQueryBuilder(null!);  // Null is never used, so we use null forgiveness operator.
+            AddParameterComboBoxInQueryBuilder(null!); // Null is never used, so we use null forgiveness operator.
 
             // Fill in the parameter boxes
             DynamicallyAvailableADCommandParametersComboBox[i].SelectedParameter = currentQuery.PSCommandParameters[i];
-            DynamicallyAvailableADCommandParameterValueTextBox[i].SelectedParameterValue = currentQuery.PSCommandParameterValues[i];
+            DynamicallyAvailableADCommandParameterValueTextBox[i].SelectedParameterValue =
+                currentQuery.PSCommandParameterValues[i];
         }
     }
-    
+
     private async void ExecuteQueryFromQueryStackPanel(object queryButton)
     {
         if (queryButton is not Button currentButton)
@@ -290,7 +294,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         var buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
-    
+
     private void DeleteQueryFromQueryStackPanel(object queryButton)
     {
         if (queryButton is not Button currentButton)
@@ -307,7 +311,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _customQuery.Queries.Remove((Query)currentButton.Tag);
         _customQuery.SaveQueriesToJson();
     }
-    
+
     private void LoadSavedQueriesFromFile()
     {
         try
@@ -328,13 +332,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             Trace.WriteLine(ex);
         }
     }
-    
+
     // TODO: Possibly change Task to void?
     private async Task ExecuteQuery(AppConsole appConsole, Command? command = null)
     {
         await ExecuteQueryCoreAsync(appConsole, command);
     }
-    
+
     // TODO: Possibly change Task to void?
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
@@ -351,12 +355,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(AvailableADCommandParameters));
 
         // Update the possible properties of the ComboBoxParameterViewModels.
-        foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in DynamicallyAvailableADCommandParametersComboBox)
+        foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in
+                     DynamicallyAvailableADCommandParametersComboBox)
         {
             comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
         }
     }
-    
+
     // TODO: Hunter: Re-review this method and make any necessary changes.
     private async Task ExecuteQueryCoreAsync(AppConsole appConsole, Command? command = null)
     {
@@ -411,7 +416,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        DynamicallyAvailableADCommandParametersComboBox.Add(new ComboBoxParameterViewModel(AvailableADCommandParameters));
+        DynamicallyAvailableADCommandParametersComboBox.Add(
+            new ComboBoxParameterViewModel(AvailableADCommandParameters));
         DynamicallyAvailableADCommandParameterValueTextBox.Add(new TextBoxViewModel());
     }
 
@@ -551,7 +557,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             string[] commandParameters;
             string[] commandParameterValues;
 
-            if (SelectedCommandFromComboBoxInQueryBuilder is not null && SelectedCommandFromComboBoxInQueryBuilder.Parameters is not null)
+            if (SelectedCommandFromComboBoxInQueryBuilder is not null &&
+                SelectedCommandFromComboBoxInQueryBuilder.Parameters is not null)
             {
                 commandParameters = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
                 commandParameterValues = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
@@ -559,7 +566,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 _currentQuery.QueryDescription = QueryDescription;
                 _currentQuery.QueryName = QueryName;
                 _currentQuery.PSCommandName = SelectedCommandFromComboBoxInQueryBuilder.CommandText;
-                
+
                 for (int i = 0; i < SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count; i++)
                 {
                     CommandParameter commandParameter = SelectedCommandFromComboBoxInQueryBuilder.Parameters[i];
@@ -582,8 +589,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (DynamicallyAvailableADCommandParametersComboBox.Count != 0)
         {
-            DynamicallyAvailableADCommandParametersComboBox.RemoveAt(DynamicallyAvailableADCommandParametersComboBox.Count - 1);
-            DynamicallyAvailableADCommandParameterValueTextBox.RemoveAt(DynamicallyAvailableADCommandParameterValueTextBox.Count - 1);
+            DynamicallyAvailableADCommandParametersComboBox.RemoveAt(
+                DynamicallyAvailableADCommandParametersComboBox.Count - 1);
+            DynamicallyAvailableADCommandParameterValueTextBox.RemoveAt(
+                DynamicallyAvailableADCommandParameterValueTextBox.Count - 1);
         }
         else
         {
@@ -638,7 +647,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void ClearQueryBuilder(object _)
     {
-        if (SelectedCommandFromComboBoxInQueryBuilder is null && DynamicallyAvailableADCommandParametersComboBox.Count == 0)
+        if (SelectedCommandFromComboBoxInQueryBuilder is null &&
+            DynamicallyAvailableADCommandParametersComboBox.Count == 0)
         {
             MessageBox.Show("The query builder is already clear.",
                             "Information",
@@ -694,7 +704,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             GetCurrentQuery();
             newButton.Height = 48;
-            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedCommandFromComboBoxInQueryBuilder.CommandText;
+            newButton.Content =
+                QueryName.Length != 0 ? QueryName : SelectedCommandFromComboBoxInQueryBuilder.CommandText;
             newButton.Tag = _currentQuery;
         }
 
@@ -712,7 +723,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         menuItem1.Items.Add(outputToText);
         menuItem1.Items.Add(outputToConsole);
 
-        MenuItem menuItem2 = new() { Header = "Edit", Command = EditQueryFromQueryStackPanelRelay, CommandParameter = newButton };
+        MenuItem menuItem2 =
+            new() { Header = "Edit", Command = EditQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
         MenuItem menuItem3 =
             new() { Header = "Delete", Command = DeleteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
@@ -728,7 +740,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     // [[ Event Handlers ]] --------------------------------------------------------- //
-    
+
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

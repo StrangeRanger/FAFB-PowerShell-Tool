@@ -25,9 +25,9 @@ public class PSExecutor
     private void PrepareCommand(Command psCommand)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
-        
+
         _powerShell.Commands.AddCommand(psCommand.CommandText);
-        
+
         foreach (var parameter in psCommand.Parameters)
         {
             _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);

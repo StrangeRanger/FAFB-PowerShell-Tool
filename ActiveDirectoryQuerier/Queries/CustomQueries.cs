@@ -50,12 +50,8 @@ public class CustomQueries
         string[] commandParameters = new string[psCommand.Parameters.Count];
         string[] commandParameterValues = new string[psCommand.Parameters.Count];
         CustomQueries customQueries = new();
-        Query newQuery = new(psCommand.CommandText)
-        {
-            QueryName = queryName,
-            QueryDescription = queryDescription
-        };
-        
+        Query newQuery = new(psCommand.CommandText) { QueryName = queryName, QueryDescription = queryDescription };
+
         // TODO: Determine if this line is necessary.
         Trace.WriteLine(psCommand.Parameters.Count);
 
@@ -69,13 +65,13 @@ public class CustomQueries
             commandParameters[i] = param.Name;
             commandParameterValues[i] = param.Value.ToString();
         }
-        
+
         newQuery.PSCommandParameters = commandParameters;
         newQuery.PSCommandParameterValues = commandParameterValues;
 
         Queries.Add(newQuery);
         customQueries.SaveQueriesToJson();
-        
+
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
