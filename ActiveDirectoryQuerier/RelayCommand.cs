@@ -27,7 +27,6 @@ public class RelayCommand : ICommand
         return _canExecute?.Invoke(parameter) ?? true;
     }
     
-    // TODO: Perform null checking before calling the _execute property.
     public void Execute(object? parameter)
     {
         // For now, we are ignoring the warning about the parameter being null.
