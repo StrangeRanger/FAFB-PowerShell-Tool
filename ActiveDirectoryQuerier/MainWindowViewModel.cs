@@ -236,28 +236,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             appConsole.Clear();
         }
     }
-
-    /// <summary>
-    /// This method will edit the Query and fill out the field with the desired query and you can edit the query
-    /// </summary>
-    /// <param name="sender">This is the object that is clicked when executing</param>
-    private void EditQueryFromQueryStackPane(object sender)
+    
+    private void EditQueryFromQueryStackPane(object queryButton)
     {
-        // Get the button that we are editing
-        Button currentButton = (Button)sender;
-        Query currentQuery = (Query)currentButton.Tag;
+        Query currentQuery = (Query)((Button)queryButton).Tag;
 
         _isEditing = currentQuery;
         QueryEditingEnabled = true;
-
-        // Need to fill in the queryName
         QueryName = currentQuery.QueryName;
-
-        // Fill in the queryDescription
         QueryDescription = currentQuery.QueryDescription;
 
         // Fill in the commandName
-        Command chosenCommand =
+        Command chosenCommand = 
             ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
         SelectedCommandFromComboBoxInQueryBuilder = chosenCommand;
 
