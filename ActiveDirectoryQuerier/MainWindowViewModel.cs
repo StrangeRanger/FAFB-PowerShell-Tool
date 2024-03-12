@@ -8,8 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ActiveDirectoryQuerier.PowerShell;
+using ActiveDirectoryQuerier.Queries;
 using Microsoft.Win32;
-using static ActiveDirectoryQuerier.PowerShell.CustomQueries;
 
 namespace ActiveDirectoryQuerier;
 
@@ -27,7 +27,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _queryDescription;
     private AppConsole _queryBuilderConsoleOutput;
     private AppConsole _activeDirectoryInfoConsoleOutput;
-    private Command? _selectedComboBoxCommandInQueryBuilder; // TODO: Change the name of this field?
+    private Command? _selectedComboBoxCommandInQueryBuilder;
     private ObservableCollection<Button>? _buttons;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
@@ -281,7 +281,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         // Fill in the commandName
         Command chosenCommand =
-            ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.CommandName)!;
+            ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
         SelectedComboBoxCommandInQueryBuilder = chosenCommand;
 
         // Load the Possible Parameters Synchronously
@@ -298,17 +298,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         // Fill in Parameters and values
-        for (int i = 0; i < currentQuery.CommandParameters.Length; i++)
+        for (int i = 0; i < currentQuery.PSCommandParameters.Length; i++)
         {
-            Trace.WriteLine(currentQuery.CommandParameters[i]);
+            Trace.WriteLine(currentQuery.PSCommandParameters[i]);
 
             // Adds the Parameters boxes
             object temp = new();
             AddParameterComboBox(temp);
 
             // Fill in the parameter boxes
-            DynamicParameterComboBoxes[i].SelectedParameter = currentQuery.CommandParameters[i];
-            DynamicParameterValueTextBoxes[i].SelectedParameterValue = currentQuery.CommandParametersValues[i];
+            DynamicParameterComboBoxes[i].SelectedParameter = currentQuery.PSCommandParameters[i];
+            DynamicParameterValueTextBoxes[i].SelectedParameterValue = currentQuery.PSCommandParameterValues[i];
         }
     }
 
@@ -355,7 +355,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         QueryButtonStackPanel.Remove(currentButton);
         _customQuery.Queries.Remove((Query)currentButton.Tag);
-        _customQuery.SerializeMethod();
+        _customQuery.SaveQueriesToJson();
     }
 
     /// <summary>
@@ -642,20 +642,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                 _currentQuery.QueryDescription = QueryDescription;
                 _currentQuery.QueryName = QueryName;
-
-                _currentQuery.CommandName = SelectedComboBoxCommandInQueryBuilder.CommandText;
-
-                // TODO: Possibly convert foreach into a for loop...
+                _currentQuery.PSCommandName = SelectedComboBoxCommandInQueryBuilder.CommandText;
+                
                 for (int i = 0; i < SelectedComboBoxCommandInQueryBuilder.Parameters.Count; i++)
                 {
                     CommandParameter commandParameter = SelectedComboBoxCommandInQueryBuilder.Parameters[i];
 
                     commandParameters[i] = commandParameter.Name;
                     commandParameterValues[i] = commandParameter.Value.ToString()!;
-                    i++;
+                    i++;  // TODO: Remove this line!
                 }
-                _currentQuery.CommandParameters = commandParameters;
-                _currentQuery.CommandParametersValues = commandParameterValues;
+                _currentQuery.PSCommandParameters = commandParameters;
+                _currentQuery.PSCommandParameterValues = commandParameterValues;
             }
         }
         catch (Exception ex)
@@ -706,7 +704,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             GetCurrentQuery();
             Trace.WriteLine(_customQuery.Queries.IndexOf(_isEditing));
             _customQuery.Queries[_customQuery.Queries.IndexOf(_isEditing)] = _currentQuery;
-            _customQuery.SerializeMethod();
+            _customQuery.SaveQueriesToJson();
             _isEditing = null;
             EditingEnabled = false;
         }
@@ -774,7 +772,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (query != null)
         {
             newButton.Height = 48;
-            newButton.Content = (string.IsNullOrEmpty(query.QueryName) ? query.CommandName : query.QueryName);
+            newButton.Content = (string.IsNullOrEmpty(query.QueryName) ? query.PSCommandName : query.QueryName);
             newButton.Tag = query;
         }
         else
