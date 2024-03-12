@@ -8,6 +8,7 @@ namespace ActiveDirectoryQuerier;
 /// <note>
 /// This is a very basic setup of the RelayCommand class. I imagine that this class can be expanded upon.
 /// </note>
+/// TODO: Place class into ViewModel folder.
 public class RelayCommand : ICommand
 {
     private readonly Action<object> _execute;

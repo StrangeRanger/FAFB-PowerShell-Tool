@@ -13,6 +13,7 @@ using Microsoft.Win32;
 
 namespace ActiveDirectoryQuerier;
 
+/// TODO: Place class into ViewModel folder.
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
     // [ Fields ] ------------------------------------------------------------------- //
