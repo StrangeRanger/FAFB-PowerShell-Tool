@@ -97,7 +97,7 @@
                                 <!-- TODO: Pieter refer to here regarding combobox setup -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Center">Command</TextBlock>
                                 <ComboBox ItemsSource="{Binding ADCommands}"
-                                          SelectedItem="{Binding SelectedComboBoxCommandInQueryBuilder}"
+                                          SelectedItem="{Binding SelectedCommandFromComboBoxInQueryBuilder}"
                                           DisplayMemberPath="CommandText"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
@@ -108,7 +108,7 @@
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Left">Parameter</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicParameterComboBoxes}"
+                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParametersComboBox}"
                                               Grid.Column="1"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -126,7 +126,7 @@
 
                                 <!-- Parameter Values ComboBox -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left">Value</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicParameterValueTextBoxes}"
+                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterValueTextBox}"
                                               Grid.Column="2"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -148,30 +148,30 @@
                                         <MenuItem Header="Add New Command Slot"
                                                   Command="{Binding AddCommandComboBoxRelay}" />
                                         <MenuItem Header="Add New Parameter Slot"
-                                                  Command="{Binding AddParameterComboBoxRelay}" />
+                                                  Command="{Binding AddCommandParameterComboBoxRelay}" />
                                         <MenuItem Header="Remove Parameter Slot"
-                                                  Command="{Binding RemoveParameterComboBoxRelay}" />
-                                        <MenuItem Header="Save Query" Command="{Binding SaveCustomQueriesRelay}" />
-                                        <MenuItem Header="Execute" Command="{Binding ExecuteSelectedCommandRelay}" />
+                                                  Command="{Binding RemoveCommandParameterComboBoxRelay}" />
+                                        <MenuItem Header="Save Query" Command="{Binding SaveQueryRelay}" />
+                                        <MenuItem Header="Execute" Command="{Binding ExecuteQueryFromQueryBuilderRelay}" />
                                         <MenuItem Header="Execute to CSV" Command="{Binding OutputToCsvFileRelay}" />
                                         <MenuItem Header="Execute to Text" Command="{Binding OutputToTextFileRelay}" />
                                         <MenuItem Header="Export Console Output"
                                                   Command="{Binding ExportConsoleOutputRelay}" />
                                         <MenuItem Header="Clear Console Output"
-                                                  Command="{Binding ClearConsoleOutputRelay}" />
+                                                  Command="{Binding ClearConsoleOutputInQueryBuilderRelay}" />
                                         <MenuItem Header="Clear Query" Command="{Binding ClearQueryBuilderRelay}" />
                                     </MenuItem>
                                 </Menu>
                                 <!-- END of Button ComboBox-->
                                 <CheckBox Grid.Row="2" Grid.Column="0" Content="Editing" HorizontalAlignment="Left"
                                           Margin="10,6,10,0"
-                                          VerticalAlignment="Top" IsChecked="{Binding EditingEnabled}" Height="15"
+                                          VerticalAlignment="Top" IsChecked="{Binding QueryEditingEnabled}" Height="15"
                                           Width="57" />
                             </Grid>
                             <!-- ROW 0 END -->
                             <!-- GRID ROW 1 START -->
                             <!-- TextBox as Console Output -->
-                            <TextBox Grid.Row="1" Text="{Binding QueryBuilderConsoleOutput.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInQueryBuilder.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
@@ -193,7 +193,7 @@
                                           Width="207"
                                           Height="26" />
                             </Grid>
-                            <TextBox Grid.Row="1" Text="{Binding ActiveDirectoryInfoConsoleOutput.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInActiveDirectoryInfo.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
