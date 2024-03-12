@@ -135,6 +135,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand SaveQueryRelay { get; }
     public ICommand ClearQueryBuilderRelay { get; }
     public ICommand ExecuteQueryFromQueryBuilderRelay { get; }
+    public ICommand ExecuteQueryFromActiveDirectoryInfoRelay { get; } // TODO: Pieter use this for execution button
     public ICommand AddCommandComboBoxRelay { get; }
     public ICommand AddCommandParameterComboBoxRelay { get; }
     public ICommand RemoveCommandParameterComboBoxRelay { get; }
@@ -142,7 +143,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand OutputToCsvFileRelay { get; }
     public ICommand ExportConsoleOutputRelay { get; }
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; }
+    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } // TODO: Pieter use this for clear console button
 
 
     /* TODO: for Pieter
@@ -169,18 +170,21 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ADCommands = new ObservableCollection<Command>();
         DynamicallyAvailableADCommandParametersComboBox = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBox = new ObservableCollection<TextBoxViewModel>();
-
-        ExecuteQueryFromQueryBuilderRelay = new RelayCommand(ExecuteSelectedCommandAsync);
+        
         OutputToCsvFileRelay = new RelayCommand(OutputToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputToTextFileAsync);
         ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutput);
+        // TODO: Figure out how resolve the warning about the async method not being awaited.
+        ExecuteQueryFromQueryBuilderRelay = new RelayCommand(_ => ExecuteQuery(_consoleOutputInQueryBuilder));
+        // TODO: Figure out how resolve the warning about the async method not being awaited.
+        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(_ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBox);
         AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBox);
-        RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveParameterComboBox);
-        SaveQueryRelay = new RelayCommand(SaveCustomQueries);
-        EditQueryFromQueryStackPanelRelay = new RelayCommand(EditCustomQuery);
-        DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteCustomQuery);
-        ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteCustomQueryCommandButton);
+        RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBox);
+        SaveQueryRelay = new RelayCommand(SaveQuery);
+        EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPane);
+        DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
+        ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanel);
         ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(_ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
         ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(_ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
@@ -237,7 +241,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method will edit the Query and fill out the field with the desired query and you can edit the query
     /// </summary>
     /// <param name="sender">This is the object that is clicked when executing</param>
-    private void EditCustomQuery(object sender)
+    private void EditQueryFromQueryStackPane(object sender)
     {
         // Get the button that we are editing
         Button currentButton = (Button)sender;
@@ -284,12 +288,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterValueTextBox[i].SelectedParameterValue = currentQuery.PSCommandParameterValues[i];
         }
     }
-
-    /// <summary>
-    /// This method executes the CustomQuery.query.command that is tied to the custom query buttons
-    /// </summary>
-    /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
-    private async void ExecuteCustomQueryCommandButton(object _)
+    
+    private async void ExecuteQueryFromQueryStackPanel(object _)
     {
         var currentButton = _ as Button;
 
@@ -304,14 +304,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         Query buttonQuery = (Query)currentButton.Tag;
-        await ExecuteSelectedCommandCoreAsync(buttonQuery.Command);
+        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
 
     /// <summary>
     /// This method deletes the button from the list and saves the changes to the file
     /// </summary>
     /// <param name="_">This is the Button as a generic object that is clicked when executing</param>
-    private void DeleteCustomQuery(object _)
+    private void DeleteQueryFromQueryStackPanel(object _)
     {
         // Delete a button from the custom queries list and from the file
         var currentButton = _ as Button;
@@ -356,19 +356,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             Trace.WriteLine(ex);
         }
     }
-
-    /// <summary>
-    /// Executes the selected PowerShell command asynchronously.
-    /// </summary>
-    /// <param name="_">This is the object that the command is bound to.</param>
-    private async void ExecuteSelectedCommandAsync(object _)
+    
+    // TODO: Possibly change Task to void?
+    private async Task ExecuteQuery(AppConsole appConsole, Command? command = null)
     {
-        await ExecuteSelectedCommandCoreAsync();
+        await ExecuteQueryCoreAsync(appConsole, command);
     }
-
-    /// <summary>
-    /// Initializes the list of Active Directory commands asynchronously.
-    /// </summary>
+    
+    // TODO: Possibly change Task to void?
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
         ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommands();
@@ -393,13 +388,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
         }
     }
-
-    /// <summary>
-    /// Executes the currently selected PowerShell command and updates the ConsoleOutputInQueryBuilder property with the result.
-    /// </summary>
-    /// <param name="command">The PowerShell command to execute.</param>
-    /// <returns>A Task representing the asynchronous operation of executing the command.</returns>
-    private async Task ExecuteSelectedCommandCoreAsync(Command? command = null)
+    
+    private async Task ExecuteQueryCoreAsync(AppConsole appConsole, Command? command = null)
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null && command is null)
         {
@@ -427,15 +417,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             if (result.HadErrors)
             {
-                ConsoleOutputInQueryBuilder.Append(result.StdErr);
+                appConsole.Append(result.StdErr);
                 return;
             }
 
-            ConsoleOutputInQueryBuilder.Append(result.StdOut);
+            appConsole.Append(result.StdOut);
         }
         catch (Exception ex)
         {
-            ConsoleOutputInQueryBuilder.Append($"Error executing command: {ex.Message}" + ex.Message);
+            appConsole.Append($"Error executing command: {ex.Message}" + ex.Message);
         }
     }
 
@@ -476,7 +466,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to.</param>
     private async void OutputToTextFileAsync(object _)
     {
-        await ExecuteSelectedCommandCoreAsync();
+        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
 
         // Filepath
         // Write the text to a file & prompt user for the location
@@ -504,7 +494,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void OutputToCsvFileAsync(object _)
     {
-        await ExecuteSelectedCommandCoreAsync();
+        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
 
         var csv = new StringBuilder();
         string[] output = ConsoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
@@ -638,7 +628,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// Removes the parameter box after adding them
     /// </summary>
     /// <param name="_">This is the CommandParameter object that this command is tied to</param>
-    private void RemoveParameterComboBox(object _)
+    private void RemoveCommandParameterComboBox(object _)
     {
         if (DynamicallyAvailableADCommandParametersComboBox.Count != 0)
         {
@@ -658,7 +648,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// This method will serialize the command and add it to the list of buttons.
     /// </summary>
     /// <param name="commandParameter">This is not used but necessary for the relay command</param>
-    private void SaveCustomQueries(object commandParameter)
+    private void SaveQuery(object commandParameter)
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null)
         {
