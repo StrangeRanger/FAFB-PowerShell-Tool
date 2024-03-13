@@ -153,7 +153,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      *
      * Create a property to act as the relay to the execution button.
      */
+    
+    //NEW CODE
+    // Property for ComboBox dropdown options/text
+    public ObservableCollection<string> ActiveDirectoryCommandsList { get; private set; }
 
+// Property to contain the selected item
+    private string _selectedComboBoxCommand;
+    public string SelectedComboBoxCommand
+    {
+        get => _selectedComboBoxCommand;
+        set
+        {
+            if (_selectedComboBoxCommand != value)
+            {
+                _selectedComboBoxCommand = value;
+                OnPropertyChanged(nameof(SelectedComboBoxCommand));
+            }
+        }
+    }
+
+// Property to act as the relay to the execution button
+    public ICommand ExecuteCommandRelay { get; }
+//NEW CODE
     // [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
