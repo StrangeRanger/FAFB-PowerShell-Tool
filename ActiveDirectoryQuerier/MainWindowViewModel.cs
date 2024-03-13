@@ -29,6 +29,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _consoleOutputInQueryBuilder;
     private AppConsole _consoleOutputInActiveDirectoryInfo;
     private Command? _selectedCommandFromComboBoxInQueryBuilder;
+    private Command? _selectedCommandFromComboBoxInActiveDirectoryInfo;
     private ObservableCollection<Button>? _buttons; // TODO: Rename to be more descriptive.
 
     // [[ Other fields ]] ----------------------------------------------------------- //
@@ -59,6 +60,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // TODO: Pieter: Use this for the console output in the Active Directory Info tab (link in GUI)
     public AppConsole ConsoleOutputInActiveDirectoryInfo
     {
         get => _consoleOutputInActiveDirectoryInfo;
@@ -106,6 +108,26 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
+    
+    public Command? SelectedCommandFromComboBoxInActiveDirectoryInfo
+    {
+        get => _selectedCommandFromComboBoxInActiveDirectoryInfo;
+        set
+        {
+            if (_selectedCommandFromComboBoxInActiveDirectoryInfo != value)
+            {
+                _selectedCommandFromComboBoxInActiveDirectoryInfo = value;
+                OnPropertyChanged(nameof(SelectedCommandFromComboBoxInActiveDirectoryInfo));
+            }
+        }
+    }
+    
+    public List<string> AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; } = new()
+    {
+        "Get user on domain",
+        "Get computers on domain",
+        "Get IP of each system on domain"
+    };
 
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
@@ -143,7 +165,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ImportQueryFileRelay { get; }
     public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay {
         get;
-    } // TODO: Pieter use this for clear console button
+    } // TODO: Impliment functionality.....
 
     /* TODO: for Pieter
      *
@@ -154,28 +176,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      * Create a property to act as the relay to the execution button.
      */
     
+    
     //NEW CODE
-    // Property for ComboBox dropdown options/text
-    public ObservableCollection<string> ActiveDirectoryCommandsList { get; private set; }
-
-// Property to contain the selected item
-    private string _selectedComboBoxCommand;
-    public string SelectedComboBoxCommand
-    {
-        get => _selectedComboBoxCommand;
-        set
-        {
-            if (_selectedComboBoxCommand != value)
-            {
-                _selectedComboBoxCommand = value;
-                OnPropertyChanged(nameof(SelectedComboBoxCommand));
-            }
-        }
-    }
-
-// Property to act as the relay to the execution button
-    public ICommand ExecuteCommandRelay { get; }
-//NEW CODE
     // [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
