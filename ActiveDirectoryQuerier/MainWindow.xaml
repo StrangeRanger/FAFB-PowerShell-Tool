@@ -10,6 +10,10 @@
         <activeDirectoryQuerier:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="93*"/>
+            <ColumnDefinition Width="547*"/>
+        </Grid.ColumnDefinitions>
         <!-- Define Columns. -->
         <!--<Grid.ColumnDefinitions><ColumnDefinition Width="119*"/><ColumnDefinition Width="681*"/></Grid.ColumnDefinitions>-->
         <!-- Define Rows. -->
@@ -18,9 +22,15 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <!-- Static Header Bar. -->
-        <Border Grid.Row="0" Grid.Column="0" Background="DarkGray" Height="42" />
+        <Border Grid.Row="0" Background="DarkGray" Height="42" Grid.ColumnSpan="2" >
+            <Menu Width="50" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <MenuItem Header="File"  Width="Auto" Height="Auto" >
+                    <MenuItem Header="Import Queries" Command="{Binding ImportQueryFileRelay}"/>
+                </MenuItem>
+            </Menu>
+        </Border>
         <!-- Grid for resizable content. -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
             <!-- Define Columns for resizable area. -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250" MinWidth="200" />

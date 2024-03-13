@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Windows;
 
 namespace ActiveDirectoryQuerier.Queries;
 
@@ -10,10 +12,11 @@ namespace ActiveDirectoryQuerier.Queries;
 /// This class is used to save a json file named "CustomQueries.dat" inside of
 /// \ActiveDirectoryQuerier\ActiveDirectoryQuerier\bin\Debug\net6.0-windows This
 /// </summary>
-/// TODO: Remove property descriptions if name is descriptive enough, or provide a detailed description if it is not.
 public class CustomQueries
 {
     public List<Query> Queries { get; private set; } = new();
+
+    public string CustomQueryFileLocation = "";
 
     /// <summary>
     /// This a variable for feeding options to the Json serializer
@@ -32,69 +35,86 @@ public class CustomQueries
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
-            File.WriteAllText("CustomQueries.dat", serializedJsonQueries);
+            if(CustomQueryFileLocation == "")
+            {
+                File.WriteAllText("CustomQueries.dat", serializedJsonQueries);
+
+            } else
+            {
+                File.WriteAllText(CustomQueryFileLocation, serializedJsonQueries);
+            }        
         }
-        // TODO: Possibly provide more comprehensive error handling.
         catch (Exception ex)
         {
-            Trace.WriteLine(ex);
+
+            MessageBox.Show(ex.Message);
         }
     }
 
     /// <summary>
     /// This method is for serializing a command type, so it converts the type to a query and then serializes it
     /// </summary>
-    /// TODO: Fix any and all warnings about possible null values.
+    /// <param name="psCommand">Command class that you want to serialize</param>
+    /// <param name="queryDescription">Description field of the Query</param>
+    /// <param name="queryName">Query Name</param>
     public void SerializeCommand(Command? psCommand, string queryName, string queryDescription)
     {
-        string[] commandParameters = new string[psCommand.Parameters.Count];
+        string[] commandParameters = new string[psCommand!.Parameters.Count];
         string[] commandParameterValues = new string[psCommand.Parameters.Count];
-        CustomQueries customQueries = new();
         Query newQuery = new(psCommand.CommandText) { QueryName = queryName, QueryDescription = queryDescription };
-
-        // TODO: Determine if this line is necessary.
-        Trace.WriteLine(psCommand.Parameters.Count);
 
         // Iterate over the parameters and add them to the string
         for (int i = 0; i < psCommand.Parameters.Count; i++)
         {
             CommandParameter param = psCommand.Parameters[i];
 
-            Trace.WriteLine(param.Name + " Value: ");
-
             commandParameters[i] = param.Name;
-            commandParameterValues[i] = param.Value.ToString();
+            commandParameterValues[i] = param.Value.ToString()!;
         }
 
         newQuery.PSCommandParameters = commandParameters;
         newQuery.PSCommandParameterValues = commandParameterValues;
 
         Queries.Add(newQuery);
-        customQueries.SaveQueriesToJson();
+        SaveQueriesToJson();
 
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
-            Trace.WriteLine(serializedJsonQueries);
-            File.WriteAllText("CustomQueries.dat", serializedJsonQueries);
+            if (CustomQueryFileLocation == "")
+            {
+                File.WriteAllText("CustomQueries.dat", serializedJsonQueries);
+
+            }
+            else
+            {
+                File.WriteAllText(CustomQueryFileLocation, serializedJsonQueries);
+            }
         }
-        // TODO: Possibly provide more comprehensive error handling.
         catch (Exception ex)
         {
-            Trace.WriteLine(ex);
+            MessageBox.Show(ex.Message);
         }
     }
     /// <summary>
     /// This method Loads the string from the saved file "CustomQueries.dat" then gives it to the Queries List
     /// </summary>
-    /// TODO: Fix any and all warnings about possible null values.
     public void LoadData()
     {
         try
         {
             // Opens file and reads it then adds the json to the Queries List
-            string json = File.ReadAllText("CustomQueries.dat");
-            Queries = JsonSerializer.Deserialize<List<Query>>(json, _options);
+            string json;
+            if (CustomQueryFileLocation == "")
+            {
+                json = File.ReadAllText("CustomQueries.dat");
+
+            }
+            else
+            {
+                json = File.ReadAllText(CustomQueryFileLocation);
+            }
+            Queries = JsonSerializer.Deserialize<List<Query>>(json, _options)!;
 
             // Now we want to fill the command variable for each query
             foreach (Query query in Queries)
@@ -106,9 +126,7 @@ public class CustomQueries
                 {
                     for (int i = 0; i < query.PSCommandParameters.Length; i++)
                     {
-                        psCommand.Parameters.Add(query.PSCommandParameters[i], query.PSCommandParameterValues[i]);
-                        // the values are working then we will use this
-                        // command.Parameters.Add(q.ADCommandParameters[i]);
+                        psCommand.Parameters.Add(query.PSCommandParameters[i], query.PSCommandParameterValues![i]);
                     }
                 }
 
@@ -116,10 +134,10 @@ public class CustomQueries
                 query.Command = psCommand;
             }
         }
-        // TODO: Possibly provide more comprehensive error handling.
         catch (Exception exception)
         {
-            Trace.WriteLine(exception);
+            
+            Trace.WriteLine(exception.Message);
         }
     }
 }

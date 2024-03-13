@@ -140,6 +140,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand OutputToCsvFileRelay { get; }
     public ICommand ExportConsoleOutputRelay { get; }
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
+    public ICommand ImportQueryFileRelay { get; }
     public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay {
         get;
     } // TODO: Pieter use this for clear console button
@@ -178,6 +179,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(
             _ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
+        ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
         AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
         RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBoxInQueryBuilder);
@@ -330,6 +332,28 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         catch (Exception ex)
         {
             Trace.WriteLine(ex);
+        }
+    }
+
+    private void ImportQueryFile(object _)
+    {
+        OpenFileDialog dialog = new() {
+            FileName = "CustomQueries.dat", 
+            Filter = "All files(*.*) | *.*"
+        };
+
+
+        // Display
+        bool? result = dialog.ShowDialog();
+
+        // Get file and write text
+        if (result == true)
+        {
+            // Open document
+            _customQuery.CustomQueryFileLocation = dialog.FileName;
+
+            QueryButtonStackPanel.Clear();
+            LoadSavedQueriesFromFile();
         }
     }
 
