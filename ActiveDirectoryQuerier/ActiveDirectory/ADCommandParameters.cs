@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
-namespace ActiveDirectoryQuerier.PowerShell;
+namespace ActiveDirectoryQuerier.ActiveDirectory;
 
 // ReSharper disable once InconsistentNaming
 public class ADCommandParameters

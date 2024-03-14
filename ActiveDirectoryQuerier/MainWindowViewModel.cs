@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ActiveDirectoryQuerier.ActiveDirectory;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.Queries;
 using Microsoft.Win32;

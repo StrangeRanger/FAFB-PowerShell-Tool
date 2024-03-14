@@ -2,8 +2,9 @@ using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Windows;
+using ActiveDirectoryQuerier.PowerShell;
 
-namespace ActiveDirectoryQuerier.PowerShell;
+namespace ActiveDirectoryQuerier.ActiveDirectory;
 
 // ReSharper disable once InconsistentNaming
 public static class ADCommandsFetcher
