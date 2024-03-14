@@ -333,9 +333,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        QueryButtonStackPanel.Remove(currentButton);
-        _customQuery.Queries.Remove((Query)currentButton.Tag);
-        _customQuery.SaveQueriesToJson();
+        MessageBoxResult result = MessageBox.Show("Are you sure you want to delete the query?",
+                                          "Warning",
+                                          MessageBoxButton.YesNo,
+                                          MessageBoxImage.Warning,
+                                          MessageBoxResult.No);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            QueryButtonStackPanel.Remove(currentButton);
+            _customQuery.Queries.Remove((Query)currentButton.Tag);
+            _customQuery.SaveQueriesToJson();
+        }
     }
 
     private void LoadSavedQueriesFromFile()
