@@ -26,6 +26,7 @@
             <Menu Width="50" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <MenuItem Header="File"  Width="Auto" Height="Auto" >
                     <MenuItem Header="Import Queries" Command="{Binding ImportQueryFileRelay}"/>
+                    <MenuItem Header="New Query File" Command="{Binding CreateNewQueryFileRelay}" />
                 </MenuItem>
             </Menu>
         </Border>

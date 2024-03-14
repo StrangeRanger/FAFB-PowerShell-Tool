@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
 using System.Text.Json;
@@ -9,7 +8,7 @@ using System.Windows;
 namespace ActiveDirectoryQuerier.Queries;
 
 /// <summary>
-/// This class is used to save a json file named "CustomQueries.dat" inside of
+/// This class is used to save a json file named "CustomQueries.json" inside of
 /// \ActiveDirectoryQuerier\ActiveDirectoryQuerier\bin\Debug\net6.0-windows This
 /// </summary>
 public class CustomQueries
@@ -37,7 +36,7 @@ public class CustomQueries
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
             if(CustomQueryFileLocation == "")
             {
-                File.WriteAllText("CustomQueries.dat", serializedJsonQueries);
+                File.WriteAllText("CustomQueries.json", serializedJsonQueries);
 
             } else
             {
@@ -46,7 +45,6 @@ public class CustomQueries
         }
         catch (Exception ex)
         {
-
             MessageBox.Show(ex.Message);
         }
     }
@@ -83,7 +81,7 @@ public class CustomQueries
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
             if (CustomQueryFileLocation == "")
             {
-                File.WriteAllText("CustomQueries.dat", serializedJsonQueries);
+                File.WriteAllText("CustomQueries.json", serializedJsonQueries);
 
             }
             else
@@ -107,8 +105,14 @@ public class CustomQueries
             string json;
             if (CustomQueryFileLocation == "")
             {
-                json = File.ReadAllText("CustomQueries.dat");
-
+                if (File.Exists("CustomeQueries.json"))
+                {
+                    json = File.ReadAllText("CustomQueries.json");
+                }
+                else
+                {
+                    return;
+                }
             }
             else
             {
@@ -136,8 +140,7 @@ public class CustomQueries
         }
         catch (Exception exception)
         {
-            
-            Trace.WriteLine(exception.Message);
+            MessageBox.Show(exception.Message);
         }
     }
 }

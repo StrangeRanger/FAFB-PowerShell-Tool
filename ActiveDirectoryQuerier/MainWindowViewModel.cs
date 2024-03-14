@@ -163,6 +163,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ExportConsoleOutputRelay { get; }
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
+    public ICommand CreateNewQueryFileRelay { get; }
     public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay {
         get;
     } // TODO: Impliment functionality.....
@@ -204,6 +205,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(
             _ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
+        CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
         AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
         RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBoxInQueryBuilder);
@@ -347,6 +349,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    private void CreateNewQueryFile(object _)
+    {
+        // Saves/creates a new save file for the queries
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
+        saveFileDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            File.WriteAllText(saveFileDialog.FileName, string.Empty);
+            _customQuery.CustomQueryFileLocation = saveFileDialog.FileName;
+        }
+    }
+
     private void LoadSavedQueriesFromFile()
     {
         try
@@ -372,7 +386,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         OpenFileDialog dialog = new() {
             FileName = "CustomQueries.dat", 
-            Filter = "All files(*.*) | *.*"
+            Filter = "Json files (*.json)|*.json|Text Files (*.txt)|*.txt"
         };
 
 

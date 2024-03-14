@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace ActiveDirectoryQuerier.Queries;
 
-// TODO: Remove property descriptions if name is descriptive enough, or provide a detailed description if it is not.
 public class Query
 {
     /// <summary>
@@ -15,19 +14,16 @@ public class Query
     /// <summary>
     /// Used for serializing the Command Name
     /// </summary>
-    // ReSharper disable once InconsistentNaming
     public string? PSCommandName { get; set; }
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
-    // ReSharper disable once InconsistentNaming
     public string[]? PSCommandParameters { get; set; }
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
-    // ReSharper disable once InconsistentNaming
     public string[]? PSCommandParameterValues { get; set; }
 
     /// <summary>
