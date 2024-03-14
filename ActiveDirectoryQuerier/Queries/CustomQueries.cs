@@ -34,7 +34,7 @@ public class CustomQueries
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
             File.WriteAllText(CustomQueryFileLocation == "" ? "CustomQueries.json" : CustomQueryFileLocation,
-                serializedJsonQueries);
+                              serializedJsonQueries);
         }
         catch (Exception ex)
         {
@@ -75,7 +75,6 @@ public class CustomQueries
             if (CustomQueryFileLocation == "")
             {
                 File.WriteAllText("CustomQueries.json", serializedJsonQueries);
-
             }
             else
             {

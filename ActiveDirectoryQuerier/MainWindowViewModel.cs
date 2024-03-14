@@ -109,12 +109,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     public Command? SelectedCommandFromComboBoxInActiveDirectoryInfo
     {
         get => _selectedCommandFromComboBoxInActiveDirectoryInfo;
-        set
-        {
+        set {
             if (_selectedCommandFromComboBoxInActiveDirectoryInfo != value)
             {
                 _selectedCommandFromComboBoxInActiveDirectoryInfo = value;
@@ -122,13 +121,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
-    public List<string> AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; } = new()
-    {
-        "Get user on domain",
-        "Get computers on domain",
-        "Get IP of each system on domain"
-    };
+
+    public List<string> AvailableOptionsFromComboBoxInActiveDirectoryInfo {
+        get;
+    } = new() { "Get user on domain", "Get computers on domain", "Get IP of each system on domain" };
 
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
@@ -165,9 +161,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay {
-        get;
-    } // TODO: Impliment functionality.....
+    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } // TODO: Impliment functionality.....
 
     /* TODO: for Pieter
      *
@@ -177,10 +171,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
      *
      * Create a property to act as the relay to the execution button.
      */
-    
-    
-    //NEW CODE
-    // [ Constructor ] ------------------------------------------------------------- //
+
+    // NEW CODE
+    //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
     {
@@ -337,10 +330,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         MessageBoxResult result = MessageBox.Show("Are you sure you want to delete the query?",
-                                          "Warning",
-                                          MessageBoxButton.YesNo,
-                                          MessageBoxImage.Warning,
-                                          MessageBoxResult.No);
+                                                  "Warning",
+                                                  MessageBoxButton.YesNo,
+                                                  MessageBoxImage.Warning,
+                                                  MessageBoxResult.No);
 
         if (result == MessageBoxResult.Yes)
         {
@@ -385,11 +378,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void ImportQueryFile(object _)
     {
-        OpenFileDialog dialog = new() {
-            FileName = "CustomQueries.dat", 
-            Filter = "Json files (*.json)|*.json|Text Files (*.txt)|*.txt"
-        };
-
+        OpenFileDialog dialog =
+            new() { FileName = "CustomQueries.dat", Filter = "Json files (*.json)|*.json|Text Files (*.txt)|*.txt" };
 
         // Display
         bool? result = dialog.ShowDialog();

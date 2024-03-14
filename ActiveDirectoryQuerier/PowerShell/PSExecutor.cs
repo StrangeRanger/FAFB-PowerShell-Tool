@@ -20,7 +20,7 @@ public class PSExecutor
         _powerShell.Invoke();
         _powerShell.Commands.Clear();
     }
-    
+
     private void AssembleFullCommand(Command psCommand)
     {
         ArgumentNullException.ThrowIfNull(psCommand);

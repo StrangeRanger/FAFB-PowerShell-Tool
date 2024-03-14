@@ -9,7 +9,9 @@ public class PSExecutorTests
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    public void Execute_WhenGivenValidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
+    public void Execute_WhenGivenValidCommand_ReturnsExpectedOutput(string command,
+                                                                    string parameter,
+                                                                    string parameterValue)
     {
         // Arrange
         Command psCommand = new(command);
@@ -46,7 +48,9 @@ public class PSExecutorTests
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
-    public async Task ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
+    public async Task ExecuteAsync_WhenGivenValidCommand_ReturnsExpectedOutput(string command,
+                                                                               string parameter,
+                                                                               string parameterValue)
     {
         // Arrange
         Command psCommand = new(command);
@@ -65,7 +69,9 @@ public class PSExecutorTests
     [Theory]
     [InlineData("Get-ADUser", "InvalidParameter", "*")]
     [InlineData("InvalidCommand", "Filter", "*")]
-    public void Execute_WhenGivenInvalidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
+    public void Execute_WhenGivenInvalidCommand_ReturnsExpectedOutput(string command,
+                                                                      string parameter,
+                                                                      string parameterValue)
     {
         // Arrange
         Command psCommand = new(command);
@@ -84,7 +90,9 @@ public class PSExecutorTests
     [Theory]
     [InlineData("Get-ADUser", "InvalidParameter", "*")]
     [InlineData("InvalidCommand", "Filter", "*")]
-    public async Task ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string command, string parameter, string parameterValue)
+    public async Task ExecuteAsync_WhenGivenInvalidCommand_ReturnsExpectedOutput(string command,
+                                                                                 string parameter,
+                                                                                 string parameterValue)
     {
         // Arrange
         Command psCommand = new(command);
