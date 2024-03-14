@@ -33,14 +33,8 @@ public class CustomQueries
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _options);
-            if(CustomQueryFileLocation == "")
-            {
-                File.WriteAllText("CustomQueries.json", serializedJsonQueries);
-
-            } else
-            {
-                File.WriteAllText(CustomQueryFileLocation, serializedJsonQueries);
-            }        
+            File.WriteAllText(CustomQueryFileLocation == "" ? "CustomQueries.json" : CustomQueryFileLocation,
+                serializedJsonQueries);
         }
         catch (Exception ex)
         {
