@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ActiveDirectoryQuerier;
+namespace ActiveDirectoryQuerier.ViewModels;
 
 /// <summary>
 /// ViewModel for a TextBox that contains the value of a parameter slot.

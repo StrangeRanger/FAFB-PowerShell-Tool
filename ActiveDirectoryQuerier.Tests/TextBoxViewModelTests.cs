@@ -1,3 +1,5 @@
+using ActiveDirectoryQuerier.ViewModels;
+
 namespace ActiveDirectoryQuerier.Tests;
 
 public class TextBoxViewModelTests

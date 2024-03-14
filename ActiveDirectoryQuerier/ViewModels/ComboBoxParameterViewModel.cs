@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace ActiveDirectoryQuerier;
+namespace ActiveDirectoryQuerier.ViewModels;
 
 /// <summary>
 /// ViewModel for a ComboBox that displays possible parameters for a PowerShell command.
