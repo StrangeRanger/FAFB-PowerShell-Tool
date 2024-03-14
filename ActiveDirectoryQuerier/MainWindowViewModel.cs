@@ -369,7 +369,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _customQuery.LoadData();
 
             // Loop through the queries and create a button for each one.
-            foreach (var newButton in _customQuery.Queries.Select(CreateCustomButton))
+            foreach (var newButton in _customQuery.Queries.Select(CreateQueryButtonInStackPanel))
             {
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
@@ -628,8 +628,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             string[] commandParameters;
             string[] commandParameterValues;
 
-            if (SelectedCommandFromComboBoxInQueryBuilder is not null &&
-                SelectedCommandFromComboBoxInQueryBuilder.Parameters is not null)
+            if (SelectedCommandFromComboBoxInQueryBuilder?.Parameters != null)
             {
                 commandParameters = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
                 commandParameterValues = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
@@ -705,7 +704,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
                 _customQuery.SerializeCommand(SelectedCommandFromComboBoxInQueryBuilder, QueryName, QueryDescription);
 
-                Button newButton = CreateCustomButton();
+                Button newButton = CreateQueryButtonInStackPanel();
 
                 QueryButtonStackPanel.Add(newButton);
             }
@@ -744,13 +743,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// This method is for creating buttons, right now it creates it off of the current/selectedcommand parameters but
-    /// could be changed to also do it from the query list.
-    /// </summary>
-    /// <returns>This method returns a button that has been customized for the custom query list</returns>
-    /// TODO: Change method name?
-    private Button CreateCustomButton(Query? query = null)
+    private Button CreateQueryButtonInStackPanel(Query? query = null)
     {
         Button newButton = new();
 
