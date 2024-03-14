@@ -14,8 +14,7 @@ namespace ActiveDirectoryQuerier.Queries;
 public class CustomQueries
 {
     public List<Query> Queries { get; private set; } = new();
-
-    public string CustomQueryFileLocation = "";
+    public string CustomQueryFileLocation { get; set; } = string.Empty;
 
     /// <summary>
     /// This a variable for feeding options to the Json serializer
