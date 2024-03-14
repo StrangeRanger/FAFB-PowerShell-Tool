@@ -105,7 +105,7 @@ public class CustomQueries
             string json;
             if (CustomQueryFileLocation == "")
             {
-                if (File.Exists("CustomeQueries.json"))
+                if (File.Exists("CustomQueries.json"))
                 {
                     json = File.ReadAllText("CustomQueries.json");
                 }
