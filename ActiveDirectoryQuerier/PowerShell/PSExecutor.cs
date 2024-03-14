@@ -20,9 +20,8 @@ public class PSExecutor
         _powerShell.Invoke();
         _powerShell.Commands.Clear();
     }
-
-    // TODO: Possibly rename method.
-    private void PrepareCommand(Command psCommand)
+    
+    private void AssembleFullCommand(Command psCommand)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
 
@@ -38,7 +37,8 @@ public class PSExecutor
     {
         try
         {
-            PrepareCommand(psCommand);
+            _powerShell.Commands.Clear();
+            AssembleFullCommand(psCommand);
 
             Collection<PSObject> results = _powerShell.Invoke();
 
@@ -55,7 +55,7 @@ public class PSExecutor
         try
         {
             _powerShell.Commands.Clear();
-            PrepareCommand(command);
+            AssembleFullCommand(command);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
 

@@ -9,7 +9,12 @@ namespace ActiveDirectoryQuerier.PowerShell;
 public class ADCommandParameters
 {
     private readonly ObservableCollection<string> _availableParameters = new();
-
+    
+    /// <summary></summary>
+    /// <important>
+    /// This property should not be accessed before LoadAvailableParametersAsync or LoadAvailableParameters has been
+    /// called. If it is accessed before either method has been called, no parameters will be available.
+    /// </important>
     public ObservableCollection<string> AvailableParameters
     {
         get {
@@ -37,7 +42,7 @@ public class ADCommandParameters
     private async Task LoadAvailableParametersCore(Command? psCommand, bool isAsync)
     {
         // psCommand can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
-        // More specifically, if the entered command doesn't exist in the ADCommands in
+        // More specifically, if the entered command doesn't exist in the ADCommands property defined in
         // MainWindowViewModel.cs, psCommand will be null, causing an exception to be thrown, crashing the
         // program.
         if (psCommand is null)

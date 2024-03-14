@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="ActiveDirectory\" />
 	  <Folder Include="ViewModels\" />
 	</ItemGroup>
 
