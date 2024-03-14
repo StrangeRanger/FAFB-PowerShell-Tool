@@ -70,13 +70,29 @@
                     <TabItem Header="Query Information">
                         <Grid Background="#FFE5E5E5">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="163*" />
-                                <ColumnDefinition Width="856*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition MinHeight="130" MaxHeight="60" Height="*"/>
+                                <RowDefinition MinHeight="130" MaxHeight="60" Height="*" />
+                            </Grid.RowDefinitions>
                             <!-- Query Name TextBox. -->
-                            <TextBox Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding QueryName}" Margin="10,29,10,0"
-                                     TextWrapping="Wrap" VerticalAlignment="Top" Height="50" />
-                            <RichTextBox Grid.Column="0" Margin="10,108,10,200" Grid.ColumnSpan="2">
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="20,10" FontWeight="Bold">Query Name</TextBlock>
+                            <TextBox  Grid.Column="0" 
+                                      Grid.ColumnSpan="2" 
+                                      Text="{Binding QueryName}" 
+                                      TextWrapping="Wrap" 
+                                      VerticalAlignment="Center" 
+                                      Height="50"
+                                      Margin="20,0,20,0"/>
+                            <!-- Query Description RichTextBox -->
+                            <TextBlock FontWeight="Bold" HorizontalAlignment="Left" Margin="20,3" Grid.Row="1">Query Description</TextBlock>
+                            <RichTextBox Grid.Row="1" 
+                                         Grid.Column="0"  
+                                         Grid.ColumnSpan="2" 
+                                         HorizontalAlignment="Center"
+                                         Margin="20,28,20,10" >
                                 <FlowDocument>
                                     <Paragraph>
                                         <Run Text="{Binding QueryDescription}" />
