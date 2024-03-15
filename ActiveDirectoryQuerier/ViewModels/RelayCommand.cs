@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace ActiveDirectoryQuerier;
+namespace ActiveDirectoryQuerier.ViewModels;
 
 /// <summary>
 /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates.
@@ -8,7 +8,6 @@ namespace ActiveDirectoryQuerier;
 /// <note>
 /// This is a very basic setup of the RelayCommand class. I imagine that this class can be expanded and improved upon.
 /// </note>
-/// TODO: Place class into ViewModel folder.
 public class RelayCommand : ICommand
 {
     private readonly Action<object> _execute;
