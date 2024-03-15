@@ -1,4 +1,6 @@
-﻿namespace ActiveDirectoryQuerier.Tests;
+﻿using ActiveDirectoryQuerier.ViewModels;
+
+namespace ActiveDirectoryQuerier.Tests;
 
 public class RelayCommandTests
 {

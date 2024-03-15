@@ -1,20 +1,18 @@
 ﻿using System.ComponentModel;
 
-namespace ActiveDirectoryQuerier;
+namespace ActiveDirectoryQuerier.ViewModels;
 
 /// <summary>
-/// ViewModel for a ComboBox that displays possible parameters for a PowerShell command.
-/// It is used when adding a new parameter slot to a command in the UI.
+/// ViewModel for a TextBox that contains the value of a parameter slot.
+/// It is used to bind the TextBox to the ViewModel.
 /// </summary>
+/// TODO: Place class into ViewModel folder.
 public sealed class TextBoxViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    private string _selectedParameterValue = string.Empty;
+    private string? _selectedParameterValue;
 
-    /// <summary>
-    /// Gets or sets the selected parameter value for the unique ComboBox.
-    /// </summary>
-    public string SelectedParameterValue
+    public string? SelectedParameterValue
     {
         get => _selectedParameterValue;
         set {
@@ -26,10 +24,6 @@ public sealed class TextBoxViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Invokes the PropertyChanged event for the specified property name.
-    /// </summary>
-    /// <param name="propertyName">Name of the property that has changed.</param>
     private void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
