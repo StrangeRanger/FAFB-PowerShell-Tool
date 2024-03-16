@@ -123,7 +123,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public ActiveDirectoryInfo AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; }  = new();
+    public ActiveDirectoryInfo AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; } = new();
 
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
@@ -150,7 +150,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand SaveQueryRelay { get; }
     public ICommand ClearQueryBuilderRelay { get; }
     public ICommand ExecuteQueryFromQueryBuilderRelay { get; }
-    public ICommand ExecuteQueryFromActiveDirectoryInfoRelay { get; } // TODO: Pieter use this for execution button
+    public ICommand ExecuteQueryAsyncFromActiveDirectoryInfoRelay { get; }
     public ICommand AddCommandComboBoxRelay { get; }
     public ICommand AddCommandParameterComboBoxRelay { get; }
     public ICommand RemoveCommandParameterComboBoxRelay { get; }
@@ -191,10 +191,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OutputToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
         ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutputToFile);
-        // TODO: Figure out how resolve the warning about the async method not being awaited.
         ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
-            _ => ExecuteQuery(_consoleOutputInQueryBuilder));
-        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(ExecuteFromComboBoxInActiveDirectoryInfo);
+            _ => ExecuteQueryAsync(_consoleOutputInQueryBuilder));
+        ExecuteQueryAsyncFromActiveDirectoryInfoRelay =
+            new RelayCommand(ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
@@ -210,10 +210,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
 
-        /* TODO: For Pieter
-         * Connect the relay property to for the execute button to you method that performs the execution.
-         */
-
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         InitializeActiveDirectoryCommandsAsync();
         LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
@@ -221,23 +217,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    private async void ExecuteFromComboBoxInActiveDirectoryInfo(object _)
+    private async void ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo(object _)
     {
         if (SelectedCommandFromComboBoxInActiveDirectoryInfo is null)
         {
             Trace.WriteLine("No command selected.");
-            MessageBox.Show("To execute a command, you must first select a command.", // TODO: reword...
+            MessageBox.Show("You must first select an option to execute.",
                             "Warning",
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning);
             return;
         }
-        
+
         string selectedOption = SelectedCommandFromComboBoxInActiveDirectoryInfo;
-        if (selectedOption != null && _activeDirectoryInfo.AvailableOptions.TryGetValue(selectedOption, out var method))
+        if (_activeDirectoryInfo.AvailableOptions.TryGetValue(selectedOption, out var method))
         {
             PSOutput result = await method.Invoke();
-            
+
             if (result.HadErrors)
             {
                 ConsoleOutputInActiveDirectoryInfo.Append(result.StdErr);
@@ -247,9 +243,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 ConsoleOutputInActiveDirectoryInfo.Append(result.StdOut);
             }
         }
+        // This is more of an internal error catch, as even through this command shouldn't fail, it's better safe than
+        // sorry.
         else
         {
-            // handle the case when no option is selected or the selected option is not found in the dictionary
+            string errorMessage =
+                "Internal Error: The selected option was not found in the dictionary: " + $"{selectedOption}";
+            MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            throw new KeyNotFoundException("The selected option was not found in the dictionary.");
         }
     }
 
@@ -411,21 +412,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    // TODO: Possibly change Task to void?
-    private async Task ExecuteQuery(AppConsole appConsole, Command? command = null)
+// It's okay to suppress this warning because this method is called within the constructor. There is more than enough
+// time for the method to complete before the user interacts with the GUI.
+#pragma warning disable S3168
+    private async void ExecuteQueryAsync(AppConsole appConsole, Command? command = null)
     {
         await ExecuteQueryCoreAsync(appConsole, command);
     }
 
-    // TODO: Possibly change Task to void?
-    private async Task InitializeActiveDirectoryCommandsAsync()
+    private async void InitializeActiveDirectoryCommandsAsync()
     {
         ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommands();
         ADCommands = new ObservableCollection<Command>(list);
         OnPropertyChanged(nameof(ADCommands));
     }
 
-    private async Task LoadCommandParametersAsync(Command? selectedCommand)
+    private async void LoadCommandParametersAsync(Command? selectedCommand)
     {
         ADCommandParameters adCommandParameters = new();
         await adCommandParameters.LoadAvailableParametersAsync(selectedCommand);
@@ -439,6 +441,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
         }
     }
+#pragma warning restore S3168
 
     // TODO: Hunter: Re-review this method and make any necessary changes.
     private async Task ExecuteQueryCoreAsync(AppConsole appConsole, Command? command = null)
