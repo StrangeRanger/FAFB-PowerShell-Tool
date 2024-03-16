@@ -16,16 +16,15 @@ public class ActiveDirectoryInfo
         AvailableOptions.Add("Get IPv4 of each system on domain", GetADIPv4Addresses);
         AvailableOptions.Add("Get IPv6 of each system on domain", GetADIPv6Addresses);
     }
-        
+
     // ReSharper disable once InconsistentNaming
     private async Task<PSOutput> GetADUsers()
     {
-        
         Command psCommand = new("Get-ADUser");
         psCommand.Parameters.Add("Filter", "*");
         return await _psExecutor.ExecuteAsync(psCommand);
     }
-    
+
     // ReSharper disable once InconsistentNaming
     private async Task<PSOutput> GetADComputers()
     {
@@ -33,7 +32,7 @@ public class ActiveDirectoryInfo
         psCommand.Parameters.Add("Filter", "*");
         return await _psExecutor.ExecuteAsync(psCommand);
     }
-    
+
     // ReSharper disable once InconsistentNaming
     private async Task<PSOutput> GetADIPv4Addresses()
     {
@@ -42,7 +41,7 @@ public class ActiveDirectoryInfo
         psCommand.Parameters.Add("Properties", "IPv4Address");
         return await _psExecutor.ExecuteAsync(psCommand);
     }
-    
+
     // ReSharper disable once InconsistentNaming
     private async Task<PSOutput> GetADIPv6Addresses()
     {
