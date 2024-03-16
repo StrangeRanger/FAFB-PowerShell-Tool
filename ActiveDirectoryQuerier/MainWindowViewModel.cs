@@ -30,7 +30,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _consoleOutputInQueryBuilder;
     private AppConsole _consoleOutputInActiveDirectoryInfo;
     private Command? _selectedCommandFromComboBoxInQueryBuilder;
-    private Command? _selectedCommandFromComboBoxInActiveDirectoryInfo;
+    private string? _selectedCommandFromComboBoxInActiveDirectoryInfo;
     private ObservableCollection<Button>? _buttons; // TODO: Rename to be more descriptive.
 
     // [[ Other fields ]] ----------------------------------------------------------- //
@@ -39,6 +39,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly CustomQueries _customQuery;
     private readonly PSExecutor _psExecutor;
     private Query? _isEditing;
+    private readonly ActiveDirectoryInfo _activeDirectoryInfo = new();
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
@@ -110,7 +111,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public Command? SelectedCommandFromComboBoxInActiveDirectoryInfo
+    public string? SelectedCommandFromComboBoxInActiveDirectoryInfo
     {
         get => _selectedCommandFromComboBoxInActiveDirectoryInfo;
         set {
@@ -122,9 +123,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public List<string> AvailableOptionsFromComboBoxInActiveDirectoryInfo {
-        get;
-    } = new() { "Get user on domain", "Get computers on domain", "Get IP of each system on domain" };
+    public ActiveDirectoryInfo AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; }  = new();
 
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
@@ -195,9 +194,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Figure out how resolve the warning about the async method not being awaited.
         ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
             _ => ExecuteQuery(_consoleOutputInQueryBuilder));
-        // TODO: Figure out how resolve the warning about the async method not being awaited.
-        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(
-            _ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
+        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(ExecuteFromComboBoxInActiveDirectoryInfo);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
@@ -224,18 +221,37 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    /* TODO: Info for Pieter to get started
-     * Create a class (outside of this one) that will contain three methods, all of each will perform one specific
-     * action, such as getting the users on the domain, getting computers on the domain, and getting the IP of each
-     * system on the domain.
-     *      - The methods in this class should use the powershell executor to execute the specific command.
-     *      - Make method async, and utilize the async execute methods in the powershell executor.
-     *
-     *      public async Task<the return type> MethodName() { } // don't forget to use await when dealing with async
-     *                                                             methods.
-     *
-     * In this class, create a method or two, that will be used to execute the specific selected action.
-     */
+    private async void ExecuteFromComboBoxInActiveDirectoryInfo(object _)
+    {
+        if (SelectedCommandFromComboBoxInActiveDirectoryInfo is null)
+        {
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("To execute a command, you must first select a command.", // TODO: reword...
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
+        }
+        
+        string selectedOption = SelectedCommandFromComboBoxInActiveDirectoryInfo;
+        if (selectedOption != null && _activeDirectoryInfo.AvailableOptions.TryGetValue(selectedOption, out var method))
+        {
+            PSOutput result = await method.Invoke();
+            
+            if (result.HadErrors)
+            {
+                ConsoleOutputInActiveDirectoryInfo.Append(result.StdErr);
+            }
+            else
+            {
+                ConsoleOutputInActiveDirectoryInfo.Append(result.StdOut);
+            }
+        }
+        else
+        {
+            // handle the case when no option is selected or the selected option is not found in the dictionary
+        }
+    }
 
     private void ClearConsoleOutput(AppConsole appConsole)
     {
