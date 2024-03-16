@@ -11,6 +11,7 @@ using ActiveDirectoryQuerier.ActiveDirectory;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.Queries;
 using ActiveDirectoryQuerier.ViewModels;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Win32;
 
 namespace ActiveDirectoryQuerier;
@@ -303,7 +304,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private async void ExecuteQueryFromQueryStackPanel(object queryButton)
     {
-        if (queryButton is not Button currentButton)
+        var currentButton = queryButton as Button;
+        
+        if (currentButton is null)
         {
             Trace.WriteLine("No button selected.");
             MessageBox.Show("To execute a query, you must first select a query.",
@@ -312,6 +315,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Warning);
             return;
         }
+        
 
         var buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
@@ -491,7 +495,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private async void OutputExecutionResultsToTextFileAsync(object _)
     {
-        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+
+        if (_.GetType() == typeof(Button))
+        {
+            var currentButton = _ as Button;
+            Query buttonQuery;
+
+            buttonQuery = (Query)currentButton!.Tag;
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+
+        }
+        else
+        {
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+        }
 
         // Filepath
         // Write the text to a file & prompt user for the location
@@ -519,7 +536,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void OutputExecutionResultsToCsvFileAsync(object _)
     {
-        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+
+        if (_.GetType() == typeof(Button)) 
+        {
+            var currentButton = _ as Button;
+            Query buttonQuery;
+
+            buttonQuery = (Query)currentButton!.Tag;
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+
+        }
+        else
+        {
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+        }
 
         var csv = new StringBuilder();
         string[] output = ConsoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
@@ -570,10 +600,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// This method is for getting the currently selected command at anytime
     /// </summary>
-    /// <note>
-    /// TODO: !Still in the works!
-    /// TODO: Does this method do the same thing an another method?
-    /// </note>
     private void UpdateSelectedCommand()
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null)
@@ -642,7 +668,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Possibly provide more comprehensive error handling.
         catch (Exception ex)
         {
-            Trace.WriteLine(ex);
+            MessageBox.Show(ex.Message);
         }
     }
 
@@ -770,9 +796,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
-        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
-        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay };
-        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryBuilderRelay };
+        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay, CommandParameter = newButton };
+        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay, CommandParameter = newButton };
+        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);
