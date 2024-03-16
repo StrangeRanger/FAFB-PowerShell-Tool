@@ -106,7 +106,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // No need to load parameters if the command is null.
             if (value is not null)
             {
-                // TODO: Figure out how to resolve the warning about the async method not being awaited!!!
+                // TODO: Figure out how to resolve the warning about the async method not being awaited...
                 LoadCommandParametersAsync(value);
             }
         }
@@ -161,18 +161,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } // TODO: Impliment functionality.....
-
-    /* TODO: for Pieter
-     *
-     * Create a property that contains the ComboBox dropdown options/text.
-     *
-     * Create a property that will contain the selected item.
-     *
-     * Create a property to act as the relay to the execution button.
-     */
-
-    // NEW CODE
+    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } 
+    
     //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
@@ -210,8 +200,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(
             _ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
-
-        // TODO: Figure out how resolve the warning about the async method not being awaited.
+        
         InitializeActiveDirectoryCommandsAsync();
         LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
     }
@@ -430,8 +419,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ADCommands = new ObservableCollection<Command>(list);
         OnPropertyChanged(nameof(ADCommands));
     }
+#pragma warning restore S3168
 
-    private async void LoadCommandParametersAsync(Command? selectedCommand)
+    private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
         ADCommandParameters adCommandParameters = new();
         await adCommandParameters.LoadAvailableParametersAsync(selectedCommand);
@@ -445,7 +435,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
         }
     }
-#pragma warning restore S3168
 
     // TODO: Hunter: Re-review this method and make any necessary changes.
     private async Task ExecuteQueryCoreAsync(AppConsole appConsole, Command? command = null)
