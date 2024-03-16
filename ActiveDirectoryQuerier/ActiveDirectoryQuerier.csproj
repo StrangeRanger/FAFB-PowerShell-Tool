@@ -9,9 +9,9 @@
 
 		<!-- Project Info. -->
 		<Title>Active Directory Querier</Title>
-		<Version>0.5.0</Version>
+		<Version>0.7.0</Version>
 		<Authors>Hunter T., Pieter, Joseph</Authors>
-		<RepositoryUrl>https://github.com/StrangeRanger/FAFB-PowerShell-Tool</RepositoryUrl>
+		<RepositoryUrl>https://github.com/StrangeRanger/Active-Directory-Querier</RepositoryUrl>
 
 		<!-- Project Compile Time Settings. -->
 		<PublishSingleFile>false</PublishSingleFile>
@@ -22,7 +22,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.18" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.11" />
 	</ItemGroup>
 
 </Project>
