@@ -11,6 +11,7 @@ using ActiveDirectoryQuerier.ActiveDirectory;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.Queries;
 using ActiveDirectoryQuerier.ViewModels;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Win32;
 
 namespace ActiveDirectoryQuerier;
@@ -30,7 +31,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private AppConsole _consoleOutputInQueryBuilder;
     private AppConsole _consoleOutputInActiveDirectoryInfo;
     private Command? _selectedCommandFromComboBoxInQueryBuilder;
-    private Command? _selectedCommandFromComboBoxInActiveDirectoryInfo;
+    private string? _selectedCommandFromComboBoxInActiveDirectoryInfo;
     private ObservableCollection<Button>? _buttons; // TODO: Rename to be more descriptive.
 
     // [[ Other fields ]] ----------------------------------------------------------- //
@@ -39,6 +40,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly CustomQueries _customQuery;
     private readonly PSExecutor _psExecutor;
     private Query? _isEditing;
+    private readonly ActiveDirectoryInfo _activeDirectoryInfo = new();
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
@@ -104,13 +106,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // No need to load parameters if the command is null.
             if (value is not null)
             {
-                // TODO: Figure out how to resolve the warning about the async method not being awaited!!!
+                // TODO: Figure out how to resolve the warning about the async method not being awaited...
                 LoadCommandParametersAsync(value);
             }
         }
     }
 
-    public Command? SelectedCommandFromComboBoxInActiveDirectoryInfo
+    public string? SelectedCommandFromComboBoxInActiveDirectoryInfo
     {
         get => _selectedCommandFromComboBoxInActiveDirectoryInfo;
         set {
@@ -122,9 +124,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public List<string> AvailableOptionsFromComboBoxInActiveDirectoryInfo {
-        get;
-    } = new() { "Get user on domain", "Get computers on domain", "Get IP of each system on domain" };
+    public ActiveDirectoryInfo AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; } = new();
 
     public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
@@ -151,7 +151,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand SaveQueryRelay { get; }
     public ICommand ClearQueryBuilderRelay { get; }
     public ICommand ExecuteQueryFromQueryBuilderRelay { get; }
-    public ICommand ExecuteQueryFromActiveDirectoryInfoRelay { get; } // TODO: Pieter use this for execution button
+    public ICommand ExecuteQueryAsyncFromActiveDirectoryInfoRelay { get; }
     public ICommand AddCommandComboBoxRelay { get; }
     public ICommand AddCommandParameterComboBoxRelay { get; }
     public ICommand RemoveCommandParameterComboBoxRelay { get; }
@@ -161,18 +161,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } // TODO: Impliment functionality.....
-
-    /* TODO: for Pieter
-     *
-     * Create a property that contains the ComboBox dropdown options/text.
-     *
-     * Create a property that will contain the selected item.
-     *
-     * Create a property to act as the relay to the execution button.
-     */
-
-    // NEW CODE
+    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } 
+    
     //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
@@ -192,12 +182,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OutputToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
         OutputToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
         ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutputToFile);
-        // TODO: Figure out how resolve the warning about the async method not being awaited.
         ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
-            _ => ExecuteQuery(_consoleOutputInQueryBuilder));
-        // TODO: Figure out how resolve the warning about the async method not being awaited.
-        ExecuteQueryFromActiveDirectoryInfoRelay = new RelayCommand(
-            _ => ExecuteQuery(_consoleOutputInActiveDirectoryInfo));
+            _ => ExecuteQueryAsync(_consoleOutputInQueryBuilder));
+        ExecuteQueryAsyncFromActiveDirectoryInfoRelay =
+            new RelayCommand(ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
@@ -212,30 +200,49 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(
             _ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
-
-        /* TODO: For Pieter
-         * Connect the relay property to for the execute button to you method that performs the execution.
-         */
-
-        // TODO: Figure out how resolve the warning about the async method not being awaited.
+        
         InitializeActiveDirectoryCommandsAsync();
         LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    /* TODO: Info for Pieter to get started
-     * Create a class (outside of this one) that will contain three methods, all of each will perform one specific
-     * action, such as getting the users on the domain, getting computers on the domain, and getting the IP of each
-     * system on the domain.
-     *      - The methods in this class should use the powershell executor to execute the specific command.
-     *      - Make method async, and utilize the async execute methods in the powershell executor.
-     *
-     *      public async Task<the return type> MethodName() { } // don't forget to use await when dealing with async
-     *                                                             methods.
-     *
-     * In this class, create a method or two, that will be used to execute the specific selected action.
-     */
+    private async void ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo(object _)
+    {
+        if (SelectedCommandFromComboBoxInActiveDirectoryInfo is null)
+        {
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("You must first select an option to execute.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
+        }
+
+        string selectedOption = SelectedCommandFromComboBoxInActiveDirectoryInfo;
+        if (_activeDirectoryInfo.AvailableOptions.TryGetValue(selectedOption, out var method))
+        {
+            PSOutput result = await method.Invoke();
+
+            if (result.HadErrors)
+            {
+                ConsoleOutputInActiveDirectoryInfo.Append(result.StdErr);
+            }
+            else
+            {
+                ConsoleOutputInActiveDirectoryInfo.Append(result.StdOut);
+            }
+        }
+        // This is more of an internal error catch, as even through this command shouldn't fail, it's better safe than
+        // sorry.
+        else
+        {
+            string errorMessage =
+                "Internal Error: The selected option was not found in the dictionary: " + $"{selectedOption}";
+            MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            throw new KeyNotFoundException("The selected option was not found in the dictionary.");
+        }
+    }
 
     private void ClearConsoleOutput(AppConsole appConsole)
     {
@@ -303,7 +310,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private async void ExecuteQueryFromQueryStackPanel(object queryButton)
     {
-        if (queryButton is not Button currentButton)
+        var currentButton = queryButton as Button;
+        
+        if (currentButton is null)
         {
             Trace.WriteLine("No button selected.");
             MessageBox.Show("To execute a query, you must first select a query.",
@@ -312,6 +321,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Warning);
             return;
         }
+        
 
         var buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
@@ -395,19 +405,21 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    // TODO: Possibly change Task to void?
-    private async Task ExecuteQuery(AppConsole appConsole, Command? command = null)
+// It's okay to suppress this warning because this method is called within the constructor. There is more than enough
+// time for the method to complete before the user interacts with the GUI.
+#pragma warning disable S3168
+    private async void ExecuteQueryAsync(AppConsole appConsole, Command? command = null)
     {
         await ExecuteQueryCoreAsync(appConsole, command);
     }
 
-    // TODO: Possibly change Task to void?
-    private async Task InitializeActiveDirectoryCommandsAsync()
+    private async void InitializeActiveDirectoryCommandsAsync()
     {
         ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommands();
         ADCommands = new ObservableCollection<Command>(list);
         OnPropertyChanged(nameof(ADCommands));
     }
+#pragma warning restore S3168
 
     private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
@@ -491,7 +503,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private async void OutputExecutionResultsToTextFileAsync(object _)
     {
-        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+
+        if (_.GetType() == typeof(Button))
+        {
+            var currentButton = _ as Button;
+            Query buttonQuery;
+
+            buttonQuery = (Query)currentButton!.Tag;
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+
+        }
+        else
+        {
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+        }
 
         // Filepath
         // Write the text to a file & prompt user for the location
@@ -519,7 +544,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void OutputExecutionResultsToCsvFileAsync(object _)
     {
-        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+
+        if (_.GetType() == typeof(Button)) 
+        {
+            var currentButton = _ as Button;
+            Query buttonQuery;
+
+            buttonQuery = (Query)currentButton!.Tag;
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+
+        }
+        else
+        {
+            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
+        }
 
         var csv = new StringBuilder();
         string[] output = ConsoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
@@ -570,10 +608,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// This method is for getting the currently selected command at anytime
     /// </summary>
-    /// <note>
-    /// TODO: !Still in the works!
-    /// TODO: Does this method do the same thing an another method?
-    /// </note>
     private void UpdateSelectedCommand()
     {
         if (SelectedCommandFromComboBoxInQueryBuilder is null)
@@ -642,7 +676,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // TODO: Possibly provide more comprehensive error handling.
         catch (Exception ex)
         {
-            Trace.WriteLine(ex);
+            MessageBox.Show(ex.Message);
         }
     }
 
@@ -770,9 +804,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
-        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay };
-        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay };
-        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryBuilderRelay };
+        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay, CommandParameter = newButton };
+        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay, CommandParameter = newButton };
+        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);

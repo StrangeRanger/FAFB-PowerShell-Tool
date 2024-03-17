@@ -23,7 +23,7 @@ public static class ADCommandsFetcher
         if (psOutput.HadErrors)
         {
             string errorMessage = "Internal Error: An error occurred while retrieving the Active Directory commands: " +
-                                  $"({string.Join(" ", psOutput.StdErr)})";
+                                  $"{string.Join(" ", psOutput.StdErr)}";
             MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             throw new InvalidPowerShellStateException(errorMessage);
         }
