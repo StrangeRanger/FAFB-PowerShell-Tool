@@ -360,7 +360,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         saveFileDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
         if (saveFileDialog.ShowDialog() == true)
         {
-            File.WriteAllText(saveFileDialog.FileName, string.Empty);
+            QueryButtonStackPanel.Clear();
+            //File.WriteAllText(saveFileDialog.FileName, string.Empty);
             _customQuery.CustomQueryFileLocation = saveFileDialog.FileName;
         }
     }
@@ -504,7 +505,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async void OutputExecutionResultsToTextFileAsync(object _)
     {
 
-        if (_.GetType() == typeof(Button))
+        if (_ is not null)
         {
             var currentButton = _ as Button;
             Query buttonQuery;
@@ -545,7 +546,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async void OutputExecutionResultsToCsvFileAsync(object _)
     {
 
-        if (_.GetType() == typeof(Button)) 
+        if (_ is not null) 
         {
             var currentButton = _ as Button;
             Query buttonQuery;
@@ -762,6 +763,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // If the user selects yes, clear the console
         if (result == MessageBoxResult.Yes)
         {
+            QueryName = "";
+            QueryDescription = "";
             SelectedCommandFromComboBoxInQueryBuilder = null;
             DynamicallyAvailableADCommandParametersComboBox.Clear();
             DynamicallyAvailableADCommandParameterValueTextBox.Clear();
