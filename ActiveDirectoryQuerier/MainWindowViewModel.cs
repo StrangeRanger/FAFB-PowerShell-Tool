@@ -37,7 +37,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // [[ Other fields ]] ----------------------------------------------------------- //
 
     private readonly Query _currentQuery;
-    private readonly CustomQueries _customQuery;
+    private readonly QueryStackPanel _queryStackPanel;
     private readonly PSExecutor _psExecutor;
     private Query? _isEditing;
     private readonly ActiveDirectoryInfo _activeDirectoryInfo = new();
@@ -172,7 +172,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _consoleOutputInQueryBuilder = new AppConsole();
         _consoleOutputInActiveDirectoryInfo = new AppConsole();
         _psExecutor = new PSExecutor();
-        _customQuery = new CustomQueries();
+        _queryStackPanel = new QueryStackPanel();
         _currentQuery = new Query();
 
         ADCommands = new ObservableCollection<Command>();
@@ -348,8 +348,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == MessageBoxResult.Yes)
         {
             QueryButtonStackPanel.Remove(currentButton);
-            _customQuery.Queries.Remove((Query)currentButton.Tag);
-            _customQuery.SaveQueriesToJson();
+            _queryStackPanel.Queries.Remove((Query)currentButton.Tag);
+            _queryStackPanel.SaveQueriesToJson();
         }
     }
 
@@ -362,7 +362,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             QueryButtonStackPanel.Clear();
             //File.WriteAllText(saveFileDialog.FileName, string.Empty);
-            _customQuery.CustomQueryFileLocation = saveFileDialog.FileName;
+            _queryStackPanel.CustomQueryFileLocation = saveFileDialog.FileName;
         }
     }
 
@@ -371,10 +371,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         try
         {
             // Load the custom queries from the file (Deserialize)
-            _customQuery.LoadData();
+            _queryStackPanel.LoadData();
 
             // Loop through the queries and create a button for each one.
-            foreach (var newButton in _customQuery.Queries.Select(CreateQueryButtonInStackPanel))
+            foreach (var newButton in _queryStackPanel.Queries.Select(CreateQueryButtonInStackPanel))
             {
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
@@ -399,7 +399,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == true)
         {
             // Open document
-            _customQuery.CustomQueryFileLocation = dialog.FileName;
+            _queryStackPanel.CustomQueryFileLocation = dialog.FileName;
 
             QueryButtonStackPanel.Clear();
             LoadSavedQueriesFromFile();
@@ -715,9 +715,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
-            Trace.WriteLine(_customQuery.Queries.IndexOf(_isEditing));
-            _customQuery.Queries[_customQuery.Queries.IndexOf(_isEditing)] = _currentQuery;
-            _customQuery.SaveQueriesToJson();
+            Trace.WriteLine(_queryStackPanel.Queries.IndexOf(_isEditing));
+            _queryStackPanel.Queries[_queryStackPanel.Queries.IndexOf(_isEditing)] = _currentQuery;
+            _queryStackPanel.SaveQueriesToJson();
             _isEditing = null;
             QueryEditingEnabled = false;
         }
@@ -728,7 +728,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 UpdateSelectedCommand();
 
-                _customQuery.SerializeCommand(SelectedCommandFromComboBoxInQueryBuilder, QueryName, QueryDescription);
+                _queryStackPanel.SerializeCommand(SelectedCommandFromComboBoxInQueryBuilder, QueryName, QueryDescription);
 
                 Button newButton = CreateQueryButtonInStackPanel();
 

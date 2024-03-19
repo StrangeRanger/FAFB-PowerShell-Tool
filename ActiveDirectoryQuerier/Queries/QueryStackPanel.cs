@@ -11,7 +11,7 @@ namespace ActiveDirectoryQuerier.Queries;
 /// This class is used to save a json file named "CustomQueries.json" inside of
 /// \ActiveDirectoryQuerier\ActiveDirectoryQuerier\bin\Debug\net6.0-windows This
 /// </summary>
-public class CustomQueries
+public class QueryStackPanel
 {
     public List<Query> Queries { get; private set; } = new();
     public string CustomQueryFileLocation { get; set; } = string.Empty;

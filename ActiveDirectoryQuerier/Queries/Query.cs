@@ -14,16 +14,19 @@ public class Query
     /// <summary>
     /// Used for serializing the Command Name
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public string? PSCommandName { get; set; }
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public string[]? PSCommandParameters { get; set; }
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public string[]? PSCommandParameterValues { get; set; }
 
     /// <summary>
@@ -35,19 +38,12 @@ public class Query
     /// Used for the Custom Queries Description
     /// </summary>
     public string? QueryDescription { get; set; }
-
-    /// <summary>
-    /// Constructor for the query class
-    /// </summary>
-    /// <param name="psCommandName">Name of the Command EX. get-adusers</param>
+    
     public Query(string psCommandName)
     {
         PSCommandName = psCommandName;
     }
-
-    /// <summary>
-    /// Empty constructor for the query class
-    /// </summary>
+    
     public Query()
     { }
 }
