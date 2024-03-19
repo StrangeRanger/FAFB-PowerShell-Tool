@@ -38,12 +38,12 @@ public class Query
     /// Used for the Custom Queries Description
     /// </summary>
     public string? QueryDescription { get; set; }
-    
+
     public Query(string psCommandName)
     {
         PSCommandName = psCommandName;
     }
-    
+
     public Query()
     { }
 }

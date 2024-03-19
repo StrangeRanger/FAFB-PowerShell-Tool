@@ -11,7 +11,6 @@ using ActiveDirectoryQuerier.ActiveDirectory;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.Queries;
 using ActiveDirectoryQuerier.ViewModels;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Win32;
 
 namespace ActiveDirectoryQuerier;
@@ -25,7 +24,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [[ Backing fields for properties ]] ------------------------------------------ //
 
-    private bool _queryEditingEnabled;
+    private bool _isQueryEditingEnabled;
     private string _queryName;
     private string _queryDescription;
     private AppConsole _consoleOutputInQueryBuilder;
@@ -39,21 +38,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly Query _currentQuery;
     private readonly QueryManager _queryManager;
     private readonly PSExecutor _psExecutor;
-    private Query? _isEditing;
+    private Query? _queryBeingEdited;
     private readonly ActiveDirectoryInfo _activeDirectoryInfo = new();
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
-
-    public bool QueryEditingEnabled
-    {
-        get => _queryEditingEnabled;
-        set {
-            _queryEditingEnabled = value;
-            OnPropertyChanged(nameof(QueryEditingEnabled));
-        }
-    }
-
+    
+    public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
+    
     public AppConsole ConsoleOutputInQueryBuilder
     {
         get => _consoleOutputInQueryBuilder;
@@ -62,8 +54,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(ConsoleOutputInQueryBuilder));
         }
     }
-
-    // TODO: Pieter: Use this for the console output in the Active Directory Info tab (link in GUI)
+    
     public AppConsole ConsoleOutputInActiveDirectoryInfo
     {
         get => _consoleOutputInActiveDirectoryInfo;
@@ -123,10 +114,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
+    
+    public bool IsQueryEditingEnabled
+    {
+        get => _isQueryEditingEnabled;
+        set {
+            _isQueryEditingEnabled = value;
+            OnPropertyChanged(nameof(IsQueryEditingEnabled));
+        }
+    }
 
     public ActiveDirectoryInfo AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; } = new();
-
-    public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
 
     // [[ Other properties ]] ------------------------------------------------------- //
 
@@ -161,8 +159,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } 
-    
+    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; }
+
     //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
@@ -185,7 +183,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
             _ => ExecuteQueryAsync(_consoleOutputInQueryBuilder));
         ExecuteQueryAsyncFromActiveDirectoryInfoRelay =
-            new RelayCommand(ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo);
+            new RelayCommand(ExecuteQueryFromComboBoxInActiveDirectoryInfoAsync);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
         AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
@@ -200,14 +198,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(
             _ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
-        
+
         InitializeActiveDirectoryCommandsAsync();
         LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    private async void ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo(object _)
+    // TODO: Rename?
+    private async void ExecuteQueryFromComboBoxInActiveDirectoryInfoAsync(object _)
     {
         if (SelectedCommandFromComboBoxInActiveDirectoryInfo is null)
         {
@@ -224,14 +223,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             PSOutput result = await method.Invoke();
 
-            if (result.HadErrors)
-            {
-                ConsoleOutputInActiveDirectoryInfo.Append(result.StdErr);
-            }
-            else
-            {
-                ConsoleOutputInActiveDirectoryInfo.Append(result.StdOut);
-            }
+            ConsoleOutputInActiveDirectoryInfo.Append(result.HadErrors ? result.StdErr : result.StdOut);
         }
         // This is more of an internal error catch, as even through this command shouldn't fail, it's better safe than
         // sorry.
@@ -271,8 +263,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         var currentQuery = (Query)((Button)queryButton).Tag;
 
-        _isEditing = currentQuery;
-        QueryEditingEnabled = true;
+        _queryBeingEdited = currentQuery;
+        IsQueryEditingEnabled = true;
         QueryName = currentQuery.QueryName;
         QueryDescription = currentQuery.QueryDescription;
 
@@ -311,7 +303,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async void ExecuteQueryFromQueryStackPanel(object queryButton)
     {
         var currentButton = queryButton as Button;
-        
+
         if (currentButton is null)
         {
             Trace.WriteLine("No button selected.");
@@ -321,7 +313,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Warning);
             return;
         }
-        
 
         var buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
@@ -361,7 +352,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (saveFileDialog.ShowDialog() == true)
         {
             QueryButtonStackPanel.Clear();
-            //File.WriteAllText(saveFileDialog.FileName, string.Empty);
+            // File.WriteAllText(saveFileDialog.FileName, string.Empty);
             _queryManager.QuerySaveLocation = saveFileDialog.FileName;
         }
     }
@@ -504,7 +495,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private async void OutputExecutionResultsToTextFileAsync(object _)
     {
-
         if (_ is not null)
         {
             var currentButton = _ as Button;
@@ -512,7 +502,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             buttonQuery = (Query)currentButton!.Tag;
             await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-
         }
         else
         {
@@ -545,15 +534,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <param name="_">Represents the object that the command is bound to</param>
     private async void OutputExecutionResultsToCsvFileAsync(object _)
     {
-
-        if (_ is not null) 
+        if (_ is not null)
         {
             var currentButton = _ as Button;
             Query buttonQuery;
 
             buttonQuery = (Query)currentButton!.Tag;
             await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-
         }
         else
         {
@@ -641,44 +628,31 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>
     /// Updates the _currentQuery object with the current query information.
     /// </summary>
-    /// <note>
-    /// TODO: It needs to be tested! Still in the works!
-    /// TODO: Fix any and all warnings about possible null values.
-    /// </note>
     private void GetCurrentQuery()
     {
         UpdateSelectedCommand();
 
-        try
+        if (SelectedCommandFromComboBoxInQueryBuilder?.Parameters == null)
         {
-            string[] commandParameters;
-            string[] commandParameterValues;
-
-            if (SelectedCommandFromComboBoxInQueryBuilder?.Parameters != null)
-            {
-                commandParameters = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
-                commandParameterValues = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
-
-                _currentQuery.QueryDescription = QueryDescription;
-                _currentQuery.QueryName = QueryName;
-                _currentQuery.PSCommandName = SelectedCommandFromComboBoxInQueryBuilder.CommandText;
-
-                for (int i = 0; i < SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count; i++)
-                {
-                    CommandParameter commandParameter = SelectedCommandFromComboBoxInQueryBuilder.Parameters[i];
-
-                    commandParameters[i] = commandParameter.Name;
-                    commandParameterValues[i] = commandParameter.Value.ToString()!;
-                }
-                _currentQuery.PSCommandParameters = commandParameters;
-                _currentQuery.PSCommandParameterValues = commandParameterValues;
-            }
+            return;
         }
-        // TODO: Possibly provide more comprehensive error handling.
-        catch (Exception ex)
+
+        var commandParameters = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
+        var commandParameterValues = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
+
+        _currentQuery.QueryDescription = QueryDescription;
+        _currentQuery.QueryName = QueryName;
+        _currentQuery.PSCommandName = SelectedCommandFromComboBoxInQueryBuilder.CommandText;
+
+        for (int i = 0; i < SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count; i++)
         {
-            MessageBox.Show(ex.Message);
+            CommandParameter commandParameter = SelectedCommandFromComboBoxInQueryBuilder.Parameters[i];
+            commandParameters[i] = commandParameter.Name;
+            commandParameterValues[i] = commandParameter.Value.ToString()!;
         }
+
+        _currentQuery.PSCommandParameters = commandParameters;
+        _currentQuery.PSCommandParameterValues = commandParameterValues;
     }
 
     private void RemoveCommandParameterComboBoxInQueryBuilder(object _)
@@ -711,15 +685,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        if (_isEditing is not null && QueryEditingEnabled)
+        // If the user is editing a query, update the query and save it.
+        if (_queryBeingEdited is not null && IsQueryEditingEnabled)
         {
-            // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
-            Trace.WriteLine(_queryManager.Queries.IndexOf(_isEditing));
-            _queryManager.Queries[_queryManager.Queries.IndexOf(_isEditing)] = _currentQuery;
+            _queryManager.Queries[_queryManager.Queries.IndexOf(_queryBeingEdited)] = _currentQuery;
             _queryManager.SaveQueryToFile();
-            _isEditing = null;
-            QueryEditingEnabled = false;
+            _queryBeingEdited = null;
+            IsQueryEditingEnabled = false;
         }
         else
         {
@@ -728,7 +701,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 UpdateSelectedCommand();
 
-                _queryManager.ConvertCommandToQueryAndSave(SelectedCommandFromComboBoxInQueryBuilder, QueryName, QueryDescription);
+                _queryManager.ConvertCommandToQueryAndSave(SelectedCommandFromComboBoxInQueryBuilder,
+                                                           QueryName,
+                                                           QueryDescription);
 
                 Button newButton = CreateQueryButtonInStackPanel();
 
@@ -775,15 +750,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         Button newButton = new();
 
-        if (query != null)
+        if (query is not null)
         {
             newButton.Height = 48;
-            newButton.Content = (string.IsNullOrEmpty(query.QueryName) ? query.PSCommandName : query.QueryName);
+            newButton.Content = string.IsNullOrEmpty(query.QueryName) ? query.PSCommandName : query.QueryName;
             newButton.Tag = query;
         }
         else
         {
-            // Check for null
             if (SelectedCommandFromComboBoxInQueryBuilder is null)
             {
                 Trace.WriteLine("No command selected.");
@@ -807,9 +781,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
-        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay, CommandParameter = newButton };
-        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay, CommandParameter = newButton };
-        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
+        MenuItem outputToCsv =
+            new() { Header = "Output to CSV", Command = OutputToCsvFileRelay, CommandParameter = newButton };
+        MenuItem outputToText =
+            new() { Header = "Output to Text", Command = OutputToTextFileRelay, CommandParameter = newButton };
+        MenuItem outputToConsole = new() { Header = "Execute to Console",
+                                           Command = ExecuteQueryFromQueryStackPanelRelay,
+                                           CommandParameter = newButton };
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);

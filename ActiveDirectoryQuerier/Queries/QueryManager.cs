@@ -16,10 +16,10 @@ public class QueryManager
         WriteIndented = true,
         ReferenceHandler = ReferenceHandler.Preserve,
     };
-    
+
     public List<Query> Queries { get; private set; } = new();
     public string QuerySaveLocation { get; set; } = string.Empty;
-    
+
     public void SaveQueryToFile()
     {
         try
@@ -39,7 +39,7 @@ public class QueryManager
         var commandParameters = new string[psCommand.Parameters.Count];
         var commandParameterValues = new string[psCommand.Parameters.Count];
         Query newQuery = new(psCommand.CommandText) { QueryName = queryName, QueryDescription = queryDescription };
-        
+
         // Loop through the parameters and add them to the new query.
         for (int i = 0; i < psCommand.Parameters.Count; i++)
         {
@@ -55,12 +55,12 @@ public class QueryManager
         // Add the new query to the list of queries.
         Queries.Add(newQuery);
         SaveQueryToFile();
-        
+
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _jsonSerializationOptions);
             File.WriteAllText(QuerySaveLocation == "" ? "CustomQueries.json" : QuerySaveLocation,
-                serializedJsonQueries);
+                              serializedJsonQueries);
         }
         // TODO: Improve exception handling.
         catch (Exception exception)
@@ -68,13 +68,13 @@ public class QueryManager
             MessageBox.Show(exception.Message);
         }
     }
-    
+
     public void LoadQueriesFromFile()
     {
         try
         {
             string fileContents;
-            
+
             // Opens file and reads it then adds the json to the Queries List
             if (QuerySaveLocation == "")
             {
@@ -91,7 +91,7 @@ public class QueryManager
             {
                 fileContents = File.ReadAllText(QuerySaveLocation);
             }
-            
+
             Queries = JsonSerializer.Deserialize<List<Query>>(fileContents, _jsonSerializationOptions)!;
 
             // Now we want to fill the command variable for each query
