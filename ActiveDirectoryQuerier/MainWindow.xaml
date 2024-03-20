@@ -124,7 +124,7 @@
                                 <!-- TODO: Pieter refer to here regarding combobox setup -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Center">Command</TextBlock>
                                 <ComboBox ItemsSource="{Binding ADCommands}"
-                                          SelectedItem="{Binding SelectedCommandFromComboBoxInQueryBuilder}"
+                                          SelectedItem="{Binding SelectedCommandInQueryBuilder}"
                                           DisplayMemberPath="CommandText"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
@@ -135,7 +135,7 @@
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Left">Parameter</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParametersComboBox}"
+                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterComboBoxes}"
                                               Grid.Column="1"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -153,7 +153,7 @@
 
                                 <!-- Parameter Values ComboBox -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left">Value</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterValueTextBox}"
+                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterValueTextBoxes}"
                                               Grid.Column="2"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -217,8 +217,8 @@
                                         Command="{Binding ExecuteQueryAsyncFromActiveDirectoryInfoRelay}"/>
                                 <ComboBox HorizontalAlignment="Left" Margin="31,44,0,0" VerticalAlignment="Top"
                                           Width="207" Height="26" 
-                                          SelectedItem="{Binding SelectedCommandFromComboBoxInActiveDirectoryInfo}"
-                                          ItemsSource="{Binding AvailableOptionsFromComboBoxInActiveDirectoryInfo.AvailableOptions.Keys }" />
+                                          SelectedItem="{Binding SelectedQueryInActiveDirectoryInfo}"
+                                          ItemsSource="{Binding AvailableQueriesInActiveDirectoryInfo.AvailableOptions.Keys }" />
                             </Grid>
                             <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInActiveDirectoryInfo.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
