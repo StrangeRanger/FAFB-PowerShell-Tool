@@ -163,22 +163,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // [[ GUI element relays ]] ----------------------------------------------------- //
     // [[[ Dynamically created elements ]]] ----------------------------------------- //
     
-    private ICommand EditSelectedQueryRelay { get; }
+    private ICommand EditQueryFromQueryStackPanelRelay { get; }
     private ICommand DeleteQueryFromQueryStackPanelRelay { get; }
     private ICommand ExecuteQueryFromQueryStackPanelRelay { get; }
 
     // [[[ Existing GUI elements ]]] ------------------------------------------------ //
 
-    public ICommand SaveQueryRelay { get; }
+    public ICommand SaveCurrentQueryRelay { get; }
     public ICommand ClearQueryBuilderRelay { get; }
-    public ICommand ExecuteQueryFromQueryBuilderRelay { get; }
-    public ICommand ExecuteQueryAsyncFromActiveDirectoryInfoRelay { get; }
-    public ICommand AddCommandComboBoxRelay { get; }
-    public ICommand AddCommandParameterComboBoxRelay { get; }
-    public ICommand RemoveCommandParameterComboBoxRelay { get; }
-    public ICommand OutputToTextFileRelay { get; }
-    public ICommand OutputToCsvFileRelay { get; }
-    public ICommand ExportConsoleOutputRelay { get; }
+    public ICommand ExecuteQueryInQueryBuilderRelay { get; }
+    public ICommand ExecuteSelectedQueryInADInfoRelay { get; }
+    public ICommand AddCommandComboBoxInQueryBuilderRelay { get; }
+    public ICommand AddParameterComboBoxInQueryBuilderRelay { get; }
+    public ICommand RemoveParameterComboBoxInQueryBuilderRelay { get; }
+    public ICommand OutputExecutionResultsToTextFileRelay { get; }
+    public ICommand OutputExecutionResultsToCsvFileRelay { get; }
+    public ICommand ExportConsoleOutputToFileRelay { get; }
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
@@ -200,20 +200,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicallyAvailableADCommandParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
 
-        OutputToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
-        OutputToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
-        ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutputToFile);
-        ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
+        OutputExecutionResultsToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
+        OutputExecutionResultsToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
+        ExportConsoleOutputToFileRelay = new RelayCommand(ExportConsoleOutputToFile);
+        ExecuteQueryInQueryBuilderRelay = new RelayCommand(
             _ => Task.Run(() => ExecuteQueryAsync(_consoleOutputInQueryBuilder)));
-        ExecuteQueryAsyncFromActiveDirectoryInfoRelay =
-            new RelayCommand(ExecuteSelectedQueryInADInfo);
+        ExecuteSelectedQueryInADInfoRelay = new RelayCommand(ExecuteSelectedQueryInADInfo);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
-        AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
-        AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
-        RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveParameterComboBoxInQueryBuilder);
-        SaveQueryRelay = new RelayCommand(SaveCurrentQuery);
-        EditSelectedQueryRelay = new RelayCommand(EditQueryFromQueryStackPanel);
+        AddParameterComboBoxInQueryBuilderRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
+        AddCommandComboBoxInQueryBuilderRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
+        RemoveParameterComboBoxInQueryBuilderRelay = new RelayCommand(RemoveParameterComboBoxInQueryBuilder);
+        SaveCurrentQueryRelay = new RelayCommand(SaveCurrentQuery);
+        EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPanel);
         DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
         ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanel);
         ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(
@@ -797,9 +796,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             new() { Header = "Execute", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
         MenuItem outputToCsv =
-            new() { Header = "Output to CSV", Command = OutputToCsvFileRelay, CommandParameter = newButton };
+            new() { Header = "Output to CSV", Command = OutputExecutionResultsToCsvFileRelay, CommandParameter = newButton };
         MenuItem outputToText =
-            new() { Header = "Output to Text", Command = OutputToTextFileRelay, CommandParameter = newButton };
+            new() { Header = "Output to Text", Command = OutputExecutionResultsToTextFileRelay, CommandParameter = newButton };
         MenuItem outputToConsole = new() { Header = "Execute to Console",
                                            Command = ExecuteQueryFromQueryStackPanelRelay,
                                            CommandParameter = newButton };
@@ -809,7 +808,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         menuItem1.Items.Add(outputToConsole);
 
         MenuItem menuItem2 =
-            new() { Header = "Edit", Command = EditSelectedQueryRelay, CommandParameter = newButton };
+            new() { Header = "Edit", Command = EditQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
         MenuItem menuItem3 =
             new() { Header = "Delete", Command = DeleteQueryFromQueryStackPanelRelay, CommandParameter = newButton };

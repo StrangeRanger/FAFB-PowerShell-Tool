@@ -173,17 +173,17 @@
                                       HorizontalAlignment="Center" MinWidth="160" Width="Auto">
                                     <MenuItem Header="Options" MinWidth="160" Height="Auto" Width="Auto">
                                         <MenuItem Header="Add New Command Slot"
-                                                  Command="{Binding AddCommandComboBoxRelay}" />
+                                                  Command="{Binding AddCommandComboBoxInQueryBuilderRelay}" />
                                         <MenuItem Header="Add New Parameter Slot"
-                                                  Command="{Binding AddCommandParameterComboBoxRelay}" />
+                                                  Command="{Binding AddParameterComboBoxInQueryBuilderRelay}" />
                                         <MenuItem Header="Remove Parameter Slot"
-                                                  Command="{Binding RemoveCommandParameterComboBoxRelay}" />
-                                        <MenuItem Header="Save Query" Command="{Binding SaveQueryRelay}" />
-                                        <MenuItem Header="Execute" Command="{Binding ExecuteQueryFromQueryBuilderRelay}" />
-                                        <MenuItem Header="Execute to CSV" Command="{Binding OutputToCsvFileRelay}" />
-                                        <MenuItem Header="Execute to Text" Command="{Binding OutputToTextFileRelay}" />
+                                                  Command="{Binding RemoveParameterComboBoxInQueryBuilderRelay}" />
+                                        <MenuItem Header="Save Query" Command="{Binding SaveCurrentQueryRelay}" />
+                                        <MenuItem Header="Execute" Command="{Binding ExecuteQueryInQueryBuilderRelay}" />
+                                        <MenuItem Header="Execute to CSV" Command="{Binding OutputExecutionResultsToCsvFileRelay}" />
+                                        <MenuItem Header="Execute to Text" Command="{Binding OutputExecutionResultsToTextFileRelay}" />
                                         <MenuItem Header="Export Console Output"
-                                                  Command="{Binding ExportConsoleOutputRelay}" />
+                                                  Command="{Binding ExportConsoleOutputToFileRelay}" />
                                         <MenuItem Header="Clear Console Output"
                                                   Command="{Binding ClearConsoleOutputInQueryBuilderRelay}" />
                                         <MenuItem Header="Clear Query" Command="{Binding ClearQueryBuilderRelay}" />
@@ -214,7 +214,7 @@
                             <Grid Margin="0,0,0,49" Grid.Row="0">
                                 <Button Content="Execute" HorizontalAlignment="Left" Margin="368,43,0,0"
                                         VerticalAlignment="Top" Height="23" Width="95" 
-                                        Command="{Binding ExecuteQueryAsyncFromActiveDirectoryInfoRelay}"/>
+                                        Command="{Binding ExecuteSelectedQueryInADInfoRelay}"/>
                                 <ComboBox HorizontalAlignment="Left" Margin="31,44,0,0" VerticalAlignment="Top"
                                           Width="207" Height="26" 
                                           SelectedItem="{Binding SelectedQueryInActiveDirectoryInfo}"
