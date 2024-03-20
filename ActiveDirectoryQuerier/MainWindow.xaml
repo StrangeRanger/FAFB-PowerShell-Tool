@@ -192,7 +192,7 @@
                                 <!-- END of Button ComboBox-->
                                 <CheckBox Grid.Row="2" Grid.Column="0" Content="Editing" HorizontalAlignment="Left"
                                           Margin="10,6,10,0"
-                                          VerticalAlignment="Top" IsChecked="{Binding QueryEditingEnabled}" Height="15"
+                                          VerticalAlignment="Top" IsChecked="{Binding IsQueryEditingEnabled}" Height="15"
                                           Width="57" />
                             </Grid>
                             <!-- ROW 0 END -->
