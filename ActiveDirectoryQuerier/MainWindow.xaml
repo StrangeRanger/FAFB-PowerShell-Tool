@@ -198,7 +198,7 @@
                             <!-- ROW 0 END -->
                             <!-- GRID ROW 1 START -->
                             <!-- TextBox as Console Output -->
-                            <TextBox Grid.Row="1" Text="{Binding ConsoleViewModelOutputInQueryBuilder.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInQueryBuilder.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
@@ -220,7 +220,7 @@
                                           SelectedItem="{Binding SelectedQueryInActiveDirectoryInfo}"
                                           ItemsSource="{Binding AvailableQueriesInActiveDirectoryInfo.AvailableOptions.Keys }" />
                             </Grid>
-                            <TextBox Grid.Row="1" Text="{Binding ConsoleViewModelOutputInActiveDirectoryInfo.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInActiveDirectoryInfo.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />

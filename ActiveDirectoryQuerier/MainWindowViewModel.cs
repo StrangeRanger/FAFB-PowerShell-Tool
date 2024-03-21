@@ -31,8 +31,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private Command? _selectedCommandInQueryBuilder;
     private ConsoleViewModel _consoleOutputInQueryBuilder;
     private ConsoleViewModel _consoleOutputInActiveDirectoryInfo;
-    private ObservableCollection<Button>? _queryButtonStackPanel; // TODO: Rename to be more descriptive.
-
+    private ObservableCollection<Button>? _queryButtonStackPanel;
+    
     // [[ Other fields ]] ----------------------------------------------------------- //
 
     private Query? _queryBeingEdited;
@@ -47,26 +47,26 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<Button> QueryButtonStackPanel => _queryButtonStackPanel ??=
         new ObservableCollection<Button>();
 
-    public ConsoleViewModel ConsoleViewModelOutputInQueryBuilder
+    public ConsoleViewModel ConsoleOutputInQueryBuilder
     {
         get => _consoleOutputInQueryBuilder;
         set {
             if (_consoleOutputInQueryBuilder != value)
             {
                 _consoleOutputInQueryBuilder = value;
-                OnPropertyChanged(nameof(ConsoleViewModelOutputInQueryBuilder));
+                OnPropertyChanged(nameof(ConsoleOutputInQueryBuilder));
             }
         }
     }
 
-    public ConsoleViewModel ConsoleViewModelOutputInActiveDirectoryInfo
+    public ConsoleViewModel ConsoleOutputInActiveDirectoryInfo
     {
         get => _consoleOutputInActiveDirectoryInfo;
         set {
             if (_consoleOutputInActiveDirectoryInfo != value)
             {
                 _consoleOutputInActiveDirectoryInfo = value;
-                OnPropertyChanged(nameof(ConsoleViewModelOutputInActiveDirectoryInfo));
+                OnPropertyChanged(nameof(ConsoleOutputInActiveDirectoryInfo));
             }
         }
     }
@@ -138,6 +138,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 _isQueryEditingEnabled = value;
                 OnPropertyChanged(nameof(IsQueryEditingEnabled));
+                OnIsQueryEditingEnabledChanged();
             }
         }
     }
@@ -308,7 +309,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (_activeDirectoryInfo.AvailableOptions.TryGetValue(SelectedQueryInActiveDirectoryInfo, out var method))
         {
             PSOutput result = await method.Invoke();
-            ConsoleViewModelOutputInActiveDirectoryInfo.Append(result.HadErrors ? result.StdErr : result.StdOut);
+            ConsoleOutputInActiveDirectoryInfo.Append(result.HadErrors ? result.StdErr : result.StdOut);
         }
         // This is an internal error to ensure that if the selected option is not found, the program will not continue.
         else
@@ -373,7 +374,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         var buttonQuery = (Query)currentButton.Tag;
-        await ExecuteQueryAsync(ConsoleViewModelOutputInQueryBuilder, buttonQuery.Command);
+        await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
 
     private void DeleteQueryFromQueryStackPanel(object queryButton)
@@ -402,6 +403,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // TODO: Continue refactoring starting here...
     private void CreateNewQueryFile(object _)
     {
         // Saves/creates a new save file for the queries
@@ -410,7 +412,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (saveFileDialog.ShowDialog() == true)
         {
             QueryButtonStackPanel.Clear();
-            // File.WriteAllText(saveFileDialog.FileName, string.Empty);
             _queryManager.QueryFileSaveLocation = saveFileDialog.FileName;
         }
     }
@@ -523,11 +524,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             Query buttonQuery;
 
             buttonQuery = (Query)currentButton!.Tag;
-            await ExecuteQueryAsync(ConsoleViewModelOutputInQueryBuilder, buttonQuery.Command);
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
         }
         else
         {
-            await ExecuteQueryAsync(ConsoleViewModelOutputInQueryBuilder);
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder);
         }
 
         // Filepath
@@ -545,7 +546,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             // Open document
             string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, ConsoleViewModelOutputInQueryBuilder.ConsoleOutput);
+            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.ConsoleOutput);
         }
     }
 
@@ -557,15 +558,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             Query buttonQuery;
 
             buttonQuery = (Query)currentButton!.Tag;
-            await ExecuteQueryAsync(ConsoleViewModelOutputInQueryBuilder, buttonQuery.Command);
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
         }
         else
         {
-            await ExecuteQueryAsync(ConsoleViewModelOutputInQueryBuilder);
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder);
         }
 
         var csv = new StringBuilder();
-        string[] output = ConsoleViewModelOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
+        string[] output = ConsoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
 
         for (int i = 0; i < output.Length - 2; i++)
         {
@@ -593,7 +594,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void ExportConsoleOutputToFile(object _)
     {
-        if (ConsoleViewModelOutputInQueryBuilder.ConsoleOutput.Length == 0)
+        if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
@@ -606,7 +607,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == true)
         {
             string filename = saveFileDialog.FileName;
-            ConsoleViewModelOutputInQueryBuilder.ExportToTextFile(filename);
+            ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
         }
     }
     
@@ -720,7 +721,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-
+    
     private void ClearQueryBuilder(object _)
     {
         if (SelectedCommandInQueryBuilder is null && DynamicallyAvailableADCommandParameterComboBoxes.Count == 0)
@@ -747,6 +748,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             SelectedCommandInQueryBuilder = null;
             DynamicallyAvailableADCommandParameterComboBoxes.Clear();
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
+        }
+    }
+    
+    private void OnIsQueryEditingEnabledChanged()
+    {
+        if (!IsQueryEditingEnabled)
+        {
+            _queryBeingEdited = null;
         }
     }
 
