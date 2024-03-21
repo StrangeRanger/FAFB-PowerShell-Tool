@@ -27,24 +27,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _isQueryEditingEnabled;
     private string _queryName;
     private string _queryDescription;
+    private string? _selectedQueryInActiveDirectoryInfo;
+    private Command? _selectedCommandInQueryBuilder;
     private ConsoleViewModel _consoleOutputInQueryBuilder;
     private ConsoleViewModel _consoleOutputInActiveDirectoryInfo;
-    private Command? _selectedCommandInQueryBuilder;
-    private string? _selectedQueryInActiveDirectoryInfo;
-    private ObservableCollection<Button>? _buttons; // TODO: Rename to be more descriptive.
+    private ObservableCollection<Button>? _queryButtonStackPanel; // TODO: Rename to be more descriptive.
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
+    private Query? _queryBeingEdited;
     private readonly Query _currentQuery;
     private readonly QueryManager _queryManager;
     private readonly PSExecutor _psExecutor;
-    private Query? _queryBeingEdited;
-    private readonly ActiveDirectoryInfo _activeDirectoryInfo = new();
+    private readonly ActiveDirectoryInfo _activeDirectoryInfo;
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
 
-    public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
+    public ObservableCollection<Button> QueryButtonStackPanel => _queryButtonStackPanel ??= new ObservableCollection<Button>();
 
     public ConsoleViewModel ConsoleViewModelOutputInQueryBuilder
     {
@@ -190,11 +190,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _queryName = string.Empty;
         _queryDescription = string.Empty;
+        _currentQuery = new Query();
+        _queryManager = new QueryManager();
+        _psExecutor = new PSExecutor();
+        _activeDirectoryInfo = new ActiveDirectoryInfo();
         _consoleOutputInQueryBuilder = new ConsoleViewModel();
         _consoleOutputInActiveDirectoryInfo = new ConsoleViewModel();
-        _psExecutor = new PSExecutor();
-        _queryManager = new QueryManager();
-        _currentQuery = new Query();
 
         ADCommands = new ObservableCollection<Command>();
         DynamicallyAvailableADCommandParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
@@ -228,7 +229,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // [ Methods ] ----------------------------------------------------------------- //
     
     // TODO: Hunter: Re-review this method and make any necessary changes.
-    private async Task ExecuteQueryAsync(ConsoleViewModel consoleOuput, Command? command = null)
+    private async Task ExecuteQueryAsync(ConsoleViewModel consoleOutput, Command? command = null)
     {
         if (SelectedCommandInQueryBuilder is null && command is null)
         {
@@ -256,21 +257,21 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             if (result.HadErrors)
             {
-                consoleOuput.Append(result.StdErr);
+                consoleOutput.Append(result.StdErr);
                 return;
             }
 
-            consoleOuput.Append(result.StdOut);
+            consoleOutput.Append(result.StdOut);
         }
         catch (Exception ex)
         {
-            consoleOuput.Append($"Error executing command: {ex.Message}" + ex.Message);
+            consoleOutput.Append($"Error executing command: {ex.Message}" + ex.Message);
         }
     }
     
-    private void ClearConsoleOutput(ConsoleViewModel consoleOuput)
+    private void ClearConsoleOutput(ConsoleViewModel consoleOutput)
     {
-        if (consoleOuput.ConsoleOutput.Length == 0)
+        if (consoleOutput.ConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is already clear.",
                 "Information",
@@ -287,7 +288,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (result == MessageBoxResult.Yes)
         {
-            consoleOuput.Clear();
+            consoleOutput.Clear();
         }
     }
 
@@ -750,7 +751,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                                                   MessageBoxImage.Warning,
                                                   MessageBoxResult.No);
 
-        // If the user selects yes, clear the consoleOuput
+        // If the user selects yes, clear the consoleOutput
         if (result == MessageBoxResult.Yes)
         {
             QueryName = "";
