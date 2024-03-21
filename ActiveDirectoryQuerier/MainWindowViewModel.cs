@@ -402,6 +402,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             QueryButtonStackPanel.Remove(currentButton);
             _queryManager.Queries.Remove((Query)currentButton.Tag);
             _queryManager.SaveQueryToFile();
+            
+            // Check if the deleted query is currently being edited
+            if (IsQueryEditingEnabled && _queryBeingEdited == (Query)currentButton.Tag)
+            {
+                IsQueryEditingEnabled = false;
+                _queryBeingEdited = null;
+            }
         }
     }
 
