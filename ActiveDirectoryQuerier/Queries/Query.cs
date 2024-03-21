@@ -6,10 +6,14 @@ namespace ActiveDirectoryQuerier.Queries;
 public class Query
 {
     /// <summary>
-    /// Command that should help with Binding the command to the query for the buttons sake
+    /// Used for the name of the custom Query
     /// </summary>
-    [JsonIgnore]
-    public Command? Command { get; set; }
+    public string QueryName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Used for the Custom Queries Description
+    /// </summary>
+    public string QueryDescription { get; set; } = string.Empty;
 
     /// <summary>
     /// Used for serializing the Command Name
@@ -28,16 +32,12 @@ public class Query
     /// </summary>
     // ReSharper disable once InconsistentNaming
     public string[]? PSCommandParameterValues { get; set; }
-
+    
     /// <summary>
-    /// Used for the name of the custom Query
+    /// Command that should help with Binding the command to the query for the buttons sake
     /// </summary>
-    public string? QueryName { get; set; }
-
-    /// <summary>
-    /// Used for the Custom Queries Description
-    /// </summary>
-    public string? QueryDescription { get; set; }
+    [JsonIgnore]
+    public Command? Command { get; set; }
 
     public Query(string psCommandName)
     {

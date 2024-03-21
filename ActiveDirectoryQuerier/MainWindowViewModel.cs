@@ -153,10 +153,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<Command> ADCommands { get; private set; }
     // ReSharper disable once InconsistentNaming
     public ObservableCollection<string>? AvailableADCommandParameters { get; private set; }
-    // TODO: Rename
     // ReSharper disable once InconsistentNaming
     public ObservableCollection<ComboBoxParameterViewModel> DynamicallyAvailableADCommandParameterComboBoxes { get; }
-    // TODO: Rename
     // ReSharper disable once InconsistentNaming
     public ObservableCollection<TextBoxViewModel> DynamicallyAvailableADCommandParameterValueTextBoxes { get; }
 
@@ -228,7 +226,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [ Methods ] ----------------------------------------------------------------- //
     
-    // TODO: Hunter: Re-review this method and make any necessary changes.
+    /// <remarks>
+    /// The use of the <c>command</c> parameter indicates that the method can be called from the Query Stack Panel.
+    /// On the other hand, the absence of the <c>command</c> parameter and use of the
+    /// <c>SelectedCommandInQueryBuilder</c> property indicates that the method can be called from the Query Builder.
+    /// </remarks>
     private async Task ExecuteQueryAsync(ConsoleViewModel consoleOutput, Command? command = null)
     {
         if (SelectedCommandInQueryBuilder is null && command is null)
@@ -346,7 +348,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterComboBoxes.Clear();
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
-
+        
+        // TODO: Fix nullability warning.
         // Fill in Parameters and values
         for (var i = 0; i < currentQuery.PSCommandParameters.Length; i++)
         {
