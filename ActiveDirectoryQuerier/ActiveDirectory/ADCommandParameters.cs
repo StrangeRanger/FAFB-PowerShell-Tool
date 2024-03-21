@@ -52,7 +52,7 @@ public class ADCommandParameters
             _availableParameters.Add("No valid command provided");
             return;
         }
-        
+
         if (_availableParameters.Count == 0)
         {
             using var powerShell = System.Management.Automation.PowerShell.Create();

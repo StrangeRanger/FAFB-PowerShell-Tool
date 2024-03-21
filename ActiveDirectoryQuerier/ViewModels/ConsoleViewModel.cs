@@ -36,7 +36,7 @@ public sealed class ConsoleViewModel : INotifyPropertyChanged
         // TODO: Add a newline character to the end of the outputText.
         ConsoleOutput += string.Join(Environment.NewLine, outputText);
     }
-    
+
     public void Append(string outputText)
     {
         // TODO: Add a newline character to the end of the outputText.

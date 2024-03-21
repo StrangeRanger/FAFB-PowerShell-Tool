@@ -9,9 +9,9 @@ namespace ActiveDirectoryQuerier.ViewModels;
 public sealed class TextBoxViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    private string? _selectedParameterValue;
+    private string _selectedParameterValue = string.Empty;
 
-    public string? SelectedParameterValue
+    public string SelectedParameterValue
     {
         get => _selectedParameterValue;
         set {

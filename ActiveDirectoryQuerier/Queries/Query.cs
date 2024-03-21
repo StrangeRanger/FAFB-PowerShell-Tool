@@ -25,14 +25,14 @@ public class Query
     /// Used for Serializing the Commands parameters
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    public string[]? PSCommandParameters { get; set; }
+    public string[] PSCommandParameters { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    public string[]? PSCommandParameterValues { get; set; }
-    
+    public string[] PSCommandParameterValues { get; set; } = Array.Empty<string>();
+
     /// <summary>
     /// Command that should help with Binding the command to the query for the buttons sake
     /// </summary>
