@@ -32,7 +32,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private ConsoleViewModel _consoleOutputInQueryBuilder;
     private ConsoleViewModel _consoleOutputInActiveDirectoryInfo;
     private ObservableCollection<Button>? _queryButtonStackPanel;
-    
+
     // [[ Other fields ]] ----------------------------------------------------------- //
 
     private Query? _queryBeingEdited;
@@ -181,6 +181,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
+    public ICommand CheckBoxCheckedRelay { get; private set; }
 
     //  [ Constructor ] ------------------------------------------------------------- //
 
@@ -217,6 +218,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(
             _ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
+        CheckBoxCheckedRelay = new RelayCommand(CheckBoxChecked);
 
         Task.Run(InitializeActiveDirectoryCommandsAsync);
         LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
@@ -333,7 +335,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         QueryDescription = currentQuery.QueryDescription;
         // Fill in the commandName
         SelectedCommandInQueryBuilder = chosenCommand;
-        
+
         // Load the Possible Parameters Synchronously
         adCommandParameters.LoadAvailableParameters(SelectedCommandInQueryBuilder);
         AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
@@ -345,7 +347,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterComboBoxes.Clear();
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
-        
+
         // Fill in Parameters and values
         for (var i = 0; i < currentQuery.PSCommandParameters.Length; i++)
         {
@@ -610,7 +612,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
         }
     }
-    
+
     private void UpdateCommandWithSelectedParameters()
     {
         if (SelectedCommandInQueryBuilder is null)
@@ -622,14 +624,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                             MessageBoxImage.Warning);
             return;
         }
-        
+
         SelectedCommandInQueryBuilder.Parameters.Clear();
         // Loop through the ComboBoxes and add the selected parameters to the command.
         for (var i = 0; i < DynamicallyAvailableADCommandParameterComboBoxes.Count; i++)
         {
-            SelectedCommandInQueryBuilder.Parameters.Add(new CommandParameter(
-                DynamicallyAvailableADCommandParameterComboBoxes[i].SelectedParameter,
-                DynamicallyAvailableADCommandParameterValueTextBoxes[i].SelectedParameterValue));
+            SelectedCommandInQueryBuilder.Parameters.Add(
+                new CommandParameter(DynamicallyAvailableADCommandParameterComboBoxes[i].SelectedParameter,
+                                     DynamicallyAvailableADCommandParameterValueTextBoxes[i].SelectedParameterValue));
         }
     }
 
@@ -721,7 +723,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
         }
     }
-    
+
     private void ClearQueryBuilder(object _)
     {
         if (SelectedCommandInQueryBuilder is null && DynamicallyAvailableADCommandParameterComboBoxes.Count == 0)
@@ -750,12 +752,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
     }
-    
+
     private void OnIsQueryEditingEnabledChanged()
     {
         if (!IsQueryEditingEnabled)
         {
             _queryBeingEdited = null;
+        }
+    }
+
+    private void CheckBoxChecked(object obj)
+    {
+        if (IsQueryEditingEnabled)
+        {
+            MessageBox.Show("To edit a query, right click on a query button and select 'Edit' from the context menu.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            IsQueryEditingEnabled = false;
         }
     }
 
