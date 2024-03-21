@@ -18,16 +18,17 @@ public class QueryManager
     };
 
     public List<Query> Queries { get; private set; } = new();
-    public string QuerySaveLocation { get; set; } = string.Empty;
+    public string QueryFileSaveLocation { get; set; } = string.Empty;
 
     public void SaveQueryToFile()
     {
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _jsonSerializationOptions);
-            File.WriteAllText(QuerySaveLocation == "" ? "CustomQueries.json" : QuerySaveLocation,
+            File.WriteAllText(QueryFileSaveLocation == "" ? "CustomQueries.json" : QueryFileSaveLocation,
                               serializedJsonQueries);
         }
+        // TODO: Improve exception handling.
         catch (Exception exception)
         {
             MessageBox.Show(exception.Message);
@@ -43,9 +44,9 @@ public class QueryManager
         // Loop through the parameters and add them to the new query.
         for (int i = 0; i < psCommand.Parameters.Count; i++)
         {
-            CommandParameter param = psCommand.Parameters[i];
-            commandParameters[i] = param.Name;
-            commandParameterValues[i] = param.Value.ToString()!;
+            CommandParameter parameter = psCommand.Parameters[i];
+            commandParameters[i] = parameter.Name;
+            commandParameterValues[i] = parameter.Value.ToString()!;
         }
 
         // Set the new query's parameters.
@@ -59,7 +60,7 @@ public class QueryManager
         try
         {
             string serializedJsonQueries = JsonSerializer.Serialize(Queries, _jsonSerializationOptions);
-            File.WriteAllText(QuerySaveLocation == "" ? "CustomQueries.json" : QuerySaveLocation,
+            File.WriteAllText(QueryFileSaveLocation == "" ? "CustomQueries.json" : QueryFileSaveLocation,
                               serializedJsonQueries);
         }
         // TODO: Improve exception handling.
@@ -76,7 +77,7 @@ public class QueryManager
             string fileContents;
 
             // Opens file and reads it then adds the json to the Queries List
-            if (QuerySaveLocation == "")
+            if (QueryFileSaveLocation == "")
             {
                 if (File.Exists("CustomQueries.json"))
                 {
@@ -89,7 +90,7 @@ public class QueryManager
             }
             else
             {
-                fileContents = File.ReadAllText(QuerySaveLocation);
+                fileContents = File.ReadAllText(QueryFileSaveLocation);
             }
 
             Queries = JsonSerializer.Deserialize<List<Query>>(fileContents, _jsonSerializationOptions)!;

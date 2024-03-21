@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using System.IO;
 
-namespace ActiveDirectoryQuerier;
+namespace ActiveDirectoryQuerier.ViewModels;
 
-public sealed class AppConsole : INotifyPropertyChanged
+public sealed class ConsoleViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     private string _consoleOutput = string.Empty;
@@ -31,17 +31,19 @@ public sealed class AppConsole : INotifyPropertyChanged
         ConsoleOutput = string.Empty;
     }
 
-    public void Append(List<string> outputText)
+    public void Append(IEnumerable<string> outputText)
     {
+        // TODO: Add a newline character to the end of the outputText.
         ConsoleOutput += string.Join(Environment.NewLine, outputText);
     }
-
+    
     public void Append(string outputText)
     {
+        // TODO: Add a newline character to the end of the outputText.
         ConsoleOutput += outputText;
     }
 
-    public void ExportToText(string filePath = "output.txt")
+    public void ExportToTextFile(string filePath = "output.txt")
     {
         File.WriteAllText(filePath, ConsoleOutput);
     }

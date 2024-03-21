@@ -5,6 +5,7 @@ using System.Management.Automation.Runspaces;
 
 namespace ActiveDirectoryQuerier.ActiveDirectory;
 
+// As a note, the fields are used instead of the property, as it would cause a Stack Overflow Exception.
 // ReSharper disable once InconsistentNaming
 public class ADCommandParameters
 {
@@ -51,7 +52,7 @@ public class ADCommandParameters
             _availableParameters.Add("No valid command provided");
             return;
         }
-
+        
         if (_availableParameters.Count == 0)
         {
             using var powerShell = System.Management.Automation.PowerShell.Create();

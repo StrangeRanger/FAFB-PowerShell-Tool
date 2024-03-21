@@ -31,7 +31,7 @@
             </Menu>
         </Border>
         <!-- Grid for resizable content. -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
             <!-- Define Columns for resizable area. -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250" MinWidth="200" />
@@ -79,15 +79,16 @@
                             </Grid.RowDefinitions>
                             <!-- Query Name TextBox. -->
                             <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="20,10" FontWeight="Bold">Query Name</TextBlock>
-                            <TextBox  Grid.Column="0" 
-                                      Grid.ColumnSpan="2" 
+                            <TextBox  Grid.Column="0"
+                                      Grid.Row="0" Grid.ColumnSpan="2" 
                                       Text="{Binding QueryName}" 
                                       TextWrapping="Wrap" 
                                       VerticalAlignment="Center" 
                                       Height="50"
                                       Margin="20,0,20,0"/>
                             <!-- Query Description RichTextBox -->
-                            <TextBlock FontWeight="Bold" HorizontalAlignment="Left" Margin="20,3" Grid.Row="1">Query Description</TextBlock>
+                            <TextBlock FontWeight="Bold" HorizontalAlignment="Left" Margin="20,3" Grid.Row="1"
+                                       Grid.Column="0">Query Description</TextBlock>
                             <RichTextBox Grid.Row="1" 
                                          Grid.Column="0"  
                                          Grid.ColumnSpan="2" 
@@ -121,7 +122,6 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <!-- TODO: Pieter refer to here regarding combobox setup -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Center">Command</TextBlock>
                                 <ComboBox ItemsSource="{Binding ADCommands}"
                                           SelectedItem="{Binding SelectedCommandInQueryBuilder}"
@@ -166,7 +166,7 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <!-- END of Dynamic ComboxBoxes for parameters and values-->
+                                <!-- END of Dynamic ComboBoxes for parameters and values-->
 
                                 <!-- START of Button ComboBox -->
                                 <Menu Margin="0,4,0,6" Height="Auto" Grid.Row="2" Grid.Column="0"
@@ -198,7 +198,7 @@
                             <!-- ROW 0 END -->
                             <!-- GRID ROW 1 START -->
                             <!-- TextBox as Console Output -->
-                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInQueryBuilder.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleViewModelOutputInQueryBuilder.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
@@ -220,7 +220,7 @@
                                           SelectedItem="{Binding SelectedQueryInActiveDirectoryInfo}"
                                           ItemsSource="{Binding AvailableQueriesInActiveDirectoryInfo.AvailableOptions.Keys }" />
                             </Grid>
-                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInActiveDirectoryInfo.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleViewModelOutputInActiveDirectoryInfo.ConsoleOutput}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
