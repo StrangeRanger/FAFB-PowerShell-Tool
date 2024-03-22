@@ -1,9 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Management.Automation.Runspaces;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -38,7 +36,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private Query? _queryBeingEdited;
     private readonly Query _currentQuery;
     private readonly QueryManager _queryManager;
-    private readonly PSExecutor _psExecutor;
     private readonly ActiveDirectoryInfo _activeDirectoryInfo;
 
     // [ Properties ] --------------------------------------------------------------- //
@@ -183,6 +180,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand CreateNewQueryFileRelay { get; }
     public ICommand CheckBoxCheckedRelay { get; private set; }
 
+    // TODO: Place in an appropriate location.
+    private QueryExecutor QueryExecutor { get; }
+
     //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
@@ -191,7 +191,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _queryDescription = string.Empty;
         _currentQuery = new Query();
         _queryManager = new QueryManager();
-        _psExecutor = new PSExecutor();
         _activeDirectoryInfo = new ActiveDirectoryInfo();
         _consoleOutputInQueryBuilder = new ConsoleViewModel();
         _consoleOutputInActiveDirectoryInfo = new ConsoleViewModel();
@@ -200,11 +199,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicallyAvailableADCommandParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
 
-        OutputExecutionResultsToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
-        OutputExecutionResultsToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
-        ExportConsoleOutputToFileRelay = new RelayCommand(ExportConsoleOutputToFile);
+        // TODO: Place in an appropriate location.
+        QueryExecutor = new QueryExecutor(new PSExecutor(), _consoleOutputInQueryBuilder, this);
+
+        OutputExecutionResultsToCsvFileRelay =
+            new RelayCommand(unknown => Task.Run(() => QueryExecutor.OutputExecutionResultsToCsvFileAsync(unknown)));
+        OutputExecutionResultsToTextFileRelay =
+            new RelayCommand(unknown => Task.Run(() => QueryExecutor.OutputExecutionResultsToTextFileAsync(unknown)));
+        ExportConsoleOutputToFileRelay = new RelayCommand(unknown => QueryExecutor.ExportConsoleOutputToFile(unknown));
         ExecuteQueryInQueryBuilderRelay = new RelayCommand(
-            _ => Task.Run(() => ExecuteQueryAsync(_consoleOutputInQueryBuilder)));
+            _ => Task.Run(() => QueryExecutor.ExecuteQueryAsync(_consoleOutputInQueryBuilder)));
         ExecuteSelectedQueryInADInfoRelay = new RelayCommand(ExecuteSelectedQueryInADInfo);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
@@ -225,53 +229,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
-
-    /// <remarks>
-    /// The use of the <c>command</c> parameter indicates that the method can be called from the Query Stack Panel.
-    /// On the other hand, the absence of the <c>command</c> parameter and use of the
-    /// <c>SelectedCommandInQueryBuilder</c> property indicates that the method can be called from the Query Builder.
-    /// </remarks>
-    private async Task ExecuteQueryAsync(ConsoleViewModel consoleOutput, Command? command = null)
-    {
-        if (SelectedCommandInQueryBuilder is null && command is null)
-        {
-            Trace.WriteLine("No command selected.");
-            MessageBox.Show("To execute a command, you must first select a command.",
-                            "Warning",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-            return;
-        }
-
-        try
-        {
-            PSOutput result;
-            if (command is not null)
-            {
-                result = await _psExecutor.ExecuteAsync(command);
-            }
-            else
-            {
-                UpdateCommandWithSelectedParameters();
-                // Null forgiveness operator is used because if command is not null, this line will never be reached.
-                // If it is null, that must mean that SelectedCommandInQueryBuilder is not null, else the return
-                // statement above would have been executed.
-                result = await _psExecutor.ExecuteAsync(SelectedCommandInQueryBuilder!);
-            }
-
-            if (result.HadErrors)
-            {
-                consoleOutput.Append(result.StdErr);
-                return;
-            }
-
-            consoleOutput.Append(result.StdOut);
-        }
-        catch (Exception exception)
-        {
-            consoleOutput.Append($"Error executing command: {exception.Message}");
-        }
-    }
 
     private void ClearConsoleOutput(ConsoleViewModel consoleOutput)
     {
@@ -376,7 +333,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         var buttonQuery = (Query)currentButton.Tag;
-        await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+        await QueryExecutor.ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
 
     private void DeleteQueryFromQueryStackPanel(object queryButton)
@@ -401,11 +358,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             Query deletedQuery = (Query)currentButton.Tag;
             int deletedQueryIndex = _queryManager.Queries.IndexOf(deletedQuery);
-            
+
             QueryButtonStackPanel.Remove(currentButton);
             _queryManager.Queries.Remove((Query)currentButton.Tag);
             _queryManager.SaveQueryToFile();
-            
+
             // Check if the deleted query is currently being edited
             if (IsQueryEditingEnabled && _queryBeingEdited == (Query)currentButton.Tag)
             {
@@ -537,102 +494,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
-    private async void OutputExecutionResultsToTextFileAsync(object _)
-    {
-        if (_ is not null)
-        {
-            var currentButton = _ as Button;
-            Query buttonQuery;
-
-            buttonQuery = (Query)currentButton!.Tag;
-            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-        }
-        else
-        {
-            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder);
-        }
-
-        // Filepath
-        // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = new() {                       // Set properties of the OpenFileDialog
-                                               FileName = "Document", // Default file name
-                                               Filter = "All files(*.*) | *.*"
-        };
-
-        // Display
-        bool? result = saveFileDialog.ShowDialog();
-
-        // Get file and write text
-        if (result == true)
-        {
-            // Open document
-            string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.ConsoleOutput);
-        }
-    }
-
-    private async void OutputExecutionResultsToCsvFileAsync(object _)
-    {
-        if (_ is not null)
-        {
-            var currentButton = _ as Button;
-            Query buttonQuery;
-
-            buttonQuery = (Query)currentButton!.Tag;
-            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-        }
-        else
-        {
-            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder);
-        }
-
-        var csv = new StringBuilder();
-        string[] output = ConsoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
-
-        for (int i = 0; i < output.Length - 2; i++)
-        {
-            var first = output[i];
-            var second = output[i + 1];
-            // format the strings and add them to a string
-            var newLine = $"{first},{second}";
-            csv.AppendLine(newLine);
-        }
-
-        // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = new() { FileName = "Document", Filter = "All files(*.*) | *.*" };
-
-        // Display
-        bool? result = saveFileDialog.ShowDialog();
-
-        // Get file and write text
-        if (result == true)
-        {
-            // Open document
-            string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, csv.ToString());
-        }
-    }
-
-    private void ExportConsoleOutputToFile(object _)
-    {
-        if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
-        {
-            MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
-
-        bool? result = saveFileDialog.ShowDialog();
-
-        if (result == true)
-        {
-            string filename = saveFileDialog.FileName;
-            ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
-        }
-    }
-
-    private void UpdateCommandWithSelectedParameters()
+    public void UpdateCommandWithSelectedParameters()
     {
         if (SelectedCommandInQueryBuilder is null)
         {
