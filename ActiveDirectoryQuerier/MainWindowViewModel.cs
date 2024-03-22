@@ -399,6 +399,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (result == MessageBoxResult.Yes)
         {
+            Query deletedQuery = (Query)currentButton.Tag;
+            int deletedQueryIndex = _queryManager.Queries.IndexOf(deletedQuery);
+            
             QueryButtonStackPanel.Remove(currentButton);
             _queryManager.Queries.Remove((Query)currentButton.Tag);
             _queryManager.SaveQueryToFile();
@@ -408,6 +411,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 IsQueryEditingEnabled = false;
                 _queryBeingEdited = null;
+            }
+            // If a different query was deleted, update the index of the editing query
+            else if (IsQueryEditingEnabled && _queryBeingEdited != null)
+            {
+                int editingQueryIndex = _queryManager.Queries.IndexOf(_queryBeingEdited);
+                if (editingQueryIndex > deletedQueryIndex)
+                {
+                    _queryBeingEdited = _queryManager.Queries[editingQueryIndex - 1];
+                }
             }
         }
     }
