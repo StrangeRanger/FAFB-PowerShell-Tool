@@ -21,7 +21,7 @@ public class PSExecutor
         _powerShell.Commands.Clear();
     }
 
-    private void AssembleFullCommand(Command psCommand)
+    private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
 
@@ -31,14 +31,19 @@ public class PSExecutor
         {
             _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
         }
+
+        if (outputFormat == OutputFormat.Csv)
+        {
+            _powerShell.Commands.AddCommand("ConvertTo-Csv").AddParameter("NoTypeInformation");
+        }
     }
 
-    public PSOutput Execute(Command psCommand)
+    public PSOutput Execute(Command psCommand, OutputFormat outputFormat = OutputFormat.Text)
     {
         try
         {
             _powerShell.Commands.Clear();
-            AssembleFullCommand(psCommand);
+            AssembleFullCommand(psCommand, outputFormat);
 
             Collection<PSObject> results = _powerShell.Invoke();
 
@@ -50,12 +55,12 @@ public class PSExecutor
         }
     }
 
-    public async Task<PSOutput> ExecuteAsync(Command command)
+    public async Task<PSOutput> ExecuteAsync(Command command, OutputFormat outputFormat = OutputFormat.Text)
     {
         try
         {
             _powerShell.Commands.Clear();
-            AssembleFullCommand(command);
+            AssembleFullCommand(command, outputFormat);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
 

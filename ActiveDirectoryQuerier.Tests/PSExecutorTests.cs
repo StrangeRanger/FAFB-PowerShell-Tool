@@ -107,4 +107,25 @@ public class PSExecutorTests
         Assert.NotEmpty(result.StdErr);
         Assert.Empty(result.StdOut);
     }
+
+    [Theory]
+    [InlineData("Get-Command", "Module", "ActiveDirectory")]
+    [InlineData("Get-Process", "Name", "explorer")]
+    public async Task ExecuteAsync_ExecuteToCsv_ReturnsExpectedOutput(string command,
+                                                                      string parameter,
+                                                                      string parameterValue)
+    {
+        // Arrange
+        Command psCommand = new(command);
+        psCommand.Parameters.Add(parameter, parameterValue);
+        PSExecutor psExecutor = new();
+
+        // Act
+        PSOutput result = await psExecutor.ExecuteAsync(psCommand, OutputFormat.Csv);
+
+        // Assert
+        Assert.False(result.HadErrors);
+        Assert.Empty(result.StdErr);
+        Assert.NotEmpty(result.StdOut);
+    }
 }

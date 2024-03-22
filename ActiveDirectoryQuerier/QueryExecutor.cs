@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,9 +35,11 @@ public class QueryExecutor
         try
         {
             PSOutput result;
+            OutputFormat outputFormat = CalculateOutputFormat();
+
             if (command is not null)
             {
-                result = await psExecutor.ExecuteAsync(command);
+                result = await psExecutor.ExecuteAsync(command, outputFormat);
             }
             else
             {
@@ -44,7 +47,8 @@ public class QueryExecutor
                 // Null forgiveness operator is used because if command is not null, this line will never be reached.
                 // If it is null, that must mean that SelectedCommandInQueryBuilder is not null, else the return
                 // statement above would have been executed.
-                result = await psExecutor.ExecuteAsync(mainWindowViewModel.SelectedCommandInQueryBuilder!);
+                result =
+                    await psExecutor.ExecuteAsync(mainWindowViewModel.SelectedCommandInQueryBuilder!, outputFormat);
             }
 
             if (result.HadErrors)
@@ -60,77 +64,7 @@ public class QueryExecutor
             consoleOutput.Append($"Error executing command: {exception.Message}");
         }
     }
-
-    public async Task OutputExecutionResultsToTextFileAsync(object? queryButton)
-    {
-        if (queryButton is not null)
-        {
-            var buttonQuery = (Query)((Button)queryButton).Tag;
-            await ExecuteQueryAsync(consoleOutputInQueryBuilder, buttonQuery.Command);
-        }
-        else
-        {
-            await ExecuteQueryAsync(consoleOutputInQueryBuilder);
-        }
-
-        // Filepath
-        // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = new() {                       // Set properties of the OpenFileDialog
-                                               FileName = "Document", // Default file name
-                                               Filter = "All files(*.*) | *.*"
-        };
-
-        // Display
-        bool? result = saveFileDialog.ShowDialog();
-
-        // Get file and write text
-        if (result == true)
-        {
-            // Open document
-            string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, consoleOutputInQueryBuilder.ConsoleOutput);
-        }
-    }
-
-    public async Task OutputExecutionResultsToCsvFileAsync(object? queryButton)
-    {
-        if (queryButton is not null)
-        {
-            var buttonQuery = (Query)((Button)queryButton).Tag;
-            await ExecuteQueryAsync(consoleOutputInQueryBuilder, buttonQuery.Command);
-        }
-        else
-        {
-            await ExecuteQueryAsync(consoleOutputInQueryBuilder);
-        }
-
-        StringBuilder csv = new();
-        string[] output = consoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
-
-        for (int i = 0; i < output.Length - 2; i++)
-        {
-            var first = output[i];
-            var second = output[i + 1];
-            // format the strings and add them to a string
-            var newLine = $"{first},{second}";
-            csv.AppendLine(newLine);
-        }
-
-        // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = new() { FileName = "Document", Filter = "All files(*.*) | *.*" };
-
-        // Display
-        bool? result = saveFileDialog.ShowDialog();
-
-        // Get file and write text
-        if (result == true)
-        {
-            // Open document
-            string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, csv.ToString());
-        }
-    }
-
+    
     public void ExportConsoleOutputToFile(object _)
     {
         if (consoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
@@ -147,6 +81,65 @@ public class QueryExecutor
         {
             string filename = saveFileDialog.FileName;
             consoleOutputInQueryBuilder.ExportToTextFile(filename);
+        }
+    }
+
+    public async Task OutputExecutionResultsToTextFileAsync(object? queryButton)
+    {
+        await OutputExecutionResultsToFileAsync(queryButton, ".txt", "Text documents (.txt)|*.txt");
+    }
+
+    public async Task OutputExecutionResultsToCsvFileAsync(object? queryButton)
+    {
+        await OutputExecutionResultsToFileAsync(queryButton, ".csv", "CSV files (*.csv)|*.csv");
+    }
+    
+    private async Task OutputExecutionResultsToFileAsync(object? queryButton, string fileExtension, string filter)
+    {
+        if (queryButton is not null)
+        {
+            var buttonQuery = (Query)((Button)queryButton).Tag;
+            await ExecuteQueryAsync(consoleOutputInQueryBuilder, buttonQuery.Command);
+        }
+        else
+        {
+            await ExecuteQueryAsync(consoleOutputInQueryBuilder);
+        }
+
+        SaveFileDialog saveFileDialog = new() { DefaultExt = fileExtension, Filter = filter };
+
+        bool? result = saveFileDialog.ShowDialog();
+
+        if (result == true)
+        {
+            string filePath = saveFileDialog.FileName;
+            await File.WriteAllTextAsync(filePath, consoleOutputInQueryBuilder.ConsoleOutput);
+        }
+    }
+    
+    private OutputFormat CalculateOutputFormat()
+    {
+        StackTrace stackTrace = new();
+        StackFrame[] stackFrames = stackTrace.GetFrames();
+
+        try
+        {
+            if (stackFrames.Length > 2)
+            {
+                // Null forgiveness operator is used because the method this statement would not be reached if the
+                // length of the stackFrames array is less than 3.
+                MethodBase callingMethod = stackFrames[2].GetMethod()!;
+                if (callingMethod.Name == "OutputExecutionResultsToCsvFileAsync")
+                {
+                    return OutputFormat.Csv;
+                }
+            }
+
+            return OutputFormat.Text;
+        }
+        catch (Exception)
+        {
+            return OutputFormat.Text;
         }
     }
 }
