@@ -54,7 +54,7 @@ public class PSExecutor
             return HandleExecutionException(exception);
         }
     }
-    
+
     private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
     {
         ArgumentNullException.ThrowIfNull(psCommand);

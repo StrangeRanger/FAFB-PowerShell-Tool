@@ -363,11 +363,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void CreateNewQueryFile(object _)
     {
         // Saves/creates a new save file for the queries
-        SaveFileDialog saveFileDialog = new()
-        {
-            Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt"
-        };
-        
+        SaveFileDialog saveFileDialog = new() { Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt" };
+
         if (saveFileDialog.ShowDialog() == true)
         {
             QueryButtonStackPanel.Clear();
@@ -575,7 +572,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 _queryManager.ConvertCommandToQueryAndSave(SelectedCommandInQueryBuilder, QueryName, QueryDescription);
 
                 Button newButton = CreateQueryButtonInStackPanel();
-                
+
                 if (newButton.Content != null)
                 {
                     QueryButtonStackPanel.Add(newButton);
@@ -616,7 +613,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
     }
-    
+
     /// <remarks>
     /// The use of the <c>command</c> parameter indicates that the method can be called from the Query Stack Panel.
     /// On the other hand, the absence of the <c>command</c> parameter and use of the
@@ -625,7 +622,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private async Task ExecuteQueryAsync(ConsoleViewModel consoleOutput, Command? command = null)
     {
         PSExecutor psExecutor = new();
-        
+
         if (SelectedCommandInQueryBuilder is null && command is null)
         {
             Trace.WriteLine("No command selected.");
@@ -651,8 +648,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 // Null forgiveness operator is used because if command is not null, this line will never be reached.
                 // If it is null, that must mean that SelectedCommandInQueryBuilder is not null, else the return
                 // statement above would have been executed.
-                result =
-                    await psExecutor.ExecuteAsync(SelectedCommandInQueryBuilder!, outputFormat);
+                result = await psExecutor.ExecuteAsync(SelectedCommandInQueryBuilder!, outputFormat);
             }
 
             if (result.HadErrors)
@@ -668,23 +664,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             consoleOutput.Append($"Error executing command: {exception.Message}");
         }
     }
-    
+
     private async void ExecuteQueryFromQueryStackPanelAsync(object queryButton)
     {
         if (queryButton is not Button currentButton)
         {
             Trace.WriteLine("No button selected.");
             MessageBox.Show("To execute a query, you must first select a query.",
-                "Warning",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
             return;
         }
 
         var buttonQuery = (Query)currentButton.Tag;
         await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
-    
+
     private void ExportConsoleOutputToFile(object _)
     {
         if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
@@ -703,7 +699,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
         }
     }
-    
+
     private async void OutputExecutionResultsToTextFileAsync(object? queryButton)
     {
         await OutputExecutionResultsToFileAsync(queryButton, ".txt", "Text documents (.txt)|*.txt");
@@ -800,7 +796,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         newButton.ContextMenu = contextMenu;
         return newButton;
     }
-    
+
     private void OnIsQueryEditingEnabledChanged()
     {
         if (!IsQueryEditingEnabled)
@@ -814,9 +810,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (IsQueryEditingEnabled)
         {
             MessageBox.Show("To edit a query, right click on a query button and select 'Edit' from the context menu.",
-                "Warning",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
             IsQueryEditingEnabled = false;
         }
     }
