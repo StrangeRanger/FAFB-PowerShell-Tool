@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Management.Automation.Runspaces;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -180,9 +182,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand CreateNewQueryFileRelay { get; }
     public ICommand CheckBoxCheckedRelay { get; private set; }
 
-    // TODO: Place in an appropriate location.
-    private QueryExecutor QueryExecutor { get; }
-
     //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
@@ -199,17 +198,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicallyAvailableADCommandParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
 
-        // TODO: Place in an appropriate location.
-        QueryExecutor = new QueryExecutor(new PSExecutor(), _consoleOutputInQueryBuilder, this);
-
-        OutputExecutionResultsToCsvFileRelay =
-            new RelayCommand(unknown => Task.Run(() => QueryExecutor.OutputExecutionResultsToCsvFileAsync(unknown)));
-        OutputExecutionResultsToTextFileRelay =
-            new RelayCommand(unknown => Task.Run(() => QueryExecutor.OutputExecutionResultsToTextFileAsync(unknown)));
-        ExportConsoleOutputToFileRelay = new RelayCommand(unknown => QueryExecutor.ExportConsoleOutputToFile(unknown));
+        OutputExecutionResultsToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
+        OutputExecutionResultsToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
+        ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanelAsync);
         ExecuteQueryInQueryBuilderRelay = new RelayCommand(
-            _ => Task.Run(() => QueryExecutor.ExecuteQueryAsync(_consoleOutputInQueryBuilder)));
+            _ => Task.Run(() => ExecuteQueryAsync(_consoleOutputInQueryBuilder)));
         ExecuteSelectedQueryInADInfoRelay = new RelayCommand(ExecuteSelectedQueryInADInfo);
+        ExportConsoleOutputToFileRelay = new RelayCommand(ExportConsoleOutputToFile);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
         AddParameterComboBoxInQueryBuilderRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
@@ -218,7 +213,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SaveCurrentQueryRelay = new RelayCommand(SaveCurrentQuery);
         EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPanel);
         DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
-        ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanel);
         ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(
             _ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
@@ -320,22 +314,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private async void ExecuteQueryFromQueryStackPanel(object queryButton)
-    {
-        if (queryButton is not Button currentButton)
-        {
-            Trace.WriteLine("No button selected.");
-            MessageBox.Show("To execute a query, you must first select a query.",
-                            "Warning",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-            return;
-        }
-
-        var buttonQuery = (Query)currentButton.Tag;
-        await QueryExecutor.ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-    }
-
     private void DeleteQueryFromQueryStackPanel(object queryButton)
     {
         if (queryButton is not Button currentButton)
@@ -385,8 +363,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void CreateNewQueryFile(object _)
     {
         // Saves/creates a new save file for the queries
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
-        saveFileDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+        SaveFileDialog saveFileDialog = new()
+        {
+            Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt"
+        };
+        
         if (saveFileDialog.ShowDialog() == true)
         {
             QueryButtonStackPanel.Clear();
@@ -408,10 +389,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 QueryButtonStackPanel.Add(newButton);
             }
         }
-        // TODO: Possibly provide more comprehensive error handling.
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            Trace.WriteLine(ex);
+            Trace.WriteLine(exception);
         }
     }
 
@@ -494,7 +474,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
-    public void UpdateCommandWithSelectedParameters()
+    private void UpdateCommandWithSelectedParameters()
     {
         if (SelectedCommandInQueryBuilder is null)
         {
@@ -595,8 +575,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 _queryManager.ConvertCommandToQueryAndSave(SelectedCommandInQueryBuilder, QueryName, QueryDescription);
 
                 Button newButton = CreateQueryButtonInStackPanel();
-
-                QueryButtonStackPanel.Add(newButton);
+                
+                if (newButton.Content != null)
+                {
+                    QueryButtonStackPanel.Add(newButton);
+                }
             }
             catch (Exception ex)
             {
@@ -633,24 +616,124 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
     }
-
-    private void OnIsQueryEditingEnabledChanged()
+    
+    /// <remarks>
+    /// The use of the <c>command</c> parameter indicates that the method can be called from the Query Stack Panel.
+    /// On the other hand, the absence of the <c>command</c> parameter and use of the
+    /// <c>SelectedCommandInQueryBuilder</c> property indicates that the method can be called from the Query Builder.
+    /// </remarks>
+    private async Task ExecuteQueryAsync(ConsoleViewModel consoleOutput, Command? command = null)
     {
-        if (!IsQueryEditingEnabled)
+        PSExecutor psExecutor = new();
+        
+        if (SelectedCommandInQueryBuilder is null && command is null)
         {
-            _queryBeingEdited = null;
-        }
-    }
-
-    private void CheckBoxChecked(object obj)
-    {
-        if (IsQueryEditingEnabled)
-        {
-            MessageBox.Show("To edit a query, right click on a query button and select 'Edit' from the context menu.",
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("To execute a command, you must first select a command.",
                             "Warning",
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning);
-            IsQueryEditingEnabled = false;
+            return;
+        }
+
+        try
+        {
+            PSOutput result;
+            OutputFormat outputFormat = CalculateOutputFormat();
+
+            if (command is not null)
+            {
+                result = await psExecutor.ExecuteAsync(command, outputFormat);
+            }
+            else
+            {
+                UpdateCommandWithSelectedParameters();
+                // Null forgiveness operator is used because if command is not null, this line will never be reached.
+                // If it is null, that must mean that SelectedCommandInQueryBuilder is not null, else the return
+                // statement above would have been executed.
+                result =
+                    await psExecutor.ExecuteAsync(SelectedCommandInQueryBuilder!, outputFormat);
+            }
+
+            if (result.HadErrors)
+            {
+                consoleOutput.Append(result.StdErr);
+                return;
+            }
+
+            consoleOutput.Append(result.StdOut);
+        }
+        catch (Exception exception)
+        {
+            consoleOutput.Append($"Error executing command: {exception.Message}");
+        }
+    }
+    
+    private async void ExecuteQueryFromQueryStackPanelAsync(object queryButton)
+    {
+        if (queryButton is not Button currentButton)
+        {
+            Trace.WriteLine("No button selected.");
+            MessageBox.Show("To execute a query, you must first select a query.",
+                "Warning",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            return;
+        }
+
+        var buttonQuery = (Query)currentButton.Tag;
+        await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+    }
+    
+    private void ExportConsoleOutputToFile(object _)
+    {
+        if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
+        {
+            MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
+
+        bool? result = saveFileDialog.ShowDialog();
+
+        if (result == true)
+        {
+            string filename = saveFileDialog.FileName;
+            ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
+        }
+    }
+    
+    private async void OutputExecutionResultsToTextFileAsync(object? queryButton)
+    {
+        await OutputExecutionResultsToFileAsync(queryButton, ".txt", "Text documents (.txt)|*.txt");
+    }
+
+    private async void OutputExecutionResultsToCsvFileAsync(object? queryButton)
+    {
+        await OutputExecutionResultsToFileAsync(queryButton, ".csv", "CSV files (*.csv)|*.csv");
+    }
+
+    private async Task OutputExecutionResultsToFileAsync(object? queryButton, string fileExtension, string filter)
+    {
+        if (queryButton is not null)
+        {
+            var buttonQuery = (Query)((Button)queryButton).Tag;
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+        }
+        else
+        {
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder);
+        }
+
+        SaveFileDialog saveFileDialog = new() { DefaultExt = fileExtension, Filter = filter };
+
+        bool? result = saveFileDialog.ShowDialog();
+
+        if (result == true)
+        {
+            string filePath = saveFileDialog.FileName;
+            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.ConsoleOutput);
         }
     }
 
@@ -673,7 +756,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                                 "Warning",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Warning);
-                return null; // TODO: Figure out what to return here!!!
+                return new Button();
             }
 
             GetCurrentQuery();
@@ -716,6 +799,52 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Add the context menu to the button
         newButton.ContextMenu = contextMenu;
         return newButton;
+    }
+    
+    private void OnIsQueryEditingEnabledChanged()
+    {
+        if (!IsQueryEditingEnabled)
+        {
+            _queryBeingEdited = null;
+        }
+    }
+
+    private void CheckBoxChecked(object obj)
+    {
+        if (IsQueryEditingEnabled)
+        {
+            MessageBox.Show("To edit a query, right click on a query button and select 'Edit' from the context menu.",
+                "Warning",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            IsQueryEditingEnabled = false;
+        }
+    }
+
+    private OutputFormat CalculateOutputFormat()
+    {
+        StackTrace stackTrace = new();
+        StackFrame[] stackFrames = stackTrace.GetFrames();
+
+        try
+        {
+            if (stackFrames.Length > 2)
+            {
+                // Null forgiveness operator is used because the method this statement would not be reached if the
+                // length of the stackFrames array is less than 3.
+                MethodBase callingMethod = stackFrames[2].GetMethod()!;
+                if (callingMethod.Name == "OutputExecutionResultsToCsvFileAsync")
+                {
+                    return OutputFormat.Csv;
+                }
+            }
+
+            return OutputFormat.Text;
+        }
+        catch (Exception)
+        {
+            return OutputFormat.Text;
+        }
     }
 
     // [[ Event Handlers ]] --------------------------------------------------------- //
