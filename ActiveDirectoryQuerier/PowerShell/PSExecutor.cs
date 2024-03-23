@@ -21,23 +21,6 @@ public class PSExecutor
         _powerShell.Commands.Clear();
     }
 
-    private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
-    {
-        ArgumentNullException.ThrowIfNull(psCommand);
-
-        _powerShell.Commands.AddCommand(psCommand.CommandText);
-
-        foreach (var parameter in psCommand.Parameters)
-        {
-            _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
-        }
-
-        if (outputFormat == OutputFormat.Csv)
-        {
-            _powerShell.Commands.AddCommand("ConvertTo-Csv").AddParameter("NoTypeInformation");
-        }
-    }
-
     public PSOutput Execute(Command psCommand, OutputFormat outputFormat = OutputFormat.Text)
     {
         try
@@ -69,6 +52,23 @@ public class PSExecutor
         catch (Exception exception)
         {
             return HandleExecutionException(exception);
+        }
+    }
+    
+    private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
+    {
+        ArgumentNullException.ThrowIfNull(psCommand);
+
+        _powerShell.Commands.AddCommand(psCommand.CommandText);
+
+        foreach (var parameter in psCommand.Parameters)
+        {
+            _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
+        }
+
+        if (outputFormat == OutputFormat.Csv)
+        {
+            _powerShell.Commands.AddCommand("ConvertTo-Csv").AddParameter("NoTypeInformation");
         }
     }
 
