@@ -32,7 +32,7 @@ public sealed class ConsoleViewModel : INotifyPropertyChanged
 
     public void Append(IEnumerable<string> outputText)
     {
-        ConsoleOutput += string.Join(Environment.NewLine, outputText);
+        ConsoleOutput += string.Join(Environment.NewLine, outputText) + Environment.NewLine;
     }
 
     public void Append(string outputText)

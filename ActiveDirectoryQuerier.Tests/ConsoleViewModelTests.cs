@@ -53,13 +53,13 @@ public class ConsoleViewModelTests : IDisposable
     {
         // Arrange
         ConsoleViewModel consoleViewModel = new();
-        const string output = "Output";
+        string output = $"Output: {Guid.NewGuid()}";
 
         // Act
         consoleViewModel.Append(output);
 
         // Assert
-        Assert.Equal(output, consoleViewModel.GetConsoleOutput);
+        Assert.Equal(output + Environment.NewLine, consoleViewModel.GetConsoleOutput);
     }
 
     [Fact]
@@ -77,8 +77,9 @@ public class ConsoleViewModelTests : IDisposable
         // Assert
         Assert.True(File.Exists("output.txt"));
 
-        Assert.Equal(returnValues.HadErrors ? string.Join(Environment.NewLine, returnValues.StdErr)
-                                            : string.Join(Environment.NewLine, returnValues.StdOut),
+        Assert.Equal(returnValues.HadErrors
+                         ? string.Join(Environment.NewLine, returnValues.StdErr) + Environment.NewLine
+                         : string.Join(Environment.NewLine, returnValues.StdOut) + Environment.NewLine,
                      fileContents);
     }
 }
