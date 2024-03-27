@@ -45,7 +45,7 @@ public class ConsoleViewModelTests : IDisposable
         appConsole.Clear();
 
         // Assert
-        Assert.Empty(appConsole.ConsoleOutput);
+        Assert.Empty(appConsole.GetConsoleOutput);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class ConsoleViewModelTests : IDisposable
         consoleViewModel.Append(output);
 
         // Assert
-        Assert.Equal(output, consoleViewModel.ConsoleOutput);
+        Assert.Equal(output, consoleViewModel.GetConsoleOutput);
     }
 
     [Fact]

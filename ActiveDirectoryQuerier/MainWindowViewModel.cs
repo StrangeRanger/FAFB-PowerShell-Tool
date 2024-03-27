@@ -226,7 +226,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void ClearConsoleOutput(ConsoleViewModel consoleOutput)
     {
-        if (consoleOutput.ConsoleOutput.Length == 0)
+        if (consoleOutput.GetConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is already clear.",
                             "Information",
@@ -683,7 +683,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void ExportConsoleOutputToFile(object _)
     {
-        if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
+        if (ConsoleOutputInQueryBuilder.GetConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
@@ -729,7 +729,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == true)
         {
             string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.ConsoleOutput);
+            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.GetConsoleOutput);
         }
     }
 
