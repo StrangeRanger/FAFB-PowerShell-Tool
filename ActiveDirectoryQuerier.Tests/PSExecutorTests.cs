@@ -112,8 +112,8 @@ public class PSExecutorTests
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
     public async Task ExecuteAsync_ExecuteToCsv_ReturnsExpectedOutput(string command,
-        string parameter,
-        string parameterValue)
+                                                                      string parameter,
+                                                                      string parameterValue)
     {
         // Arrange
         Command psCommand = new(command);

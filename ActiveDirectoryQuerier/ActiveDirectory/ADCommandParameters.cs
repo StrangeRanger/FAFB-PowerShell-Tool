@@ -9,7 +9,7 @@ namespace ActiveDirectoryQuerier.ActiveDirectory;
 public class ADCommandParameters
 {
     private readonly ObservableCollection<string> _availableParameters = new();
-    
+
     /// <remarks>
     /// IMPORTANT: This property should not be accessed before LoadAvailableParametersAsync or LoadAvailableParameters
     /// has been called. If it is accessed before either method has been called, no parameters will be available.

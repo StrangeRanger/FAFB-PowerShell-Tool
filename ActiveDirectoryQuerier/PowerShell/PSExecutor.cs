@@ -37,7 +37,7 @@ public class PSExecutor
             return HandleExecutionException(exception);
         }
     }
-    
+
     public async Task<PSOutput> ExecuteAsync(string commandText, OutputFormat outputFormat = OutputFormat.Text)
     {
         return await ExecuteAsync(new Command(commandText), outputFormat);
