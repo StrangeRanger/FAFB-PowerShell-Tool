@@ -40,12 +40,19 @@ public class PSExecutor
 
     public async Task<PSOutput> ExecuteAsync(Command command, OutputFormat outputFormat = OutputFormat.Text)
     {
-        _powerShell.Commands.Clear();
-        AssembleFullCommand(command, outputFormat);
+        try
+        {
+            _powerShell.Commands.Clear();
+            AssembleFullCommand(command, outputFormat);
 
-        PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
+            PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
 
-        return ProcessExecutionResults(results);
+            return ProcessExecutionResults(results);
+        }
+        catch (Exception exception)
+        {
+            return HandleExecutionException(exception);
+        }
     }
 
     private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
