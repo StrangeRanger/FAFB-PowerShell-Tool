@@ -11,10 +11,7 @@ public class MainWindowViewModelTests
     {
         // Arrange
         var mockMessageBoxService = new Mock<IMessageBoxService>();
-        var viewModel = new MainWindowViewModel
-        {
-            MessageBoxService = mockMessageBoxService.Object
-        };
+        var viewModel = new MainWindowViewModel { MessageBoxService = mockMessageBoxService.Object };
 
         // Act
         viewModel.EditQueryFromQueryStackPanel(null);

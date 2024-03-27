@@ -283,12 +283,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             Trace.WriteLine("No button selected.");
             MessageBoxService.Show($"An internal error occurred while trying to edit the query: {queryButton}",
-                "Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+                                   "Error",
+                                   MessageBoxButton.OK,
+                                   MessageBoxImage.Error);
             return;
         }
-        
+
         var currentQuery = (Query)button.Tag;
         Command chosenCommand = ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
         ADCommandParameters adCommandParameters = new();
