@@ -428,7 +428,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         try
         {
-            ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommands();
+            ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommandsAsync();
             ADCommands = new ObservableCollection<Command>(list);
             OnPropertyChanged(nameof(ADCommands));
         }

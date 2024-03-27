@@ -11,7 +11,7 @@ public class ADCommandsFetcherTests
     public async Task GetADCommands_ReturnsCommandList_IsNotEmpty()
     {
         // Act
-        ObservableCollection<Command> adCommands = await ADCommandsFetcher.GetADCommands();
+        ObservableCollection<Command> adCommands = await ADCommandsFetcher.GetADCommandsAsync();
 
         // Assert
         Assert.NotEmpty(adCommands);
@@ -24,7 +24,7 @@ public class ADCommandsFetcherTests
     public async Task GetADCommands_ReturnsCommandList_ContainsCommand(string commandName)
     {
         // Act
-        ObservableCollection<Command> adCommands = await ADCommandsFetcher.GetADCommands();
+        ObservableCollection<Command> adCommands = await ADCommandsFetcher.GetADCommandsAsync();
 
         // Assert
         Assert.Contains(adCommands, command => command.CommandText == commandName);
