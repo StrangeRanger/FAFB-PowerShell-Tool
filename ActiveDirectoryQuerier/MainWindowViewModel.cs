@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ActiveDirectoryQuerier.ActiveDirectory;
+using ActiveDirectoryQuerier.MessageBoxService;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.Queries;
 using ActiveDirectoryQuerier.ViewModels;
@@ -181,6 +182,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
     public ICommand CheckBoxCheckedRelay { get; private set; }
+    public IMessageBoxService MessageBoxService { get; init; }
 
     //  [ Constructor ] ------------------------------------------------------------- //
 
@@ -197,6 +199,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ADCommands = new ObservableCollection<Command>();
         DynamicallyAvailableADCommandParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
         DynamicallyAvailableADCommandParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
+        MessageBoxService = new MessageBoxService.MessageBoxService();
 
         OutputExecutionResultsToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
         OutputExecutionResultsToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
@@ -247,7 +250,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private async void ExecuteSelectedQueryInADInfo(object _)
+    private async void ExecuteSelectedQueryInADInfo(object? _)
     {
         if (SelectedQueryInActiveDirectoryInfo is null)
         {
@@ -274,9 +277,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void EditQueryFromQueryStackPanel(object queryButton)
+    internal void EditQueryFromQueryStackPanel(object? queryButton)
     {
-        var currentQuery = (Query)((Button)queryButton).Tag;
+        if (queryButton is not Button button)
+        {
+            Trace.WriteLine("No button selected.");
+            MessageBoxService.Show($"An internal error occurred while trying to edit the query: {queryButton}",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            return;
+        }
+        
+        var currentQuery = (Query)button.Tag;
         Command chosenCommand = ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
         ADCommandParameters adCommandParameters = new();
 
@@ -314,7 +327,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void DeleteQueryFromQueryStackPanel(object queryButton)
+    private void DeleteQueryFromQueryStackPanel(object? queryButton)
     {
         if (queryButton is not Button currentButton)
         {
@@ -360,7 +373,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     // TODO: Continue refactoring starting here...
-    private void CreateNewQueryFile(object _)
+    private void CreateNewQueryFile(object? _)
     {
         // Saves/creates a new save file for the queries
         SaveFileDialog saveFileDialog = new() { Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt" };
@@ -392,7 +405,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void ImportQueryFile(object _)
+    private void ImportQueryFile(object? _)
     {
         OpenFileDialog dialog =
             new() { FileName = "CustomQueries.dat", Filter = "Json files (*.json)|*.json|Text Files (*.txt)|*.txt" };
@@ -447,7 +460,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void AddParameterComboBoxInQueryBuilder(object _)
+    private void AddParameterComboBoxInQueryBuilder(object? _)
     {
         // Check if some variable is null and throw an exception if it is
         if (AvailableADCommandParameters is null)
@@ -465,7 +478,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DynamicallyAvailableADCommandParameterValueTextBoxes.Add(new TextBoxViewModel());
     }
 
-    private void AddCommandComboBoxInQueryBuilder(object _)
+    private void AddCommandComboBoxInQueryBuilder(object? _)
     {
         Trace.WriteLine("Not implemented yet.");
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -523,7 +536,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _currentQuery.PSCommandParameterValues = commandParameterValues;
     }
 
-    private void RemoveParameterComboBoxInQueryBuilder(object _)
+    private void RemoveParameterComboBoxInQueryBuilder(object? _)
     {
         if (DynamicallyAvailableADCommandParameterComboBoxes.Count != 0)
         {
@@ -541,7 +554,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void SaveCurrentQuery(object commandParameter)
+    private void SaveCurrentQuery(object? commandParameter)
     {
         if (SelectedCommandInQueryBuilder is null)
         {
@@ -585,7 +598,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void ClearQueryBuilder(object _)
+    private void ClearQueryBuilder(object? _)
     {
         if (SelectedCommandInQueryBuilder is null && DynamicallyAvailableADCommandParameterComboBoxes.Count == 0)
         {
@@ -665,7 +678,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private async void ExecuteQueryFromQueryStackPanelAsync(object queryButton)
+    private async void ExecuteQueryFromQueryStackPanelAsync(object? queryButton)
     {
         if (queryButton is not Button currentButton)
         {
@@ -681,7 +694,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
 
-    private void ExportConsoleOutputToFile(object _)
+    private void ExportConsoleOutputToFile(object? _)
     {
         if (ConsoleOutputInQueryBuilder.GetConsoleOutput.Length == 0)
         {
@@ -805,7 +818,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void CheckBoxChecked(object obj)
+    private void CheckBoxChecked(object? obj)
     {
         if (IsQueryEditingEnabled)
         {
