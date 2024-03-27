@@ -7,11 +7,11 @@ public sealed class ConsoleViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     private string _consoleOutput = string.Empty;
-
-    /// <summary></summary>
-    /// <important>
-    /// Do not set this property directly. Use the Append method instead. It's public for data binding purposes.
-    /// </important>
+    
+    /// <remarks>
+    /// IMPORTANT: Do not set this property directly. Use the Append method instead. It's public for data binding
+    /// purposes.
+    /// </remarks>
     /// TODO: Find a way to make the set of this property private, while still allowing data binding.
     public string ConsoleOutput
     {
