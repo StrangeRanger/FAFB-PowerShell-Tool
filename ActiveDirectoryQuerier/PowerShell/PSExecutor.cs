@@ -37,6 +37,11 @@ public class PSExecutor
             return HandleExecutionException(exception);
         }
     }
+    
+    public async Task<PSOutput> ExecuteAsync(string commandText, OutputFormat outputFormat = OutputFormat.Text)
+    {
+        return await ExecuteAsync(new Command(commandText), outputFormat);
+    }
 
     public async Task<PSOutput> ExecuteAsync(Command command, OutputFormat outputFormat = OutputFormat.Text)
     {
@@ -94,9 +99,16 @@ public class PSExecutor
         return psOutput;
     }
 
-    private Task<PSOutput> ProcessExecutionResultsAsync(IEnumerable<PSObject> results)
+    private async Task<PSOutput> ProcessExecutionResultsAsync(IEnumerable<PSObject> results)
     {
-        return Task.FromResult(ProcessExecutionResults(results));
+        try
+        {
+            return await Task.Run(() => ProcessExecutionResults(results));
+        }
+        catch (Exception exception)
+        {
+            return HandleExecutionException(exception);
+        }
     }
 
     private PSOutput HandleExecutionException(Exception exception)
@@ -106,7 +118,7 @@ public class PSExecutor
         errorMessage.AppendLine("An error occurred while executing the PowerShell command:");
         errorMessage.AppendLine(exception.Message);
         errorMessage.AppendLine(exception.StackTrace);
-        Debug.WriteLine(errorMessage.ToString());
+        Trace.WriteLine(errorMessage.ToString());
 
         return new PSOutput { StdErr = { errorMessage.ToString() } };
     }
