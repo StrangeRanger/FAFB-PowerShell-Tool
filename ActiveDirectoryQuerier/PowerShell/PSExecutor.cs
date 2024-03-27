@@ -38,26 +38,14 @@ public class PSExecutor
         }
     }
 
-    public async Task<PSOutput> ExecuteAsync(string commandText, OutputFormat outputFormat = OutputFormat.Text)
-    {
-        return await ExecuteAsync(new Command(commandText), outputFormat);
-    }
-
     public async Task<PSOutput> ExecuteAsync(Command command, OutputFormat outputFormat = OutputFormat.Text)
     {
-        try
-        {
-            _powerShell.Commands.Clear();
-            AssembleFullCommand(command, outputFormat);
+        _powerShell.Commands.Clear();
+        AssembleFullCommand(command, outputFormat);
 
-            PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
+        PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
 
-            return await ProcessExecutionResultsAsync(results);
-        }
-        catch (Exception exception)
-        {
-            return HandleExecutionException(exception);
-        }
+        return ProcessExecutionResults(results);
     }
 
     private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
@@ -97,18 +85,6 @@ public class PSExecutor
         }
 
         return psOutput;
-    }
-
-    private async Task<PSOutput> ProcessExecutionResultsAsync(IEnumerable<PSObject> results)
-    {
-        try
-        {
-            return await Task.Run(() => ProcessExecutionResults(results));
-        }
-        catch (Exception exception)
-        {
-            return HandleExecutionException(exception);
-        }
     }
 
     private PSOutput HandleExecutionException(Exception exception)
