@@ -3,15 +3,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation.Runspaces;
-using System.Text;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ActiveDirectoryQuerier.ActiveDirectory;
+using ActiveDirectoryQuerier.MessageBoxService;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.Queries;
 using ActiveDirectoryQuerier.ViewModels;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Win32;
 
 namespace ActiveDirectoryQuerier;
@@ -25,51 +25,49 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [[ Backing fields for properties ]] ------------------------------------------ //
 
-    private bool _queryEditingEnabled;
+    private bool _isQueryEditingEnabled;
     private string _queryName;
     private string _queryDescription;
-    private AppConsole _consoleOutputInQueryBuilder;
-    private AppConsole _consoleOutputInActiveDirectoryInfo;
-    private Command? _selectedCommandFromComboBoxInQueryBuilder;
-    private string? _selectedCommandFromComboBoxInActiveDirectoryInfo;
-    private ObservableCollection<Button>? _buttons; // TODO: Rename to be more descriptive.
+    private string? _selectedQueryInActiveDirectoryInfo;
+    private Command? _selectedCommandInQueryBuilder;
+    private ConsoleViewModel _consoleOutputInQueryBuilder;
+    private ConsoleViewModel _consoleOutputInActiveDirectoryInfo;
+    private ObservableCollection<Button>? _queryButtonStackPanel;
 
     // [[ Other fields ]] ----------------------------------------------------------- //
 
+    private Query? _queryBeingEdited;
     private readonly Query _currentQuery;
-    private readonly CustomQueries _customQuery;
-    private readonly PSExecutor _psExecutor;
-    private Query? _isEditing;
-    private readonly ActiveDirectoryInfo _activeDirectoryInfo = new();
+    private readonly QueryManager _queryManager;
+    private readonly ActiveDirectoryInfo _activeDirectoryInfo;
 
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
 
-    public bool QueryEditingEnabled
-    {
-        get => _queryEditingEnabled;
-        set {
-            _queryEditingEnabled = value;
-            OnPropertyChanged(nameof(QueryEditingEnabled));
-        }
-    }
+    public ObservableCollection<Button> QueryButtonStackPanel => _queryButtonStackPanel ??=
+        new ObservableCollection<Button>();
 
-    public AppConsole ConsoleOutputInQueryBuilder
+    public ConsoleViewModel ConsoleOutputInQueryBuilder
     {
         get => _consoleOutputInQueryBuilder;
         set {
-            _consoleOutputInQueryBuilder = value;
-            OnPropertyChanged(nameof(ConsoleOutputInQueryBuilder));
+            if (_consoleOutputInQueryBuilder != value)
+            {
+                _consoleOutputInQueryBuilder = value;
+                OnPropertyChanged(nameof(ConsoleOutputInQueryBuilder));
+            }
         }
     }
 
-    // TODO: Pieter: Use this for the console output in the Active Directory Info tab (link in GUI)
-    public AppConsole ConsoleOutputInActiveDirectoryInfo
+    public ConsoleViewModel ConsoleOutputInActiveDirectoryInfo
     {
         get => _consoleOutputInActiveDirectoryInfo;
         set {
-            _consoleOutputInActiveDirectoryInfo = value;
-            OnPropertyChanged(nameof(ConsoleOutputInActiveDirectoryInfo));
+            if (_consoleOutputInActiveDirectoryInfo != value)
+            {
+                _consoleOutputInActiveDirectoryInfo = value;
+                OnPropertyChanged(nameof(ConsoleOutputInActiveDirectoryInfo));
+            }
         }
     }
 
@@ -97,36 +95,58 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public Command? SelectedCommandFromComboBoxInQueryBuilder
+    /// <summary>
+    /// The currently selected powershell command from the ComboBox in the Query Builder tab.
+    /// </summary>
+    public Command? SelectedCommandInQueryBuilder
     {
-        get => _selectedCommandFromComboBoxInQueryBuilder;
+        get => _selectedCommandInQueryBuilder;
         set {
-            _selectedCommandFromComboBoxInQueryBuilder = value;
-            OnPropertyChanged(nameof(SelectedCommandFromComboBoxInQueryBuilder));
-            // No need to load parameters if the command is null.
-            if (value is not null)
+            if (_selectedCommandInQueryBuilder != value)
             {
-                // TODO: Figure out how to resolve the warning about the async method not being awaited...
-                LoadCommandParametersAsync(value);
+                _selectedCommandInQueryBuilder = value;
+                OnPropertyChanged(nameof(SelectedCommandInQueryBuilder));
+                // No need to load parameters if the command is null.
+                if (value is not null)
+                {
+                    Task.Run(() => LoadCommandParametersAsync(value));
+                }
             }
         }
     }
 
-    public string? SelectedCommandFromComboBoxInActiveDirectoryInfo
+    /// <summary>
+    /// The currently selected query from the ComboBox in the Active Directory Info tab.
+    /// </summary>
+    public string? SelectedQueryInActiveDirectoryInfo
     {
-        get => _selectedCommandFromComboBoxInActiveDirectoryInfo;
+        get => _selectedQueryInActiveDirectoryInfo;
         set {
-            if (_selectedCommandFromComboBoxInActiveDirectoryInfo != value)
+            if (_selectedQueryInActiveDirectoryInfo != value)
             {
-                _selectedCommandFromComboBoxInActiveDirectoryInfo = value;
-                OnPropertyChanged(nameof(SelectedCommandFromComboBoxInActiveDirectoryInfo));
+                _selectedQueryInActiveDirectoryInfo = value;
+                OnPropertyChanged(nameof(SelectedQueryInActiveDirectoryInfo));
             }
         }
     }
 
-    public ActiveDirectoryInfo AvailableOptionsFromComboBoxInActiveDirectoryInfo { get; } = new();
+    public bool IsQueryEditingEnabled
+    {
+        get => _isQueryEditingEnabled;
+        set {
+            if (_isQueryEditingEnabled != value)
+            {
+                _isQueryEditingEnabled = value;
+                OnPropertyChanged(nameof(IsQueryEditingEnabled));
+                OnIsQueryEditingEnabledChanged();
+            }
+        }
+    }
 
-    public ObservableCollection<Button> QueryButtonStackPanel => _buttons ??= new ObservableCollection<Button>();
+    /// <summary>
+    /// The available queries that can be selected from the ComboBox in the ActiveDirectoryInfo tab.
+    /// </summary>
+    public ActiveDirectoryInfo AvailableQueriesInActiveDirectoryInfo { get; } = new();
 
     // [[ Other properties ]] ------------------------------------------------------- //
 
@@ -135,9 +155,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // ReSharper disable once InconsistentNaming
     public ObservableCollection<string>? AvailableADCommandParameters { get; private set; }
     // ReSharper disable once InconsistentNaming
-    public ObservableCollection<ComboBoxParameterViewModel> DynamicallyAvailableADCommandParametersComboBox { get; }
+    public ObservableCollection<ComboBoxParameterViewModel> DynamicallyAvailableADCommandParameterComboBoxes { get; }
     // ReSharper disable once InconsistentNaming
-    public ObservableCollection<TextBoxViewModel> DynamicallyAvailableADCommandParameterValueTextBox { get; }
+    public ObservableCollection<TextBoxViewModel> DynamicallyAvailableADCommandParameterValueTextBoxes { get; }
 
     // [[ GUI element relays ]] ----------------------------------------------------- //
     // [[[ Dynamically created elements ]]] ----------------------------------------- //
@@ -148,105 +168,68 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     // [[[ Existing GUI elements ]]] ------------------------------------------------ //
 
-    public ICommand SaveQueryRelay { get; }
+    public ICommand SaveCurrentQueryRelay { get; }
     public ICommand ClearQueryBuilderRelay { get; }
-    public ICommand ExecuteQueryFromQueryBuilderRelay { get; }
-    public ICommand ExecuteQueryAsyncFromActiveDirectoryInfoRelay { get; }
-    public ICommand AddCommandComboBoxRelay { get; }
-    public ICommand AddCommandParameterComboBoxRelay { get; }
-    public ICommand RemoveCommandParameterComboBoxRelay { get; }
-    public ICommand OutputToTextFileRelay { get; }
-    public ICommand OutputToCsvFileRelay { get; }
-    public ICommand ExportConsoleOutputRelay { get; }
+    public ICommand ExecuteQueryInQueryBuilderRelay { get; }
+    public ICommand ExecuteSelectedQueryInADInfoRelay { get; }
+    public ICommand AddCommandComboBoxInQueryBuilderRelay { get; }
+    public ICommand AddParameterComboBoxInQueryBuilderRelay { get; }
+    public ICommand RemoveParameterComboBoxInQueryBuilderRelay { get; }
+    public ICommand OutputExecutionResultsToTextFileRelay { get; }
+    public ICommand OutputExecutionResultsToCsvFileRelay { get; }
+    public ICommand ExportConsoleOutputToFileRelay { get; }
     public ICommand ClearConsoleOutputInQueryBuilderRelay { get; }
     public ICommand ImportQueryFileRelay { get; }
     public ICommand CreateNewQueryFileRelay { get; }
-    public ICommand ClearConsoleOutputInActiveDirectoryInfoRelay { get; } 
-    
+    public ICommand CheckBoxCheckedRelay { get; private set; }
+    public IMessageBoxService MessageBoxService { get; init; }
+
     //  [ Constructor ] ------------------------------------------------------------- //
 
     public MainWindowViewModel()
     {
         _queryName = string.Empty;
         _queryDescription = string.Empty;
-        _consoleOutputInQueryBuilder = new AppConsole();
-        _consoleOutputInActiveDirectoryInfo = new AppConsole();
-        _psExecutor = new PSExecutor();
-        _customQuery = new CustomQueries();
         _currentQuery = new Query();
+        _queryManager = new QueryManager();
+        _activeDirectoryInfo = new ActiveDirectoryInfo();
+        _consoleOutputInQueryBuilder = new ConsoleViewModel();
+        _consoleOutputInActiveDirectoryInfo = new ConsoleViewModel();
 
         ADCommands = new ObservableCollection<Command>();
-        DynamicallyAvailableADCommandParametersComboBox = new ObservableCollection<ComboBoxParameterViewModel>();
-        DynamicallyAvailableADCommandParameterValueTextBox = new ObservableCollection<TextBoxViewModel>();
+        DynamicallyAvailableADCommandParameterComboBoxes = new ObservableCollection<ComboBoxParameterViewModel>();
+        DynamicallyAvailableADCommandParameterValueTextBoxes = new ObservableCollection<TextBoxViewModel>();
+        MessageBoxService = new MessageBoxService.MessageBoxService();
 
-        OutputToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
-        OutputToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
-        ExportConsoleOutputRelay = new RelayCommand(ExportConsoleOutputToFile);
-        ExecuteQueryFromQueryBuilderRelay = new RelayCommand(
-            _ => ExecuteQueryAsync(_consoleOutputInQueryBuilder));
-        ExecuteQueryAsyncFromActiveDirectoryInfoRelay =
-            new RelayCommand(ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo);
+        OutputExecutionResultsToCsvFileRelay = new RelayCommand(OutputExecutionResultsToCsvFileAsync);
+        OutputExecutionResultsToTextFileRelay = new RelayCommand(OutputExecutionResultsToTextFileAsync);
+        ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanelAsync);
+        ExecuteQueryInQueryBuilderRelay = new RelayCommand(
+            _ => Task.Run(() => ExecuteQueryAsync(_consoleOutputInQueryBuilder)));
+        ExecuteSelectedQueryInADInfoRelay = new RelayCommand(ExecuteSelectedQueryInADInfo);
+        ExportConsoleOutputToFileRelay = new RelayCommand(ExportConsoleOutputToFile);
         ImportQueryFileRelay = new RelayCommand(ImportQueryFile);
         CreateNewQueryFileRelay = new RelayCommand(CreateNewQueryFile);
-        AddCommandParameterComboBoxRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
-        AddCommandComboBoxRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
-        RemoveCommandParameterComboBoxRelay = new RelayCommand(RemoveCommandParameterComboBoxInQueryBuilder);
-        SaveQueryRelay = new RelayCommand(SaveQuery);
+        AddParameterComboBoxInQueryBuilderRelay = new RelayCommand(AddParameterComboBoxInQueryBuilder);
+        AddCommandComboBoxInQueryBuilderRelay = new RelayCommand(AddCommandComboBoxInQueryBuilder);
+        RemoveParameterComboBoxInQueryBuilderRelay = new RelayCommand(RemoveParameterComboBoxInQueryBuilder);
+        SaveCurrentQueryRelay = new RelayCommand(SaveCurrentQuery);
         EditQueryFromQueryStackPanelRelay = new RelayCommand(EditQueryFromQueryStackPanel);
         DeleteQueryFromQueryStackPanelRelay = new RelayCommand(DeleteQueryFromQueryStackPanel);
-        ExecuteQueryFromQueryStackPanelRelay = new RelayCommand(ExecuteQueryFromQueryStackPanel);
         ClearConsoleOutputInQueryBuilderRelay = new RelayCommand(
             _ => ClearConsoleOutput(_consoleOutputInQueryBuilder));
-        ClearConsoleOutputInActiveDirectoryInfoRelay = new RelayCommand(
-            _ => ClearConsoleOutput(_consoleOutputInActiveDirectoryInfo));
         ClearQueryBuilderRelay = new RelayCommand(ClearQueryBuilder);
-        
-        InitializeActiveDirectoryCommandsAsync();
+        CheckBoxCheckedRelay = new RelayCommand(CheckBoxChecked);
+
+        Task.Run(InitializeActiveDirectoryCommandsAsync);
         LoadSavedQueriesFromFile(); // Calls method to deserialize and load buttons.
     }
 
     // [ Methods ] ----------------------------------------------------------------- //
 
-    private async void ExecuteQueryAsyncFromComboBoxInActiveDirectoryInfo(object _)
+    private void ClearConsoleOutput(ConsoleViewModel consoleOutput)
     {
-        if (SelectedCommandFromComboBoxInActiveDirectoryInfo is null)
-        {
-            Trace.WriteLine("No command selected.");
-            MessageBox.Show("You must first select an option to execute.",
-                            "Warning",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-            return;
-        }
-
-        string selectedOption = SelectedCommandFromComboBoxInActiveDirectoryInfo;
-        if (_activeDirectoryInfo.AvailableOptions.TryGetValue(selectedOption, out var method))
-        {
-            PSOutput result = await method.Invoke();
-
-            if (result.HadErrors)
-            {
-                ConsoleOutputInActiveDirectoryInfo.Append(result.StdErr);
-            }
-            else
-            {
-                ConsoleOutputInActiveDirectoryInfo.Append(result.StdOut);
-            }
-        }
-        // This is more of an internal error catch, as even through this command shouldn't fail, it's better safe than
-        // sorry.
-        else
-        {
-            string errorMessage =
-                "Internal Error: The selected option was not found in the dictionary: " + $"{selectedOption}";
-            MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            throw new KeyNotFoundException("The selected option was not found in the dictionary.");
-        }
-    }
-
-    private void ClearConsoleOutput(AppConsole appConsole)
-    {
-        if (appConsole.ConsoleOutput.Length == 0)
+        if (consoleOutput.GetConsoleOutput.Length == 0)
         {
             MessageBox.Show("The console is already clear.",
                             "Information",
@@ -263,34 +246,70 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (result == MessageBoxResult.Yes)
         {
-            appConsole.Clear();
+            consoleOutput.Clear();
         }
     }
 
-    private void EditQueryFromQueryStackPanel(object queryButton)
+    private async void ExecuteSelectedQueryInADInfo(object? _)
     {
-        var currentQuery = (Query)((Button)queryButton).Tag;
+        if (SelectedQueryInActiveDirectoryInfo is null)
+        {
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("You must first select an option to execute.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
+        }
 
-        _isEditing = currentQuery;
-        QueryEditingEnabled = true;
+        if (_activeDirectoryInfo.AvailableOptions.TryGetValue(SelectedQueryInActiveDirectoryInfo, out var method))
+        {
+            PSOutput result = await method.Invoke();
+            ConsoleOutputInActiveDirectoryInfo.Append(result.HadErrors ? result.StdErr : result.StdOut);
+        }
+        // This is an internal error to ensure that if the selected option is not found, the program will not continue.
+        else
+        {
+            var errorMessage = "Internal Error: The selected option was not found in the dictionary: " +
+                               $"{SelectedQueryInActiveDirectoryInfo}";
+            MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            throw new KeyNotFoundException("The selected option was not found in the dictionary.");
+        }
+    }
+
+    internal void EditQueryFromQueryStackPanel(object? queryButton)
+    {
+        if (queryButton is not Button button)
+        {
+            Trace.WriteLine("No button selected.");
+            MessageBoxService.Show($"An internal error occurred while trying to edit the query: {queryButton}",
+                                   "Error",
+                                   MessageBoxButton.OK,
+                                   MessageBoxImage.Error);
+            return;
+        }
+
+        var currentQuery = (Query)button.Tag;
+        Command chosenCommand = ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
+        ADCommandParameters adCommandParameters = new();
+
+        _queryBeingEdited = currentQuery;
+        IsQueryEditingEnabled = true;
         QueryName = currentQuery.QueryName;
         QueryDescription = currentQuery.QueryDescription;
-
         // Fill in the commandName
-        Command chosenCommand = ADCommands.FirstOrDefault(item => item.CommandText == currentQuery.PSCommandName)!;
-        SelectedCommandFromComboBoxInQueryBuilder = chosenCommand;
+        SelectedCommandInQueryBuilder = chosenCommand;
 
         // Load the Possible Parameters Synchronously
-        ADCommandParameters adCommandParameters = new();
-        adCommandParameters.LoadAvailableParameters(SelectedCommandFromComboBoxInQueryBuilder);
+        adCommandParameters.LoadAvailableParameters(SelectedCommandInQueryBuilder);
         AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
         OnPropertyChanged(nameof(AvailableADCommandParameters));
 
-        // Check to see if the DynamicallyAvailableADCommandParametersComboBox is empty and clear it if it is
-        if (DynamicallyAvailableADCommandParametersComboBox.Count != 0)
+        // Check to see if the DynamicallyAvailableADCommandParameterComboBoxes is empty and clear it if it is
+        if (DynamicallyAvailableADCommandParameterComboBoxes.Count != 0)
         {
-            DynamicallyAvailableADCommandParametersComboBox.Clear();
-            DynamicallyAvailableADCommandParameterValueTextBox.Clear();
+            DynamicallyAvailableADCommandParameterComboBoxes.Clear();
+            DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
 
         // Fill in Parameters and values
@@ -302,32 +321,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             AddParameterComboBoxInQueryBuilder(null!); // Null is never used, so we use null forgiveness operator.
 
             // Fill in the parameter boxes
-            DynamicallyAvailableADCommandParametersComboBox[i].SelectedParameter = currentQuery.PSCommandParameters[i];
-            DynamicallyAvailableADCommandParameterValueTextBox[i].SelectedParameterValue =
+            DynamicallyAvailableADCommandParameterComboBoxes[i].SelectedParameter = currentQuery.PSCommandParameters[i];
+            DynamicallyAvailableADCommandParameterValueTextBoxes[i].SelectedParameterValue =
                 currentQuery.PSCommandParameterValues[i];
         }
     }
 
-    private async void ExecuteQueryFromQueryStackPanel(object queryButton)
-    {
-        var currentButton = queryButton as Button;
-        
-        if (currentButton is null)
-        {
-            Trace.WriteLine("No button selected.");
-            MessageBox.Show("To execute a query, you must first select a query.",
-                            "Warning",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-            return;
-        }
-        
-
-        var buttonQuery = (Query)currentButton.Tag;
-        await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-    }
-
-    private void DeleteQueryFromQueryStackPanel(object queryButton)
+    private void DeleteQueryFromQueryStackPanel(object? queryButton)
     {
         if (queryButton is not Button currentButton)
         {
@@ -347,22 +347,41 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (result == MessageBoxResult.Yes)
         {
+            Query deletedQuery = (Query)currentButton.Tag;
+            int deletedQueryIndex = _queryManager.Queries.IndexOf(deletedQuery);
+
             QueryButtonStackPanel.Remove(currentButton);
-            _customQuery.Queries.Remove((Query)currentButton.Tag);
-            _customQuery.SaveQueriesToJson();
+            _queryManager.Queries.Remove((Query)currentButton.Tag);
+            _queryManager.SaveQueryToFile();
+
+            // Check if the deleted query is currently being edited
+            if (IsQueryEditingEnabled && _queryBeingEdited == (Query)currentButton.Tag)
+            {
+                IsQueryEditingEnabled = false;
+                _queryBeingEdited = null;
+            }
+            // If a different query was deleted, update the index of the editing query
+            else if (IsQueryEditingEnabled && _queryBeingEdited != null)
+            {
+                int editingQueryIndex = _queryManager.Queries.IndexOf(_queryBeingEdited);
+                if (editingQueryIndex > deletedQueryIndex)
+                {
+                    _queryBeingEdited = _queryManager.Queries[editingQueryIndex - 1];
+                }
+            }
         }
     }
 
-    private void CreateNewQueryFile(object _)
+    // TODO: Continue refactoring starting here...
+    private void CreateNewQueryFile(object? _)
     {
         // Saves/creates a new save file for the queries
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
-        saveFileDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+        SaveFileDialog saveFileDialog = new() { Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt" };
+
         if (saveFileDialog.ShowDialog() == true)
         {
             QueryButtonStackPanel.Clear();
-            //File.WriteAllText(saveFileDialog.FileName, string.Empty);
-            _customQuery.CustomQueryFileLocation = saveFileDialog.FileName;
+            _queryManager.QueryFileSaveLocation = saveFileDialog.FileName;
         }
     }
 
@@ -371,23 +390,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         try
         {
             // Load the custom queries from the file (Deserialize)
-            _customQuery.LoadData();
+            _queryManager.LoadQueriesFromFile();
 
             // Loop through the queries and create a button for each one.
-            foreach (var newButton in _customQuery.Queries.Select(CreateQueryButtonInStackPanel))
+            foreach (var newButton in _queryManager.Queries.Select(CreateQueryButtonInStackPanel))
             {
                 // Lastly add the button to the stack panel
                 QueryButtonStackPanel.Add(newButton);
             }
         }
-        // TODO: Possibly provide more comprehensive error handling.
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            Trace.WriteLine(ex);
+            Trace.WriteLine(exception);
         }
     }
 
-    private void ImportQueryFile(object _)
+    private void ImportQueryFile(object? _)
     {
         OpenFileDialog dialog =
             new() { FileName = "CustomQueries.dat", Filter = "Json files (*.json)|*.json|Text Files (*.txt)|*.txt" };
@@ -399,86 +417,50 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (result == true)
         {
             // Open document
-            _customQuery.CustomQueryFileLocation = dialog.FileName;
+            _queryManager.QueryFileSaveLocation = dialog.FileName;
 
             QueryButtonStackPanel.Clear();
             LoadSavedQueriesFromFile();
         }
     }
 
-// It's okay to suppress this warning because this method is called within the constructor. There is more than enough
-// time for the method to complete before the user interacts with the GUI.
-#pragma warning disable S3168
-    private async void ExecuteQueryAsync(AppConsole appConsole, Command? command = null)
+    private async Task InitializeActiveDirectoryCommandsAsync()
     {
-        await ExecuteQueryCoreAsync(appConsole, command);
+        try
+        {
+            ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommandsAsync();
+            ADCommands = new ObservableCollection<Command>(list);
+            OnPropertyChanged(nameof(ADCommands));
+        }
+        catch (Exception exception)
+        {
+            Trace.WriteLine(exception);
+        }
     }
-
-    private async void InitializeActiveDirectoryCommandsAsync()
-    {
-        ObservableCollection<Command> list = await ADCommandsFetcher.GetADCommands();
-        ADCommands = new ObservableCollection<Command>(list);
-        OnPropertyChanged(nameof(ADCommands));
-    }
-#pragma warning restore S3168
 
     private async Task LoadCommandParametersAsync(Command? selectedCommand)
     {
-        ADCommandParameters adCommandParameters = new();
-        await adCommandParameters.LoadAvailableParametersAsync(selectedCommand);
-        AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
-        OnPropertyChanged(nameof(AvailableADCommandParameters));
-
-        // Update the possible properties of the ComboBoxParameterViewModels.
-        foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in
-                     DynamicallyAvailableADCommandParametersComboBox)
-        {
-            comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
-        }
-    }
-
-    // TODO: Hunter: Re-review this method and make any necessary changes.
-    private async Task ExecuteQueryCoreAsync(AppConsole appConsole, Command? command = null)
-    {
-        if (SelectedCommandFromComboBoxInQueryBuilder is null && command is null)
-        {
-            Trace.WriteLine("No command selected.");
-            MessageBox.Show("To execute a command, you must first select a command.",
-                            "Warning",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-            return;
-        }
-
         try
         {
-            PSOutput result;
-            if (command is not null)
-            {
-                result = await _psExecutor.ExecuteAsync(command);
-            }
-            else
-            {
-                // Add selected parameters and their values to the command.
-                UpdateSelectedCommand();
-                result = await _psExecutor.ExecuteAsync(SelectedCommandFromComboBoxInQueryBuilder);
-            }
+            ADCommandParameters adCommandParameters = new();
+            await adCommandParameters.LoadAvailableParametersAsync(selectedCommand);
+            AvailableADCommandParameters = new ObservableCollection<string>(adCommandParameters.AvailableParameters);
+            OnPropertyChanged(nameof(AvailableADCommandParameters));
 
-            if (result.HadErrors)
+            // Update the possible properties of the ComboBoxParameterViewModels.
+            foreach (ComboBoxParameterViewModel comboBoxParameterViewModel in
+                         DynamicallyAvailableADCommandParameterComboBoxes)
             {
-                appConsole.Append(result.StdErr);
-                return;
+                comboBoxParameterViewModel.AvailableParameters = AvailableADCommandParameters;
             }
-
-            appConsole.Append(result.StdOut);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            appConsole.Append($"Error executing command: {ex.Message}" + ex.Message);
+            Trace.WriteLine(exception);
         }
     }
 
-    private void AddParameterComboBoxInQueryBuilder(object _)
+    private void AddParameterComboBoxInQueryBuilder(object? _)
     {
         // Check if some variable is null and throw an exception if it is
         if (AvailableADCommandParameters is null)
@@ -491,127 +473,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        DynamicallyAvailableADCommandParametersComboBox.Add(
+        DynamicallyAvailableADCommandParameterComboBoxes.Add(
             new ComboBoxParameterViewModel(AvailableADCommandParameters));
-        DynamicallyAvailableADCommandParameterValueTextBox.Add(new TextBoxViewModel());
+        DynamicallyAvailableADCommandParameterValueTextBoxes.Add(new TextBoxViewModel());
     }
 
-    private void AddCommandComboBoxInQueryBuilder(object _)
+    private void AddCommandComboBoxInQueryBuilder(object? _)
     {
         Trace.WriteLine("Not implemented yet.");
         MessageBox.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
-    private async void OutputExecutionResultsToTextFileAsync(object _)
+    private void UpdateCommandWithSelectedParameters()
     {
-
-        if (_ is not null)
-        {
-            var currentButton = _ as Button;
-            Query buttonQuery;
-
-            buttonQuery = (Query)currentButton!.Tag;
-            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-
-        }
-        else
-        {
-            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
-        }
-
-        // Filepath
-        // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = new() {                       // Set properties of the OpenFileDialog
-                                               FileName = "Document", // Default file name
-                                               Filter = "All files(*.*) | *.*"
-        };
-
-        // Display
-        bool? result = saveFileDialog.ShowDialog();
-
-        // Get file and write text
-        if (result == true)
-        {
-            // Open document
-            string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.ConsoleOutput);
-        }
-    }
-
-    /// <summary>
-    /// This method is in the working
-    /// Status: prompts user for file path and saves correctly though the string could be edited to be better
-    /// </summary>
-    /// <param name="_">Represents the object that the command is bound to</param>
-    private async void OutputExecutionResultsToCsvFileAsync(object _)
-    {
-
-        if (_ is not null) 
-        {
-            var currentButton = _ as Button;
-            Query buttonQuery;
-
-            buttonQuery = (Query)currentButton!.Tag;
-            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
-
-        }
-        else
-        {
-            await ExecuteQueryCoreAsync(ConsoleOutputInQueryBuilder);
-        }
-
-        var csv = new StringBuilder();
-        string[] output = ConsoleOutputInQueryBuilder.ConsoleOutput.Split(' ', '\n');
-
-        for (int i = 0; i < output.Length - 2; i++)
-        {
-            var first = output[i];
-            var second = output[i + 1];
-            // format the strings and add them to a string
-            var newLine = $"{first},{second}";
-            csv.AppendLine(newLine);
-        }
-
-        // Write the text to a file & prompt user for the location
-        SaveFileDialog saveFileDialog = new() { FileName = "Document", Filter = "All files(*.*) | *.*" };
-
-        // Display
-        bool? result = saveFileDialog.ShowDialog();
-
-        // Get file and write text
-        if (result == true)
-        {
-            // Open document
-            string filePath = saveFileDialog.FileName;
-            await File.WriteAllTextAsync(filePath, csv.ToString());
-        }
-    }
-
-    private void ExportConsoleOutputToFile(object _)
-    {
-        if (ConsoleOutputInQueryBuilder.ConsoleOutput.Length == 0)
-        {
-            MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
-
-        bool? result = saveFileDialog.ShowDialog();
-
-        if (result == true)
-        {
-            string filename = saveFileDialog.FileName;
-            ConsoleOutputInQueryBuilder.ExportToText(filename);
-        }
-    }
-
-    /// <summary>
-    /// This method is for getting the currently selected command at anytime
-    /// </summary>
-    private void UpdateSelectedCommand()
-    {
-        if (SelectedCommandFromComboBoxInQueryBuilder is null)
+        if (SelectedCommandInQueryBuilder is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To save a query, you must first select a command.",
@@ -621,74 +496,54 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        // Try to get the content within the drop downs
-        try
+        SelectedCommandInQueryBuilder.Parameters.Clear();
+        // Loop through the ComboBoxes and add the selected parameters to the command.
+        for (var i = 0; i < DynamicallyAvailableADCommandParameterComboBoxes.Count; i++)
         {
-            SelectedCommandFromComboBoxInQueryBuilder.Parameters.Clear();
-            for (int i = 0; i < DynamicallyAvailableADCommandParametersComboBox.Count; i++)
-            {
-                SelectedCommandFromComboBoxInQueryBuilder.Parameters.Add(
-                    new CommandParameter(DynamicallyAvailableADCommandParametersComboBox[i].SelectedParameter,
-                                         DynamicallyAvailableADCommandParameterValueTextBox[i].SelectedParameterValue));
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Write(ex);
+            SelectedCommandInQueryBuilder.Parameters.Add(
+                new CommandParameter(DynamicallyAvailableADCommandParameterComboBoxes[i].SelectedParameter,
+                                     DynamicallyAvailableADCommandParameterValueTextBoxes[i].SelectedParameterValue));
         }
     }
 
     /// <summary>
     /// Updates the _currentQuery object with the current query information.
     /// </summary>
-    /// <note>
-    /// TODO: It needs to be tested! Still in the works!
-    /// TODO: Fix any and all warnings about possible null values.
-    /// </note>
     private void GetCurrentQuery()
     {
-        UpdateSelectedCommand();
+        UpdateCommandWithSelectedParameters();
 
-        try
+        if (SelectedCommandInQueryBuilder?.Parameters == null)
         {
-            string[] commandParameters;
-            string[] commandParameterValues;
-
-            if (SelectedCommandFromComboBoxInQueryBuilder?.Parameters != null)
-            {
-                commandParameters = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
-                commandParameterValues = new string[SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count];
-
-                _currentQuery.QueryDescription = QueryDescription;
-                _currentQuery.QueryName = QueryName;
-                _currentQuery.PSCommandName = SelectedCommandFromComboBoxInQueryBuilder.CommandText;
-
-                for (int i = 0; i < SelectedCommandFromComboBoxInQueryBuilder.Parameters.Count; i++)
-                {
-                    CommandParameter commandParameter = SelectedCommandFromComboBoxInQueryBuilder.Parameters[i];
-
-                    commandParameters[i] = commandParameter.Name;
-                    commandParameterValues[i] = commandParameter.Value.ToString()!;
-                }
-                _currentQuery.PSCommandParameters = commandParameters;
-                _currentQuery.PSCommandParameterValues = commandParameterValues;
-            }
+            return;
         }
-        // TODO: Possibly provide more comprehensive error handling.
-        catch (Exception ex)
+
+        var commandParameters = new string[SelectedCommandInQueryBuilder.Parameters.Count];
+        var commandParameterValues = new string[SelectedCommandInQueryBuilder.Parameters.Count];
+
+        _currentQuery.QueryDescription = QueryDescription;
+        _currentQuery.QueryName = QueryName;
+        _currentQuery.PSCommandName = SelectedCommandInQueryBuilder.CommandText;
+
+        for (int i = 0; i < SelectedCommandInQueryBuilder.Parameters.Count; i++)
         {
-            MessageBox.Show(ex.Message);
+            CommandParameter commandParameter = SelectedCommandInQueryBuilder.Parameters[i];
+            commandParameters[i] = commandParameter.Name;
+            commandParameterValues[i] = commandParameter.Value.ToString()!;
         }
+
+        _currentQuery.PSCommandParameters = commandParameters;
+        _currentQuery.PSCommandParameterValues = commandParameterValues;
     }
 
-    private void RemoveCommandParameterComboBoxInQueryBuilder(object _)
+    private void RemoveParameterComboBoxInQueryBuilder(object? _)
     {
-        if (DynamicallyAvailableADCommandParametersComboBox.Count != 0)
+        if (DynamicallyAvailableADCommandParameterComboBoxes.Count != 0)
         {
-            DynamicallyAvailableADCommandParametersComboBox.RemoveAt(
-                DynamicallyAvailableADCommandParametersComboBox.Count - 1);
-            DynamicallyAvailableADCommandParameterValueTextBox.RemoveAt(
-                DynamicallyAvailableADCommandParameterValueTextBox.Count - 1);
+            DynamicallyAvailableADCommandParameterComboBoxes.RemoveAt(
+                DynamicallyAvailableADCommandParameterComboBoxes.Count - 1);
+            DynamicallyAvailableADCommandParameterValueTextBoxes.RemoveAt(
+                DynamicallyAvailableADCommandParameterValueTextBoxes.Count - 1);
         }
         else
         {
@@ -699,9 +554,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void SaveQuery(object commandParameter)
+    private void SaveCurrentQuery(object? commandParameter)
     {
-        if (SelectedCommandFromComboBoxInQueryBuilder is null)
+        if (SelectedCommandInQueryBuilder is null)
         {
             Trace.WriteLine("No command selected.");
             MessageBox.Show("To save a query, you must first select a command.",
@@ -711,28 +566,30 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return;
         }
 
-        if (_isEditing is not null && QueryEditingEnabled)
+        // If the user is editing a query, update the query and save it.
+        if (_queryBeingEdited is not null && IsQueryEditingEnabled)
         {
-            // CustomQueries.query editingQuery = _customQuery.Queries.Find(item => item == isEditing);
             GetCurrentQuery();
-            Trace.WriteLine(_customQuery.Queries.IndexOf(_isEditing));
-            _customQuery.Queries[_customQuery.Queries.IndexOf(_isEditing)] = _currentQuery;
-            _customQuery.SaveQueriesToJson();
-            _isEditing = null;
-            QueryEditingEnabled = false;
+            _queryManager.Queries[_queryManager.Queries.IndexOf(_queryBeingEdited)] = _currentQuery;
+            _queryManager.SaveQueryToFile();
+            _queryBeingEdited = null;
+            IsQueryEditingEnabled = false;
         }
         else
         {
             // Try to get the content within the drop downs
             try
             {
-                UpdateSelectedCommand();
+                UpdateCommandWithSelectedParameters();
 
-                _customQuery.SerializeCommand(SelectedCommandFromComboBoxInQueryBuilder, QueryName, QueryDescription);
+                _queryManager.ConvertCommandToQueryAndSave(SelectedCommandInQueryBuilder, QueryName, QueryDescription);
 
                 Button newButton = CreateQueryButtonInStackPanel();
 
-                QueryButtonStackPanel.Add(newButton);
+                if (newButton.Content != null)
+                {
+                    QueryButtonStackPanel.Add(newButton);
+                }
             }
             catch (Exception ex)
             {
@@ -741,10 +598,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void ClearQueryBuilder(object _)
+    private void ClearQueryBuilder(object? _)
     {
-        if (SelectedCommandFromComboBoxInQueryBuilder is null &&
-            DynamicallyAvailableADCommandParametersComboBox.Count == 0)
+        if (SelectedCommandInQueryBuilder is null && DynamicallyAvailableADCommandParameterComboBoxes.Count == 0)
         {
             MessageBox.Show("The query builder is already clear.",
                             "Information",
@@ -760,14 +616,133 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                                                   MessageBoxImage.Warning,
                                                   MessageBoxResult.No);
 
-        // If the user selects yes, clear the console
+        // If the user selects yes, clear the consoleOutput
         if (result == MessageBoxResult.Yes)
         {
-            QueryName = "";
-            QueryDescription = "";
-            SelectedCommandFromComboBoxInQueryBuilder = null;
-            DynamicallyAvailableADCommandParametersComboBox.Clear();
-            DynamicallyAvailableADCommandParameterValueTextBox.Clear();
+            QueryName = string.Empty;
+            QueryDescription = string.Empty;
+            SelectedCommandInQueryBuilder = null;
+            DynamicallyAvailableADCommandParameterComboBoxes.Clear();
+            DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
+        }
+    }
+
+    /// <remarks>
+    /// The use of the <c>command</c> parameter indicates that the method can be called from the Query Stack Panel.
+    /// On the other hand, the absence of the <c>command</c> parameter and use of the
+    /// <c>SelectedCommandInQueryBuilder</c> property indicates that the method can be called from the Query Builder.
+    /// </remarks>
+    private async Task ExecuteQueryAsync(ConsoleViewModel consoleOutput, Command? command = null)
+    {
+        PSExecutor psExecutor = new();
+
+        if (SelectedCommandInQueryBuilder is null && command is null)
+        {
+            Trace.WriteLine("No command selected.");
+            MessageBox.Show("To execute a command, you must first select a command.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            PSOutput result;
+            OutputFormat outputFormat = CalculateOutputFormat();
+
+            if (command is not null)
+            {
+                result = await psExecutor.ExecuteAsync(command, outputFormat);
+            }
+            else
+            {
+                UpdateCommandWithSelectedParameters();
+                // Null forgiveness operator is used because if command is not null, this line will never be reached.
+                // If it is null, that must mean that SelectedCommandInQueryBuilder is not null, else the return
+                // statement above would have been executed.
+                result = await psExecutor.ExecuteAsync(SelectedCommandInQueryBuilder!, outputFormat);
+            }
+
+            if (result.HadErrors)
+            {
+                consoleOutput.Append(result.StdErr);
+                return;
+            }
+
+            consoleOutput.Append(result.StdOut);
+        }
+        catch (Exception exception)
+        {
+            consoleOutput.Append($"Error executing command: {exception.Message}");
+        }
+    }
+
+    private async void ExecuteQueryFromQueryStackPanelAsync(object? queryButton)
+    {
+        if (queryButton is not Button currentButton)
+        {
+            Trace.WriteLine("No button selected.");
+            MessageBox.Show("To execute a query, you must first select a query.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            return;
+        }
+
+        var buttonQuery = (Query)currentButton.Tag;
+        await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+    }
+
+    private void ExportConsoleOutputToFile(object? _)
+    {
+        if (ConsoleOutputInQueryBuilder.GetConsoleOutput.Length == 0)
+        {
+            MessageBox.Show("The console is empty.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        SaveFileDialog saveFileDialog = new() { DefaultExt = ".txt", Filter = "Text documents (.txt)|*.txt" };
+
+        bool? result = saveFileDialog.ShowDialog();
+
+        if (result == true)
+        {
+            string filename = saveFileDialog.FileName;
+            ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
+        }
+    }
+
+    private async void OutputExecutionResultsToTextFileAsync(object? queryButton)
+    {
+        await OutputExecutionResultsToFileAsync(queryButton, ".txt", "Text documents (.txt)|*.txt");
+    }
+
+    private async void OutputExecutionResultsToCsvFileAsync(object? queryButton)
+    {
+        await OutputExecutionResultsToFileAsync(queryButton, ".csv", "CSV files (*.csv)|*.csv");
+    }
+
+    private async Task OutputExecutionResultsToFileAsync(object? queryButton, string fileExtension, string filter)
+    {
+        if (queryButton is not null)
+        {
+            var buttonQuery = (Query)((Button)queryButton).Tag;
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
+        }
+        else
+        {
+            await ExecuteQueryAsync(ConsoleOutputInQueryBuilder);
+        }
+
+        SaveFileDialog saveFileDialog = new() { DefaultExt = fileExtension, Filter = filter };
+
+        bool? result = saveFileDialog.ShowDialog();
+
+        if (result == true)
+        {
+            string filePath = saveFileDialog.FileName;
+            await File.WriteAllTextAsync(filePath, ConsoleOutputInQueryBuilder.GetConsoleOutput);
         }
     }
 
@@ -775,29 +750,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         Button newButton = new();
 
-        if (query != null)
+        if (query is not null)
         {
             newButton.Height = 48;
-            newButton.Content = (string.IsNullOrEmpty(query.QueryName) ? query.PSCommandName : query.QueryName);
+            newButton.Content = string.IsNullOrEmpty(query.QueryName) ? query.PSCommandName : query.QueryName;
             newButton.Tag = query;
         }
         else
         {
-            // Check for null
-            if (SelectedCommandFromComboBoxInQueryBuilder is null)
+            if (SelectedCommandInQueryBuilder is null)
             {
                 Trace.WriteLine("No command selected.");
                 MessageBox.Show("To save a query, you must first select a command.",
                                 "Warning",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Warning);
-                return null; // TODO: Figure out what to return here!!!
+                return new Button();
             }
 
             GetCurrentQuery();
             newButton.Height = 48;
-            newButton.Content =
-                QueryName.Length != 0 ? QueryName : SelectedCommandFromComboBoxInQueryBuilder.CommandText;
+            newButton.Content = QueryName.Length != 0 ? QueryName : SelectedCommandInQueryBuilder.CommandText;
             newButton.Tag = _currentQuery;
         }
 
@@ -807,9 +780,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
-        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputToCsvFileRelay, CommandParameter = newButton };
-        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputToTextFileRelay, CommandParameter = newButton };
-        MenuItem outputToConsole = new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
+        MenuItem outputToCsv = new() { Header = "Output to CSV",
+                                       Command = OutputExecutionResultsToCsvFileRelay,
+                                       CommandParameter = newButton };
+        MenuItem outputToText = new() { Header = "Output to Text",
+                                        Command = OutputExecutionResultsToTextFileRelay,
+                                        CommandParameter = newButton };
+        MenuItem outputToConsole = new() { Header = "Execute to Console",
+                                           Command = ExecuteQueryFromQueryStackPanelRelay,
+                                           CommandParameter = newButton };
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);
@@ -829,6 +808,52 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         // Add the context menu to the button
         newButton.ContextMenu = contextMenu;
         return newButton;
+    }
+
+    private void OnIsQueryEditingEnabledChanged()
+    {
+        if (!IsQueryEditingEnabled)
+        {
+            _queryBeingEdited = null;
+        }
+    }
+
+    private void CheckBoxChecked(object? obj)
+    {
+        if (IsQueryEditingEnabled)
+        {
+            MessageBox.Show("To edit a query, right click on a query button and select 'Edit' from the context menu.",
+                            "Warning",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+            IsQueryEditingEnabled = false;
+        }
+    }
+
+    private OutputFormat CalculateOutputFormat()
+    {
+        StackTrace stackTrace = new();
+        StackFrame[] stackFrames = stackTrace.GetFrames();
+
+        try
+        {
+            if (stackFrames.Length > 2)
+            {
+                // Null forgiveness operator is used because the method this statement would not be reached if the
+                // length of the stackFrames array is less than 3.
+                MethodBase callingMethod = stackFrames[2].GetMethod()!;
+                if (callingMethod.Name == "OutputExecutionResultsToCsvFileAsync")
+                {
+                    return OutputFormat.Csv;
+                }
+            }
+
+            return OutputFormat.Text;
+        }
+        catch (Exception)
+        {
+            return OutputFormat.Text;
+        }
     }
 
     // [[ Event Handlers ]] --------------------------------------------------------- //

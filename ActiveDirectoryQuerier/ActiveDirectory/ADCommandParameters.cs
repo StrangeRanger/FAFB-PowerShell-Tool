@@ -10,17 +10,16 @@ public class ADCommandParameters
 {
     private readonly ObservableCollection<string> _availableParameters = new();
 
-    /// <summary></summary>
-    /// <important>
-    /// This property should not be accessed before LoadAvailableParametersAsync or LoadAvailableParameters has been
-    /// called. If it is accessed before either method has been called, no parameters will be available.
-    /// </important>
+    /// <remarks>
+    /// IMPORTANT: This property should not be accessed before LoadAvailableParametersAsync or LoadAvailableParameters
+    /// has been called. If it is accessed before either method has been called, no parameters will be available.
+    /// </remarks>
     public ObservableCollection<string> AvailableParameters
     {
         get {
             if (_availableParameters.Count == 0)
             {
-                Debug.WriteLine("Warning: LoadAvailableParametersAsync should be called before accessing " +
+                Trace.WriteLine("Warning: LoadAvailableParametersAsync should be called before accessing " +
                                 "AvailableParameters, to ensure asynchronous loading of parameters.");
                 LoadAvailableParameters(null);
             }

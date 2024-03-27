@@ -10,7 +10,7 @@ namespace ActiveDirectoryQuerier.ActiveDirectory;
 public static class ADCommandsFetcher
 {
     // ReSharper disable once InconsistentNaming
-    public static async Task<ObservableCollection<Command>> GetADCommands()
+    public static async Task<ObservableCollection<Command>> GetADCommandsAsync()
     {
         Command psCommand = new("Get-Command");
         psCommand.Parameters.Add("Module", "ActiveDirectory");

@@ -6,48 +6,44 @@ namespace ActiveDirectoryQuerier.Queries;
 public class Query
 {
     /// <summary>
-    /// Command that should help with Binding the command to the query for the buttons sake
+    /// Used for the name of the custom Query
     /// </summary>
-    [JsonIgnore]
-    public Command? Command { get; set; }
+    public string QueryName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Used for the Custom Queries Description
+    /// </summary>
+    public string QueryDescription { get; set; } = string.Empty;
 
     /// <summary>
     /// Used for serializing the Command Name
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public string? PSCommandName { get; set; }
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
-    public string[]? PSCommandParameters { get; set; }
+    // ReSharper disable once InconsistentNaming
+    public string[] PSCommandParameters { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// Used for Serializing the Commands parameters
     /// </summary>
-    public string[]? PSCommandParameterValues { get; set; }
+    // ReSharper disable once InconsistentNaming
+    public string[] PSCommandParameterValues { get; set; } = Array.Empty<string>();
 
     /// <summary>
-    /// Used for the name of the custom Query
+    /// Command that should help with Binding the command to the query for the buttons sake
     /// </summary>
-    public string? QueryName { get; set; }
+    [JsonIgnore]
+    public Command? Command { get; set; }
 
-    /// <summary>
-    /// Used for the Custom Queries Description
-    /// </summary>
-    public string? QueryDescription { get; set; }
-
-    /// <summary>
-    /// Constructor for the query class
-    /// </summary>
-    /// <param name="psCommandName">Name of the Command EX. get-adusers</param>
     public Query(string psCommandName)
     {
         PSCommandName = psCommandName;
     }
 
-    /// <summary>
-    /// Empty constructor for the query class
-    /// </summary>
     public Query()
     { }
 }

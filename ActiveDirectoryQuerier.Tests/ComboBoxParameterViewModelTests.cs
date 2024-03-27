@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.ActiveDirectory;
-using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.ViewModels;
 
 namespace ActiveDirectoryQuerier.Tests;

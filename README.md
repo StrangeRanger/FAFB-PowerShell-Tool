@@ -9,10 +9,26 @@
 ![Static Badge](https://img.shields.io/badge/state-Beta-orange)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/StrangeRanger/FAFB-PowerShell-Tool)
 
-Active Directory Querier is a Windows GUI for creating, saving, and executing one or more PowerShell commands, against a Local Active Directory.
+Active Directory Querier is a Windows GUI for creating, saving, and executing one or more PowerShell commands against a Local Active Directory.
 
 ## Getting Started
 
 ### Installing
 
-Active Directory Querier does not require the installation of any software. Simply go to [the lastest releases tab](https://github.com/StrangeRanger/FAFB-PowerShell-Tool/releases), and download the version for your appropriate architecture.
+To begin using Active Directory Querier, no additional software installation is required. Simply go to the [latest releases tab](https://github.com/StrangeRanger/FAFB-PowerShell-Tool/releases) and select the version that matches your architecture.
+
+## Development
+
+If you are interested in pursuing or expanding this project, here are the requirements you will need to begin:
+
+- One or more of the following IDEs:
+  - [JetBrain's Rider](https://www.jetbrains.com/rider/)
+  - [Visual Studio](https://visualstudio.microsoft.com/)
+  - [Visual Studio Code](https://code.visualstudio.com/)
+- On the system you'll be doing your development on, install the following:
+  - [.Net 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) is the language we have used to program the application.
+  - [Remote Server Administration Tools](https://activedirectorypro.com/install-rsat-remote-server-administration-tools-windows-10/#rsat-powershell) will make all Active Directory commands available to the program.
+- Set up your dev/test environment:
+  - [Windows Server 2019](https://www.microsoft.com/en-us/evalcenter/download-windows-server-2019) – Will act as your Active Directory Domain host.
+  - [Windows Enterprise](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-10-enterprise) – Will act as a single system on the Active Directory Domain.
+  - [Setting up an AD dev environment]() – Instruction on how to get a working test environment set up.
