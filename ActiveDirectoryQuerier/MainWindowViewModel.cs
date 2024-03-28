@@ -250,6 +250,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     private async void ExecuteSelectedQueryInADInfo(object? _)
     {
         if (SelectedQueryInActiveDirectoryInfo is null)
@@ -276,6 +277,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             throw new KeyNotFoundException("The selected option was not found in the dictionary.");
         }
     }
+#pragma warning restore S2326 // Unused parameters should be removed
 
     internal void EditQueryFromQueryStackPanel(object? queryButton)
     {
@@ -372,7 +374,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    // TODO: Continue refactoring starting here...
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     private void CreateNewQueryFile(object? _)
     {
         // Saves/creates a new save file for the queries
@@ -384,6 +386,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _queryManager.QueryFileSaveLocation = saveFileDialog.FileName;
         }
     }
+#pragma warning restore S2326 // Unused parameters should be removed
 
     private void LoadSavedQueriesFromFile()
     {
@@ -405,6 +408,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     private void ImportQueryFile(object? _)
     {
         OpenFileDialog dialog =
@@ -423,6 +427,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             LoadSavedQueriesFromFile();
         }
     }
+#pragma warning restore S2326
 
     private async Task InitializeActiveDirectoryCommandsAsync()
     {
@@ -460,6 +465,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     internal void AddParameterComboBoxInQueryBuilder(object? _)
     {
         // Check if some variable is null and throw an exception if it is
@@ -477,12 +483,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             new ComboBoxParameterViewModel(AvailableADCommandParameters));
         DynamicallyAvailableADCommandParameterValueTextBoxes.Add(new TextBoxViewModel());
     }
+#pragma warning restore S2326
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     private void AddCommandComboBoxInQueryBuilder(object? _)
     {
         Trace.WriteLine("Not implemented yet.");
         MessageBoxService.Show("Not implemented yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
+#pragma warning restore S2326
 
     private void UpdateCommandWithSelectedParameters()
     {
@@ -536,6 +545,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _currentQuery.PSCommandParameterValues = commandParameterValues;
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     internal void RemoveParameterComboBoxInQueryBuilder(object? _)
     {
         if (DynamicallyAvailableADCommandParameterComboBoxes.Count != 0)
@@ -553,6 +563,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                                    MessageBoxImage.Warning);
         }
     }
+#pragma warning restore S2326
 
     internal void SaveCurrentQuery(object? commandParameter)
     {
@@ -598,6 +609,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     internal void ClearQueryBuilder(object? _)
     {
         if (SelectedCommandInQueryBuilder is null && DynamicallyAvailableADCommandParameterComboBoxes.Count == 0)
@@ -626,6 +638,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DynamicallyAvailableADCommandParameterValueTextBoxes.Clear();
         }
     }
+#pragma warning restore S2326
 
     /// <remarks>
     /// The use of the <c>command</c> parameter indicates that the method can be called from the Query Stack Panel.
@@ -694,6 +707,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ExecuteQueryAsync(ConsoleOutputInQueryBuilder, buttonQuery.Command);
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     private void ExportConsoleOutputToFile(object? _)
     {
         if (ConsoleOutputInQueryBuilder.GetConsoleOutput.Length == 0)
@@ -715,6 +729,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ConsoleOutputInQueryBuilder.ExportToTextFile(filename);
         }
     }
+#pragma warning restore S2326
 
     private async void OutputExecutionResultsToTextFileAsync(object? queryButton)
     {
@@ -821,6 +836,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+#pragma warning disable S2326 // Unused parameters should be removed | This method is used as a relay command.
     private void CheckBoxChecked(object? _)
     {
         if (IsQueryEditingEnabled)
@@ -833,6 +849,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             IsQueryEditingEnabled = false;
         }
     }
+#pragma warning restore S2326
 
     private OutputFormat CalculateOutputFormat()
     {
