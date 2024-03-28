@@ -1,16 +1,16 @@
 ﻿using System.Collections.ObjectModel;
 using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.ActiveDirectory;
+// ReSharper disable InconsistentNaming
 
 namespace ActiveDirectoryQuerier.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class ADCommandsFetcherTests
 {
     [Fact]
     public async Task GetADCommands_ReturnsCommandList_IsNotEmpty()
     {
-        // Act
+        // Arrange
         ObservableCollection<Command> adCommands = await ADCommandsFetcher.GetADCommandsAsync();
 
         // Assert
@@ -23,7 +23,7 @@ public class ADCommandsFetcherTests
     [InlineData("Get-ADComputer")]
     public async Task GetADCommands_ReturnsCommandList_ContainsCommand(string commandName)
     {
-        // Act
+        // Arrange
         ObservableCollection<Command> adCommands = await ADCommandsFetcher.GetADCommandsAsync();
 
         // Assert

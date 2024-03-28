@@ -2,22 +2,32 @@ using System.Collections.ObjectModel;
 using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.ActiveDirectory;
 using ActiveDirectoryQuerier.ViewModels;
+// ReSharper disable JoinDeclarationAndInitializer
+// ReSharper disable ConvertConstructorToMemberInitializers
 
 namespace ActiveDirectoryQuerier.Tests;
 
 public class ComboBoxParameterViewModelTests
 {
+    private readonly Command _command;
+    private readonly ADCommandParameters _adCommandParameters;
+
+    public ComboBoxParameterViewModelTests()
+    {
+        // Arrange
+        _command = new Command("Get-ADUser");
+        _adCommandParameters = new ADCommandParameters();
+    }
+
     [Fact]
     public async Task ComboBoxParameterViewModel_WhenConstructed_PossibleParametersIsNotNullOrEmpty()
     {
         // Arrange
-        Command command = new("Get-ADUser");
-        ADCommandParameters adCommandParameters = new();
         ComboBoxParameterViewModel comboBoxParameterViewModel;
 
         // Act
-        await adCommandParameters.LoadAvailableParametersAsync(command);
-        comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
+        await _adCommandParameters.LoadAvailableParametersAsync(_command);
+        comboBoxParameterViewModel = new ComboBoxParameterViewModel(_adCommandParameters.AvailableParameters);
 
         // Assert
         Assert.NotNull(comboBoxParameterViewModel.AvailableParameters);
@@ -28,13 +38,11 @@ public class ComboBoxParameterViewModelTests
     public async Task ComboBoxParameterViewModel_WhenConstructed_PossibleParametersContainsExpectedParameters()
     {
         // Arrange
-        Command command = new("Get-ADUser");
-        ADCommandParameters adCommandParameters = new();
         ComboBoxParameterViewModel comboBoxParameterViewModel;
 
         // Act
-        await adCommandParameters.LoadAvailableParametersAsync(command);
-        comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
+        await _adCommandParameters.LoadAvailableParametersAsync(_command);
+        comboBoxParameterViewModel = new ComboBoxParameterViewModel(_adCommandParameters.AvailableParameters);
 
         // Assert
         Assert.Contains(comboBoxParameterViewModel.AvailableParameters, param => param == "-Filter");
@@ -49,13 +57,11 @@ public class ComboBoxParameterViewModelTests
     {
         // Arrange
         string selectedParameter;
-        Command command = new("Get-ADUser");
-        ADCommandParameters adCommandParameters = new();
         ComboBoxParameterViewModel comboBoxParameterViewModel;
 
         // Act
-        await adCommandParameters.LoadAvailableParametersAsync(command);
-        comboBoxParameterViewModel = new(adCommandParameters.AvailableParameters);
+        await _adCommandParameters.LoadAvailableParametersAsync(_command);
+        comboBoxParameterViewModel = new ComboBoxParameterViewModel(_adCommandParameters.AvailableParameters);
         selectedParameter = comboBoxParameterViewModel.AvailableParameters[0];
         comboBoxParameterViewModel.SelectedParameter = selectedParameter;
 

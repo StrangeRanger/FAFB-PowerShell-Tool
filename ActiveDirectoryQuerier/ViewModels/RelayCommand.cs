@@ -2,6 +2,10 @@
 
 namespace ActiveDirectoryQuerier.ViewModels;
 
+/// <summary>
+/// This class is a simple implementation of the ICommand interface and a traditional RelayCommand, with an added
+/// thread-safe event handler for CanExecuteChanged.
+/// </summary>
 public class RelayCommand
 (Action<object?> execute, Predicate<object?>? canExecute = null) : ICommand
 {

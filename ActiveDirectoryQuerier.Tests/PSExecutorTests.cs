@@ -1,11 +1,20 @@
 ﻿using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.PowerShell;
+// ReSharper disable InconsistentNaming
+// ReSharper disable ConvertConstructorToMemberInitializers
 
 namespace ActiveDirectoryQuerier.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class PSExecutorTests
 {
+    private readonly PSExecutor _psExecutor;
+
+    public PSExecutorTests()
+    {
+        // Arrange
+        _psExecutor = new PSExecutor();
+    }
+
     [Theory]
     [InlineData("Get-Command", "Module", "ActiveDirectory")]
     [InlineData("Get-Process", "Name", "explorer")]
@@ -16,10 +25,9 @@ public class PSExecutorTests
         // Arrange
         Command psCommand = new(command);
         psCommand.Parameters.Add(parameter, parameterValue);
-        PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = psExecutor.Execute(psCommand);
+        PSOutput result = _psExecutor.Execute(psCommand);
 
         // Assert
         Assert.False(result.HadErrors);
@@ -35,11 +43,10 @@ public class PSExecutorTests
         command.Parameters.Add("Module", "ActiveDirectory");
         Command command2 = new("Get-Process");
         command.Parameters.Add("Name", "explorer");
-        PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = psExecutor.Execute(command);
-        PSOutput result2 = psExecutor.Execute(command2);
+        PSOutput result = _psExecutor.Execute(command);
+        PSOutput result2 = _psExecutor.Execute(command2);
 
         // Assert
         Assert.NotEqual(result, result2);
@@ -55,10 +62,9 @@ public class PSExecutorTests
         // Arrange
         Command psCommand = new(command);
         psCommand.Parameters.Add(parameter, parameterValue);
-        PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = await psExecutor.ExecuteAsync(psCommand);
+        PSOutput result = await _psExecutor.ExecuteAsync(psCommand);
 
         // Assert
         Assert.False(result.HadErrors);
@@ -76,10 +82,9 @@ public class PSExecutorTests
         // Arrange
         Command psCommand = new(command);
         psCommand.Parameters.Add(parameter, parameterValue);
-        PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = psExecutor.Execute(psCommand);
+        PSOutput result = _psExecutor.Execute(psCommand);
 
         // Assert
         Assert.True(result.HadErrors);
@@ -97,10 +102,9 @@ public class PSExecutorTests
         // Arrange
         Command psCommand = new(command);
         psCommand.Parameters.Add(parameter, parameterValue);
-        PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = await psExecutor.ExecuteAsync(psCommand);
+        PSOutput result = await _psExecutor.ExecuteAsync(psCommand);
 
         // Assert
         Assert.True(result.HadErrors);
@@ -118,10 +122,9 @@ public class PSExecutorTests
         // Arrange
         Command psCommand = new(command);
         psCommand.Parameters.Add(parameter, parameterValue);
-        PSExecutor psExecutor = new();
 
         // Act
-        PSOutput result = await psExecutor.ExecuteAsync(psCommand, OutputFormat.Csv);
+        PSOutput result = await _psExecutor.ExecuteAsync(psCommand, OutputFormat.Csv);
 
         // Assert
         Assert.False(result.HadErrors);

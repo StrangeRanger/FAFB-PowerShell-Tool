@@ -1,11 +1,22 @@
 using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.PowerShell;
 using ActiveDirectoryQuerier.ViewModels;
+// ReSharper disable ConvertConstructorToMemberInitializers
 
 namespace ActiveDirectoryQuerier.Tests;
 
 public class ConsoleViewModelTests : IDisposable
 {
+    private readonly PSExecutor _psExecutor;
+    private readonly ConsoleViewModel _consoleViewModel;
+
+    public ConsoleViewModelTests()
+    {
+        // Arrange
+        _psExecutor = new PSExecutor();
+        _consoleViewModel = new ConsoleViewModel();
+    }
+
     // TODO: Make sure this is how I should perform cleanups...
     public void Dispose()
     {
@@ -22,15 +33,13 @@ public class ConsoleViewModelTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static async Task<(ConsoleViewModel, PSOutput)> ExecuteCommandAsync(Command command)
+    private async Task<(ConsoleViewModel, PSOutput)> ExecuteCommandAsync(Command command)
     {
-        PSExecutor psExecutor = new();
-        ConsoleViewModel consoleViewModel = new();
-        PSOutput result = await psExecutor.ExecuteAsync(command);
+        PSOutput result = await _psExecutor.ExecuteAsync(command);
 
-        consoleViewModel.Append(result.HadErrors ? result.StdErr : result.StdOut);
+        _consoleViewModel.Append(result.HadErrors ? result.StdErr : result.StdOut);
 
-        return (consoleViewModel, result);
+        return (_consoleViewModel, result);
     }
 
     [Fact]
@@ -52,14 +61,13 @@ public class ConsoleViewModelTests : IDisposable
     public void Append_AppendsStringToConsole_SuccessfullyAppended()
     {
         // Arrange
-        ConsoleViewModel consoleViewModel = new();
         string output = $"Output: {Guid.NewGuid()}";
 
         // Act
-        consoleViewModel.Append(output);
+        _consoleViewModel.Append(output);
 
         // Assert
-        Assert.Equal(output + Environment.NewLine, consoleViewModel.GetConsoleOutput);
+        Assert.Equal(output + Environment.NewLine, _consoleViewModel.GetConsoleOutput);
     }
 
     [Fact]

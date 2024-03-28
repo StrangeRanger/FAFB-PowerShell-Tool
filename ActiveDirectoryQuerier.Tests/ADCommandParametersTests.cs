@@ -1,47 +1,51 @@
 ﻿using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.ActiveDirectory;
+// ReSharper disable InconsistentNaming
+// ReSharper disable ConvertConstructorToMemberInitializers
 
 namespace ActiveDirectoryQuerier.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class ADCommandParametersTests
 {
+    private readonly ADCommandParameters _adCommandParameters;
+
+    public ADCommandParametersTests()
+    {
+        // Arrange
+        _adCommandParameters = new ADCommandParameters();
+    }
+
     [Fact]
     public void AvailableParameters_AvailableParametersNotPopulated_NoValidCommandProvided()
     {
-        // Arrange
-        ADCommandParameters adCommandParameters = new();
-
         // Assert
-        Assert.Contains("No valid command provided", adCommandParameters.AvailableParameters);
+        Assert.Contains("No valid command provided", _adCommandParameters.AvailableParameters);
     }
 
     [Fact]
     public async Task LoadAvailableParametersAsync_PopulatesAvailableParameters_IsNotEmpty()
     {
         // Arrange
-        ADCommandParameters adCommandParameters = new();
         Command command = new("Get-Process");
 
         // Act
-        await adCommandParameters.LoadAvailableParametersAsync(command);
+        await _adCommandParameters.LoadAvailableParametersAsync(command);
 
         // Assert
-        Assert.NotEmpty(adCommandParameters.AvailableParameters);
+        Assert.NotEmpty(_adCommandParameters.AvailableParameters);
     }
 
     [Fact]
     public async Task LoadAvailableParametersAsync_CheckAvailableParameters_ContainsNameAndId()
     {
         // Arrange
-        ADCommandParameters adCommandParameters = new();
         Command command = new("Get-Process");
 
         // Act
-        await adCommandParameters.LoadAvailableParametersAsync(command);
+        await _adCommandParameters.LoadAvailableParametersAsync(command);
 
         // Assert
-        Assert.Contains("-Name", adCommandParameters.AvailableParameters);
-        Assert.Contains("-Id", adCommandParameters.AvailableParameters);
+        Assert.Contains("-Name", _adCommandParameters.AvailableParameters);
+        Assert.Contains("-Id", _adCommandParameters.AvailableParameters);
     }
 }
