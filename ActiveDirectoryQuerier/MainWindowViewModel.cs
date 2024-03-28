@@ -45,6 +45,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     // [ Properties ] --------------------------------------------------------------- //
     // [[ Properties for backing fields ]] ------------------------------------------ //
 
+    // Bool that describes whether editing is enabled
     public bool QueryEditingEnabled
     {
         get => _queryEditingEnabled;
@@ -73,6 +74,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // Name of the query
     public string QueryName
     {
         get => _queryName;
@@ -244,6 +246,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // Clears console output
     private void ClearConsoleOutput(AppConsole appConsole)
     {
         if (appConsole.ConsoleOutput.Length == 0)
@@ -267,6 +270,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // Edit's query, but only from the stack panel 
+    //NOTE: Not all queries!!
     private void EditQueryFromQueryStackPanel(object queryButton)
     {
         var currentQuery = (Query)((Button)queryButton).Tag;
@@ -478,6 +483,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // Adds parameter combo box in the query builder
     private void AddParameterComboBoxInQueryBuilder(object _)
     {
         // Check if some variable is null and throw an exception if it is
@@ -771,6 +777,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    // Creates the query button in the stack panel
     private Button CreateQueryButtonInStackPanel(Query? query = null)
     {
         Button newButton = new();
@@ -813,7 +820,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);
-        menuItem1.Items.Add(outputToConsole);
+        menuItem1.Items.Add(outputToConsole); //TODO: Hunter: Add additional menu items
 
         MenuItem menuItem2 =
             new() { Header = "Edit", Command = EditQueryFromQueryStackPanelRelay, CommandParameter = newButton };
@@ -835,6 +842,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void OnPropertyChanged(string propertyName)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); //TODO: Make this more verbose for clarity
     }
 }

@@ -21,6 +21,7 @@ public class PSExecutor
         _powerShell.Commands.Clear();
     }
 
+    // Method that enables the assemblage of a full command through the use of powershell's AddCommand and AddParameter methods
     private void AssembleFullCommand(Command psCommand)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
@@ -50,6 +51,7 @@ public class PSExecutor
         }
     }
 
+    // Same as above method, but asynchronously
     public async Task<PSOutput> ExecuteAsync(Command command)
     {
         try
@@ -94,6 +96,7 @@ public class PSExecutor
         return Task.FromResult(ProcessExecutionResults(results));
     }
 
+    // Method for when you've gone down a bad road
     private PSOutput HandleExecutionException(Exception exception)
     {
         StringBuilder errorMessage = new();
