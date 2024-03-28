@@ -40,10 +40,9 @@ public class ADCommandParameters
 
     private async Task LoadAvailableParametersCore(Command? psCommand, bool isAsync)
     {
-        // psCommand can be null if the user attempts to select an ActiveDirectory command that doesn't exist.
-        // More specifically, if the entered command doesn't exist in the ADCommands property defined in
-        // MainWindowViewModel.cs, psCommand will be null, causing an exception to be thrown, crashing the
-        // program.
+        // psCommand may be null if the user attempts to select an Active Directory command that doesn't exist. More
+        // specifically, if the entered command doesn't exist in the ADCommands property defined in
+        // MainWindowViewModel.cs, psCommand will be null, causing an exception to be thrown, crashing the program.
         if (psCommand is null)
         {
             Trace.WriteLine("Error: command is null");
@@ -53,28 +52,26 @@ public class ADCommandParameters
 
         if (_availableParameters.Count == 0)
         {
+            ICollection<PSObject> result;
             using var powerShell = System.Management.Automation.PowerShell.Create();
-            string commandString =
-                $"Get-Command {psCommand.CommandText} | Select -ExpandProperty Parameters | ForEach-Object {{ $_.Keys }}";
+            var commandString = $"Get-Command {psCommand.CommandText} | Select -ExpandProperty Parameters | " +
+                                $"ForEach-Object {{ $_.Keys }}";
 
             powerShell.Commands.Clear();
             powerShell.AddScript(commandString);
 
             if (isAsync)
             {
-                PSDataCollection<PSObject> result = await powerShell.InvokeAsync();
-                foreach (PSObject adCommandParameter in result)
-                {
-                    _availableParameters.Add($"-{adCommandParameter}");
-                }
+                result = await powerShell.InvokeAsync();
             }
             else
             {
-                Collection<PSObject> result = powerShell.Invoke();
-                foreach (PSObject adCommandParameter in result)
-                {
-                    _availableParameters.Add($"-{adCommandParameter}");
-                }
+                result = powerShell.Invoke();
+            }
+
+            foreach (PSObject adCommandParameter in result)
+            {
+                _availableParameters.Add($"-{adCommandParameter}");
             }
         }
     }
