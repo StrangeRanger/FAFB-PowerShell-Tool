@@ -11,7 +11,7 @@ namespace ActiveDirectoryQuerier.Tests;
 public class ActiveDirectoryInfoTests
 {
     private readonly ActiveDirectoryInfo _adInfo = new();
-    
+
     [Fact]
     public async Task GetADUsers_ReturnsExpectedOutput()
     {
@@ -20,7 +20,7 @@ public class ActiveDirectoryInfoTests
 
         // Assert
         Assert.NotNull(result);
-        
+
         if (result.HadErrors)
         {
             Assert.True(result.StdErr.Count > 0);
@@ -39,7 +39,7 @@ public class ActiveDirectoryInfoTests
 
         // Assert
         Assert.NotNull(result);
-        
+
         if (result.HadErrors)
         {
             Assert.True(result.StdErr.Count > 0);
@@ -58,7 +58,7 @@ public class ActiveDirectoryInfoTests
 
         // Assert
         Assert.NotNull(result);
-        
+
         if (result.HadErrors)
         {
             Assert.True(result.StdErr.Count > 0);
@@ -77,7 +77,7 @@ public class ActiveDirectoryInfoTests
 
         // Assert
         Assert.NotNull(result);
-        
+
         if (result.HadErrors)
         {
             Assert.True(result.StdErr.Count > 0);

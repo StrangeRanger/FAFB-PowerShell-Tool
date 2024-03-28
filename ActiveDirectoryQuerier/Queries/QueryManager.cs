@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Management.Automation.Runspaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,7 +7,7 @@ using System.Windows;
 namespace ActiveDirectoryQuerier.Queries;
 
 /// <summary>
-/// This class is for the collection of queries, it is used for serializing and deserializing the queries to a file.
+/// Manages queries, including saving and loading queries from a file.
 /// </summary>
 public class QueryManager
 {
