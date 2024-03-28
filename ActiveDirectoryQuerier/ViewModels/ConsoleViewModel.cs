@@ -7,8 +7,7 @@ public sealed class ConsoleViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     private string _consoleOutput = string.Empty;
-
-    // Setting this as private to prevent external modification.
+    
     private string ConsoleOutput
     {
         get => _consoleOutput;
