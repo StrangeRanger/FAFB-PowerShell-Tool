@@ -26,7 +26,7 @@ public class PSExecutor
         try
         {
             _powerShell.Commands.Clear();
-            AssembleFullCommand(psCommand, outputFormat);
+            AddCommandToPowerShell(psCommand, outputFormat);
 
             Collection<PSObject> results = _powerShell.Invoke();
 
@@ -43,7 +43,7 @@ public class PSExecutor
         try
         {
             _powerShell.Commands.Clear();
-            AssembleFullCommand(command, outputFormat);
+            AddCommandToPowerShell(command, outputFormat);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
 
@@ -55,7 +55,7 @@ public class PSExecutor
         }
     }
 
-    private void AssembleFullCommand(Command psCommand, OutputFormat outputFormat)
+    private void AddCommandToPowerShell(Command psCommand, OutputFormat outputFormat)
     {
         ArgumentNullException.ThrowIfNull(psCommand);
 
