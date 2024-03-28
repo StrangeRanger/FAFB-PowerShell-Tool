@@ -12,7 +12,7 @@ public class Query
     public string[] PSCommandParameters { get; set; } = Array.Empty<string>();
     public string[] PSCommandParameterValues { get; set; } = Array.Empty<string>();
     // ReSharper restore InconsistentNaming
-    
+
     [JsonIgnore]
     public Command? Command { get; set; }
 
