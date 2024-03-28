@@ -821,7 +821,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private void CheckBoxChecked(object? obj)
+    private void CheckBoxChecked(object? _)
     {
         if (IsQueryEditingEnabled)
         {
