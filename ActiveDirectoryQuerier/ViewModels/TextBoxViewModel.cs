@@ -2,17 +2,12 @@
 
 namespace ActiveDirectoryQuerier.ViewModels;
 
-/// <summary>
-/// ViewModel for a TextBox that contains the value of a parameter slot.
-/// It is used to bind the TextBox to the ViewModel.
-/// </summary>
-/// TODO: Place class into ViewModel folder.
 public sealed class TextBoxViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    private string? _selectedParameterValue;
+    private string _selectedParameterValue = string.Empty;
 
-    public string? SelectedParameterValue
+    public string SelectedParameterValue
     {
         get => _selectedParameterValue;
         set {

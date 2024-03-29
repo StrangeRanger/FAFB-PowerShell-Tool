@@ -1,39 +1,46 @@
 ﻿using ActiveDirectoryQuerier.PowerShell;
+// ReSharper disable InconsistentNaming
+// ReSharper disable ConvertConstructorToMemberInitializers
 
 namespace ActiveDirectoryQuerier.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class PSOutputTest
 {
+    private readonly PSOutput _psOutput;
+
+    public PSOutputTest()
+    {
+        // Arrange
+        _psOutput = new PSOutput();
+    }
+
     [Fact]
     public void HadErrors_StdErrHasEntries_ReturnsTrue()
     {
         // Arrange
-        PSOutput psOutput = new();
-        psOutput.StdErr.Add("Error");
+        _psOutput.StdErr.Add("Error");
 
         // Act
-        bool result = psOutput.HadErrors;
+        bool result = _psOutput.HadErrors;
 
         // Assert
         Assert.True(result);
-        Assert.NotEmpty(psOutput.StdErr);
-        Assert.Empty(psOutput.StdOut);
+        Assert.NotEmpty(_psOutput.StdErr);
+        Assert.Empty(_psOutput.StdOut);
     }
 
     [Fact]
     public void NoErrors_StdOutHasEntries_ReturnsFalse()
     {
         // Arrange
-        PSOutput psOutput = new();
-        psOutput.StdOut.Add("Output");
+        _psOutput.StdOut.Add("Output");
 
         // Act
-        var result = psOutput.HadErrors;
+        var result = _psOutput.HadErrors;
 
         // Assert
         Assert.False(result);
-        Assert.Empty(psOutput.StdErr);
-        Assert.NotEmpty(psOutput.StdOut);
+        Assert.Empty(_psOutput.StdErr);
+        Assert.NotEmpty(_psOutput.StdOut);
     }
 }

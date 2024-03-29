@@ -1,10 +1,22 @@
 using System.Management.Automation.Runspaces;
 using ActiveDirectoryQuerier.PowerShell;
+using ActiveDirectoryQuerier.ViewModels;
+// ReSharper disable ConvertConstructorToMemberInitializers
 
 namespace ActiveDirectoryQuerier.Tests;
 
-public class AppConsoleTests : IDisposable
+public class ConsoleViewModelTests : IDisposable
 {
+    private readonly PSExecutor _psExecutor;
+    private readonly ConsoleViewModel _consoleViewModel;
+
+    public ConsoleViewModelTests()
+    {
+        // Arrange
+        _psExecutor = new PSExecutor();
+        _consoleViewModel = new ConsoleViewModel();
+    }
+
     // TODO: Make sure this is how I should perform cleanups...
     public void Dispose()
     {
@@ -21,15 +33,13 @@ public class AppConsoleTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static async Task<(AppConsole, PSOutput)> ExecuteCommandAsync(Command command)
+    private async Task<(ConsoleViewModel, PSOutput)> ExecuteCommandAsync(Command command)
     {
-        PSExecutor psExecutor = new();
-        AppConsole appConsole = new();
-        PSOutput result = await psExecutor.ExecuteAsync(command);
+        PSOutput result = await _psExecutor.ExecuteAsync(command);
 
-        appConsole.Append(result.HadErrors ? result.StdErr : result.StdOut);
+        _consoleViewModel.Append(result.HadErrors ? result.StdErr : result.StdOut);
 
-        return (appConsole, result);
+        return (_consoleViewModel, result);
     }
 
     [Fact]
@@ -44,21 +54,20 @@ public class AppConsoleTests : IDisposable
         appConsole.Clear();
 
         // Assert
-        Assert.Empty(appConsole.ConsoleOutput);
+        Assert.Empty(appConsole.GetConsoleOutput);
     }
 
     [Fact]
     public void Append_AppendsStringToConsole_SuccessfullyAppended()
     {
         // Arrange
-        AppConsole appConsole = new();
-        const string output = "Output";
+        string output = $"Output: {Guid.NewGuid()}";
 
         // Act
-        appConsole.Append(output);
+        _consoleViewModel.Append(output);
 
         // Assert
-        Assert.Equal(output, appConsole.ConsoleOutput);
+        Assert.Equal(output + Environment.NewLine, _consoleViewModel.GetConsoleOutput);
     }
 
     [Fact]
@@ -70,14 +79,15 @@ public class AppConsoleTests : IDisposable
         var (appConsole, returnValues) = await ExecuteCommandAsync(command);
 
         // Act
-        appConsole.ExportToText();
+        appConsole.ExportToTextFile();
         string fileContents = await File.ReadAllTextAsync("output.txt");
 
         // Assert
         Assert.True(File.Exists("output.txt"));
 
-        Assert.Equal(returnValues.HadErrors ? string.Join(Environment.NewLine, returnValues.StdErr)
-                                            : string.Join(Environment.NewLine, returnValues.StdOut),
+        Assert.Equal(returnValues.HadErrors
+                         ? string.Join(Environment.NewLine, returnValues.StdErr) + Environment.NewLine
+                         : string.Join(Environment.NewLine, returnValues.StdOut) + Environment.NewLine,
                      fileContents);
     }
 }

@@ -31,7 +31,7 @@
             </Menu>
         </Border>
         <!-- Grid for resizable content. -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
             <!-- Define Columns for resizable area. -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250" MinWidth="200" />
@@ -79,15 +79,16 @@
                             </Grid.RowDefinitions>
                             <!-- Query Name TextBox. -->
                             <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="20,10" FontWeight="Bold">Query Name</TextBlock>
-                            <TextBox  Grid.Column="0" 
-                                      Grid.ColumnSpan="2" 
+                            <TextBox  Grid.Column="0"
+                                      Grid.Row="0" Grid.ColumnSpan="2" 
                                       Text="{Binding QueryName}" 
                                       TextWrapping="Wrap" 
                                       VerticalAlignment="Center" 
                                       Height="50"
                                       Margin="20,0,20,0"/>
                             <!-- Query Description RichTextBox -->
-                            <TextBlock FontWeight="Bold" HorizontalAlignment="Left" Margin="20,3" Grid.Row="1">Query Description</TextBlock>
+                            <TextBlock FontWeight="Bold" HorizontalAlignment="Left" Margin="20,3" Grid.Row="1"
+                                       Grid.Column="0">Query Description</TextBlock>
                             <RichTextBox Grid.Row="1" 
                                          Grid.Column="0"  
                                          Grid.ColumnSpan="2" 
@@ -121,10 +122,9 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <!-- TODO: Pieter refer to here regarding combobox setup -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Center">Command</TextBlock>
                                 <ComboBox ItemsSource="{Binding ADCommands}"
-                                          SelectedItem="{Binding SelectedCommandFromComboBoxInQueryBuilder}"
+                                          SelectedItem="{Binding SelectedCommandInQueryBuilder}"
                                           DisplayMemberPath="CommandText"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
@@ -135,7 +135,7 @@
 
                                 <!-- ItemsControl for Dynamic ComboBoxes -->
                                 <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Left">Parameter</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParametersComboBox}"
+                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterComboBoxes}"
                                               Grid.Column="1"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -153,7 +153,7 @@
 
                                 <!-- Parameter Values ComboBox -->
                                 <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left">Value</TextBlock>
-                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterValueTextBox}"
+                                <ItemsControl ItemsSource="{Binding DynamicallyAvailableADCommandParameterValueTextBoxes}"
                                               Grid.Column="2"
                                               Grid.Row="1">
                                     <ItemsControl.ItemTemplate>
@@ -166,24 +166,24 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <!-- END of Dynamic ComboxBoxes for parameters and values-->
+                                <!-- END of Dynamic ComboBoxes for parameters and values-->
 
                                 <!-- START of Button ComboBox -->
                                 <Menu Margin="0,4,0,6" Height="Auto" Grid.Row="2" Grid.Column="0"
                                       HorizontalAlignment="Center" MinWidth="160" Width="Auto">
                                     <MenuItem Header="Options" MinWidth="160" Height="Auto" Width="Auto">
                                         <MenuItem Header="Add New Command Slot"
-                                                  Command="{Binding AddCommandComboBoxRelay}" />
+                                                  Command="{Binding AddCommandComboBoxInQueryBuilderRelay}" />
                                         <MenuItem Header="Add New Parameter Slot"
-                                                  Command="{Binding AddCommandParameterComboBoxRelay}" />
+                                                  Command="{Binding AddParameterComboBoxInQueryBuilderRelay}" />
                                         <MenuItem Header="Remove Parameter Slot"
-                                                  Command="{Binding RemoveCommandParameterComboBoxRelay}" />
-                                        <MenuItem Header="Save Query" Command="{Binding SaveQueryRelay}" />
-                                        <MenuItem Header="Execute" Command="{Binding ExecuteQueryFromQueryBuilderRelay}" />
-                                        <MenuItem Header="Execute to CSV" Command="{Binding OutputToCsvFileRelay}" />
-                                        <MenuItem Header="Execute to Text" Command="{Binding OutputToTextFileRelay}" />
+                                                  Command="{Binding RemoveParameterComboBoxInQueryBuilderRelay}" />
+                                        <MenuItem Header="Save Query" Command="{Binding SaveCurrentQueryRelay}" />
+                                        <MenuItem Header="Execute" Command="{Binding ExecuteQueryInQueryBuilderRelay}" />
+                                        <MenuItem Header="Execute to CSV" Command="{Binding OutputExecutionResultsToCsvFileRelay}" />
+                                        <MenuItem Header="Execute to Text" Command="{Binding OutputExecutionResultsToTextFileRelay}" />
                                         <MenuItem Header="Export Console Output"
-                                                  Command="{Binding ExportConsoleOutputRelay}" />
+                                                  Command="{Binding ExportConsoleOutputToFileRelay}" />
                                         <MenuItem Header="Clear Console Output"
                                                   Command="{Binding ClearConsoleOutputInQueryBuilderRelay}" />
                                         <MenuItem Header="Clear Query" Command="{Binding ClearQueryBuilderRelay}" />
@@ -191,14 +191,14 @@
                                 </Menu>
                                 <!-- END of Button ComboBox-->
                                 <CheckBox Grid.Row="2" Grid.Column="0" Content="Editing" HorizontalAlignment="Left"
-                                          Margin="10,6,10,0"
-                                          VerticalAlignment="Top" IsChecked="{Binding QueryEditingEnabled}" Height="15"
-                                          Width="57" />
+                                          Margin="10,6,10,0" VerticalAlignment="Top" 
+                                          IsChecked="{Binding IsQueryEditingEnabled}" 
+                                          Command="{Binding CheckBoxCheckedRelay}" Height="15" Width="57" />
                             </Grid>
                             <!-- ROW 0 END -->
                             <!-- GRID ROW 1 START -->
                             <!-- TextBox as Console Output -->
-                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInQueryBuilder.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInQueryBuilder.GetConsoleOutput, Mode=OneWay}"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />
@@ -214,13 +214,13 @@
                             <Grid Margin="0,0,0,49" Grid.Row="0">
                                 <Button Content="Execute" HorizontalAlignment="Left" Margin="368,43,0,0"
                                         VerticalAlignment="Top" Height="23" Width="95" 
-                                        Command="{Binding ExecuteQueryAsyncFromActiveDirectoryInfoRelay}"/>
+                                        Command="{Binding ExecuteSelectedQueryInADInfoRelay}"/>
                                 <ComboBox HorizontalAlignment="Left" Margin="31,44,0,0" VerticalAlignment="Top"
                                           Width="207" Height="26" 
-                                          SelectedItem="{Binding SelectedCommandFromComboBoxInActiveDirectoryInfo}"
-                                          ItemsSource="{Binding AvailableOptionsFromComboBoxInActiveDirectoryInfo.AvailableOptions.Keys }" />
+                                          SelectedItem="{Binding SelectedQueryInActiveDirectoryInfo}"
+                                          ItemsSource="{Binding AvailableQueriesInActiveDirectoryInfo.AvailableOptions.Keys }" />
                             </Grid>
-                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInActiveDirectoryInfo.ConsoleOutput}"
+                            <TextBox Grid.Row="1" Text="{Binding ConsoleOutputInActiveDirectoryInfo.GetConsoleOutput, Mode=OneWay }"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch" Margin="10" IsReadOnly="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto" />

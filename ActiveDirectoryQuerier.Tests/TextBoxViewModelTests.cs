@@ -7,10 +7,8 @@ public class TextBoxViewModelTests
     [Fact]
     public void TextBoxViewModel_WhenConstructed_SelectedParameterValueIsNotNullOrEmpty()
     {
-        // Arrange
-        TextBoxViewModel textBoxViewModel = new() {// Act
-                                                   SelectedParameterValue = "*"
-        };
+        // Arrange & Act
+        TextBoxViewModel textBoxViewModel = new() { SelectedParameterValue = "*" };
 
         // Assert
         Assert.NotNull(textBoxViewModel.SelectedParameterValue);
@@ -20,10 +18,8 @@ public class TextBoxViewModelTests
     [Fact]
     public void TextBoxViewModel_WhenSetToNull_NoExceptionIsThrown()
     {
-        // Arrange
-        TextBoxViewModel textBoxViewModel = new() {// Act
-                                                   SelectedParameterValue = null!
-        };
+        // Arrange & Act
+        TextBoxViewModel textBoxViewModel = new() { SelectedParameterValue = null! };
 
         // Assert
         Assert.Null(textBoxViewModel.SelectedParameterValue);

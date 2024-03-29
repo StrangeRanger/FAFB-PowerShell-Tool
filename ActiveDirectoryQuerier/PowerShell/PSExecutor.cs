@@ -21,24 +21,12 @@ public class PSExecutor
         _powerShell.Commands.Clear();
     }
 
-    private void AssembleFullCommand(Command psCommand)
-    {
-        ArgumentNullException.ThrowIfNull(psCommand);
-
-        _powerShell.Commands.AddCommand(psCommand.CommandText);
-
-        foreach (var parameter in psCommand.Parameters)
-        {
-            _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
-        }
-    }
-
-    public PSOutput Execute(Command psCommand)
+    public PSOutput Execute(Command psCommand, OutputFormat outputFormat = OutputFormat.Text)
     {
         try
         {
             _powerShell.Commands.Clear();
-            AssembleFullCommand(psCommand);
+            AddCommandToPowerShell(psCommand, outputFormat);
 
             Collection<PSObject> results = _powerShell.Invoke();
 
@@ -50,20 +38,37 @@ public class PSExecutor
         }
     }
 
-    public async Task<PSOutput> ExecuteAsync(Command command)
+    public async Task<PSOutput> ExecuteAsync(Command command, OutputFormat outputFormat = OutputFormat.Text)
     {
         try
         {
             _powerShell.Commands.Clear();
-            AssembleFullCommand(command);
+            AddCommandToPowerShell(command, outputFormat);
 
             PSDataCollection<PSObject> results = await _powerShell.InvokeAsync();
 
-            return await ProcessExecutionResultsAsync(results);
+            return ProcessExecutionResults(results);
         }
         catch (Exception exception)
         {
             return HandleExecutionException(exception);
+        }
+    }
+
+    private void AddCommandToPowerShell(Command psCommand, OutputFormat outputFormat)
+    {
+        ArgumentNullException.ThrowIfNull(psCommand);
+
+        _powerShell.Commands.AddCommand(psCommand.CommandText);
+
+        foreach (var parameter in psCommand.Parameters)
+        {
+            _powerShell.Commands.AddParameter(parameter.Name, parameter.Value);
+        }
+
+        if (outputFormat == OutputFormat.Csv)
+        {
+            _powerShell.Commands.AddCommand("ConvertTo-Csv").AddParameter("NoTypeInformation");
         }
     }
 
@@ -89,11 +94,6 @@ public class PSExecutor
         return psOutput;
     }
 
-    private Task<PSOutput> ProcessExecutionResultsAsync(IEnumerable<PSObject> results)
-    {
-        return Task.FromResult(ProcessExecutionResults(results));
-    }
-
     private PSOutput HandleExecutionException(Exception exception)
     {
         StringBuilder errorMessage = new();
@@ -101,7 +101,7 @@ public class PSExecutor
         errorMessage.AppendLine("An error occurred while executing the PowerShell command:");
         errorMessage.AppendLine(exception.Message);
         errorMessage.AppendLine(exception.StackTrace);
-        Debug.WriteLine(errorMessage.ToString());
+        Trace.WriteLine(errorMessage.ToString());
 
         return new PSOutput { StdErr = { errorMessage.ToString() } };
     }
