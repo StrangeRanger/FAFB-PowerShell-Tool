@@ -31,4 +31,4 @@ If you are interested in pursuing or expanding this project, here are the requir
 - Set up your dev/test environment:
   - [Windows Server 2019](https://www.microsoft.com/en-us/evalcenter/download-windows-server-2019) – Will act as your Active Directory Domain host.
   - [Windows Enterprise](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-10-enterprise) – Will act as a single system on the Active Directory Domain.
-  - [Setting up an AD dev environment]() – Instruction on how to get a working test environment set up.
+  - [Setting up an AD dev environment](https://activedirectorypro.com/create-active-directory-test-environment/) – Instruction on how to get a working test environment set up.
