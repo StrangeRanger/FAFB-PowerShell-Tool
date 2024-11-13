@@ -231,18 +231,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (consoleOutput.GetConsoleOutput.Length == 0)
         {
-            MessageBoxService.Show("The console is already clear.",
-                                   "Information",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("The console is already clear.", "Information", MessageBoxButton.OK,
                                    MessageBoxImage.Information);
             return;
         }
 
-        MessageBoxResult result = MessageBoxService.Show("Are you sure you want to clear the console output?",
-                                                         "Warning",
-                                                         MessageBoxButton.YesNo,
-                                                         MessageBoxImage.Warning,
-                                                         MessageBoxResult.No);
+        MessageBoxResult result =
+            MessageBoxService.Show("Are you sure you want to clear the console output?", "Warning",
+                                   MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
 
         if (result == MessageBoxResult.Yes)
         {
@@ -255,9 +251,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (SelectedQueryInActiveDirectoryInfo is null)
         {
             Trace.WriteLine("No command selected.");
-            MessageBoxService.Show("You must first select an option to execute.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("You must first select an option to execute.", "Warning", MessageBoxButton.OK,
                                    MessageBoxImage.Warning);
             return;
         }
@@ -282,10 +276,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (queryButton is not Button button)
         {
             Trace.WriteLine("No button selected.");
-            MessageBoxService.Show($"An internal error occurred while trying to edit the query: {queryButton}",
-                                   "Error",
-                                   MessageBoxButton.OK,
-                                   MessageBoxImage.Error);
+            MessageBoxService.Show($"An internal error occurred while trying to edit the query: {queryButton}", "Error",
+                                   MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
@@ -332,18 +324,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (queryButton is not Button currentButton)
         {
             Trace.WriteLine("No button selected.");
-            MessageBoxService.Show("To delete a query, you must first select a query.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("To delete a query, you must first select a query.", "Warning", MessageBoxButton.OK,
                                    MessageBoxImage.Warning);
             return;
         }
 
-        MessageBoxResult result = MessageBoxService.Show("Are you sure you want to delete the query?",
-                                                         "Warning",
-                                                         MessageBoxButton.YesNo,
-                                                         MessageBoxImage.Warning,
-                                                         MessageBoxResult.No);
+        MessageBoxResult result =
+            MessageBoxService.Show("Are you sure you want to delete the query?", "Warning", MessageBoxButton.YesNo,
+                                   MessageBoxImage.Warning, MessageBoxResult.No);
 
         if (result == MessageBoxResult.Yes)
         {
@@ -466,10 +454,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (AvailableADCommandParameters is null)
         {
             Trace.WriteLine("AvailableADCommandParameters has not been populated yet.");
-            MessageBoxService.Show("To add a parameter, you must first select a command.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
-                                   MessageBoxImage.Warning);
+            MessageBoxService.Show("To add a parameter, you must first select a command.", "Warning",
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -489,9 +475,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (SelectedCommandInQueryBuilder is null)
         {
             Trace.WriteLine("No command selected.");
-            MessageBoxService.Show("To save a query, you must first select a command.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("To save a query, you must first select a command.", "Warning", MessageBoxButton.OK,
                                    MessageBoxImage.Warning);
             return;
         }
@@ -547,9 +531,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
         else
         {
-            MessageBoxService.Show("There are no parameters to remove.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("There are no parameters to remove.", "Warning", MessageBoxButton.OK,
                                    MessageBoxImage.Warning);
         }
     }
@@ -559,9 +541,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (SelectedCommandInQueryBuilder is null)
         {
             Trace.WriteLine("No command selected.");
-            MessageBoxService.Show("To save a query, you must first select a command.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("To save a query, you must first select a command.", "Warning", MessageBoxButton.OK,
                                    MessageBoxImage.Warning);
             return;
         }
@@ -602,19 +582,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (SelectedCommandInQueryBuilder is null && DynamicallyAvailableADCommandParameterComboBoxes.Count == 0)
         {
-            MessageBoxService.Show("The query builder is already clear.",
-                                   "Information",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("The query builder is already clear.", "Information", MessageBoxButton.OK,
                                    MessageBoxImage.Information);
             return;
         }
 
         // Display a gui box confirming if the user wants to confirm the clear
-        MessageBoxResult result = MessageBoxService.Show("Are you sure you want to clear the query builder?",
-                                                         "Warning",
-                                                         MessageBoxButton.YesNo,
-                                                         MessageBoxImage.Warning,
-                                                         MessageBoxResult.No);
+        MessageBoxResult result =
+            MessageBoxService.Show("Are you sure you want to clear the query builder?", "Warning",
+                                   MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
 
         // If the user selects yes, clear the consoleOutput
         if (result == MessageBoxResult.Yes)
@@ -639,10 +615,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (SelectedCommandInQueryBuilder is null && command is null)
         {
             Trace.WriteLine("No command selected.");
-            MessageBoxService.Show("To execute a command, you must first select a command.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
-                                   MessageBoxImage.Warning);
+            MessageBoxService.Show("To execute a command, you must first select a command.", "Warning",
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -683,9 +657,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (queryButton is not Button currentButton)
         {
             Trace.WriteLine("No button selected.");
-            MessageBoxService.Show("To execute a query, you must first select a query.",
-                                   "Warning",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("To execute a query, you must first select a query.", "Warning", MessageBoxButton.OK,
                                    MessageBoxImage.Warning);
             return;
         }
@@ -698,9 +670,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (ConsoleOutputInQueryBuilder.GetConsoleOutput.Length == 0)
         {
-            MessageBoxService.Show("The console is empty.",
-                                   "Information",
-                                   MessageBoxButton.OK,
+            MessageBoxService.Show("The console is empty.", "Information", MessageBoxButton.OK,
                                    MessageBoxImage.Information);
             return;
         }
@@ -764,10 +734,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             if (SelectedCommandInQueryBuilder is null)
             {
                 Trace.WriteLine("No command selected.");
-                MessageBoxService.Show("To save a query, you must first select a command.",
-                                       "Warning",
-                                       MessageBoxButton.OK,
-                                       MessageBoxImage.Warning);
+                MessageBoxService.Show("To save a query, you must first select a command.", "Warning",
+                                       MessageBoxButton.OK, MessageBoxImage.Warning);
                 return new Button();
             }
 
@@ -783,15 +751,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         MenuItem menuItem1 =
             new() { Header = "Execute", Command = ExecuteQueryFromQueryStackPanelRelay, CommandParameter = newButton };
 
-        MenuItem outputToCsv = new() { Header = "Output to CSV",
-                                       Command = OutputExecutionResultsToCsvFileRelay,
+        MenuItem outputToCsv = new() { Header = "Output to CSV", Command = OutputExecutionResultsToCsvFileRelay,
                                        CommandParameter = newButton };
-        MenuItem outputToText = new() { Header = "Output to Text",
-                                        Command = OutputExecutionResultsToTextFileRelay,
+        MenuItem outputToText = new() { Header = "Output to Text", Command = OutputExecutionResultsToTextFileRelay,
                                         CommandParameter = newButton };
-        MenuItem outputToConsole = new() { Header = "Execute to Console",
-                                           Command = ExecuteQueryFromQueryStackPanelRelay,
-                                           CommandParameter = newButton };
+        MenuItem outputToConsole =
+            new() { Header = "Execute to Console", Command = ExecuteQueryFromQueryStackPanelRelay,
+                    CommandParameter = newButton };
 
         menuItem1.Items.Add(outputToCsv);
         menuItem1.Items.Add(outputToText);
@@ -826,10 +792,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         if (IsQueryEditingEnabled)
         {
             MessageBoxService.Show(
-                "To edit a query, right click on a query button and select 'Edit' from the context menu.",
-                "Warning",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                "To edit a query, right click on a query button and select 'Edit' from the context menu.", "Warning",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
             IsQueryEditingEnabled = false;
         }
     }

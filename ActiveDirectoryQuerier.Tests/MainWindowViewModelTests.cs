@@ -35,11 +35,8 @@ public class MainWindowViewModelTests
 
         _viewModel.ClearConsoleOutput(consoleViewModel);
 
-        _messageBoxServiceMock.Verify(m => m.Show(It.IsAny<string>(),
-                                                  "Warning",
-                                                  MessageBoxButton.YesNo,
-                                                  MessageBoxImage.Warning,
-                                                  MessageBoxResult.No),
+        _messageBoxServiceMock.Verify(m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.YesNo,
+                                                  MessageBoxImage.Warning, MessageBoxResult.No),
                                       Times.Once);
     }
 
@@ -57,8 +54,7 @@ public class MainWindowViewModelTests
 
         // Assert
         _messageBoxServiceMock.Verify(
-            x => x.Show(It.IsAny<string>(), "Error", MessageBoxButton.OK, MessageBoxImage.Error),
-            Times.Once);
+            x => x.Show(It.IsAny<string>(), "Error", MessageBoxButton.OK, MessageBoxImage.Error), Times.Once);
     }
 
     [Fact]
@@ -67,8 +63,7 @@ public class MainWindowViewModelTests
         _viewModel.DeleteQueryFromQueryStackPanel(null);
 
         _messageBoxServiceMock.Verify(
-            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning),
-            Times.Once);
+            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning), Times.Once);
     }
 
     [Fact]
@@ -77,8 +72,7 @@ public class MainWindowViewModelTests
         _viewModel.RemoveParameterComboBoxInQueryBuilder(null);
 
         _messageBoxServiceMock.Verify(
-            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning),
-            Times.Once);
+            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning), Times.Once);
     }
 
     [Fact]
@@ -87,8 +81,7 @@ public class MainWindowViewModelTests
         _viewModel.SaveCurrentQuery(null);
 
         _messageBoxServiceMock.Verify(
-            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning),
-            Times.Once);
+            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning), Times.Once);
     }
 
     [Fact]
@@ -97,8 +90,7 @@ public class MainWindowViewModelTests
         _viewModel.AddParameterComboBoxInQueryBuilder(null);
 
         _messageBoxServiceMock.Verify(
-            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning),
-            Times.Once);
+            m => m.Show(It.IsAny<string>(), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning), Times.Once);
     }
 
     [Fact]
